@@ -1,4 +1,17 @@
-# Injectable
+# es-injection
+
+[![AppVeyor](https://img.shields.io/appveyor/ci/rraziel/es-injection/master.svg?label=Win32&style=flat)](https://ci.appveyor.com/project/rraziel/es-injection)
+[![CircleCI](https://img.shields.io/circleci/project/github/rraziel/es-injection/master.svg?label=MacOS&style=flat)](https://circleci.com/gh/rraziel/es-injection)
+[![Travis CI](https://img.shields.io/travis/rraziel/es-injection/master.svg?label=Linux&style=flat)](https://travis-ci.org/rraziel/es-injection)
+[![AppVeyor tests](https://img.shields.io/appveyor/tests/rraziel/es-injection/master.svg?label=Tests&style=flat)](https://ci.appveyor.com/project/rraziel/es-injection/build/tests)
+[![Codecov](https://img.shields.io/codecov/c/github/rraziel/es-injection.svg?label=Coverage&style=flat)](https://codecov.io/gh/rraziel/es-injection)
+[![Code Climate](https://img.shields.io/codeclimate/maintainability/rraziel/es-injection.svg?label=Maintainability&style=flat)](https://codeclimate.com/github/rraziel/es-injection)
+[![Code Climate](https://img.shields.io/codeclimate/issues/github/rraziel/es-injection.svg?label=Code%20Issues&style=flat)](https://codeclimate.com/github/rraziel/es-injection/issues)
+
+[![Dependencies](https://img.shields.io/david/rraziel/es-injection.svg?label=Dependencies&style=flat)](https://david-dm.org/rraziel/es-injection)
+[![Development dependencies](https://img.shields.io/david/dev/rraziel/es-injection.svg?label=Dev%20Dependencies&style=flat)](https://david-dm.org/rraziel/es-injection?type=dev)
+[![Known Vulnerabilities](https://snyk.io/test/github/rraziel/es-injection/badge.svg)](https://snyk.io/test/github/rraziel/es-injection)
+[![Greenkeeper](https://badges.greenkeeper.io/rraziel/es-injection.svg)](https://greenkeeper.io/)
 
 A modern, lightweight implementation of dependency injection inspired by [JSR-330](https://jcp.org/en/jsr/detail?id=330) and [Spring](https://docs.spring.io/spring-boot/docs/current/reference/html/using-boot-spring-beans-and-dependency-injection.html).
 
@@ -42,13 +55,17 @@ In this example, the `MyOtherComponent` class does not need to know anything abo
 
 ### Component Stereotypes
 
-The `@Component` decorator is used to declare a generic component, however it is also possible to use three more specific stereotypes:
+The `@Component` decorator is used to declare a generic component.
 
-- `@Controller`: stereotype dedicated to the presentation layer
-- `@Repository`: stereotype dedicated to the persistence layer
-- `@Service`: stereotype dedicated to the service layer
+As an alternative, it is also possible to use one of the three more specific stereotypes:
 
-All four decorators exhibit the same behavior. However the annotated code is usually more readable when using the proper stereotype. It also makes it possible to retrieve a list of components based on their stereotype.
+- `@Controller`, which is dedicated to the presentation layer
+- `@Repository`, which is dedicated to the persistence layer
+- `@Service`, which is dedicated to the service layer
+
+All four decorators exhibit the same behavior, but the annotated code is usually more readable when using the proper stereotype.
+
+It also makes it possible to filter components based on their stereotype.
 
 ### Named Components
 

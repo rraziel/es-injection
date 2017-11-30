@@ -1,20 +1,20 @@
 {
-  "name": "injectable",
+  "name": "es-injection",
   "version": "0.1.0",
   "description": "A modern, lightweight dependency injection library inspired by JSR-303 and Spring",
-  "homepage": "https://github.com/rraziel/injectable",
-  "bugs": "https://github.com/rraziel/injectable/issues",
+  "homepage": "https://github.com/rraziel/es-injection",
+  "bugs": "https://github.com/rraziel/es-injection/issues",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rraziel/injectable.git"
+    "url": "https://github.com/rraziel/es-injection.git"
   },
   "main": "index.js",
   "scripts": {
     "build": "tsc -p .",
     "test": "./node_modules/.bin/jest --watch --no-cache --verbose",
     "coverage": "./node_modules/.bin/jest --no-cache --coverage",
-    "tslint": "tslint --config ./conf/tslint.json '**/*.ts' --exclude '**/node_modules/**'"
+    "tslint": "tslint --project ./tsconfig.json --config ./conf/tslint.json '**/*.ts' --exclude '**/node_modules/**'"
   },
   "jest": {
     "mapCoverage": true,
