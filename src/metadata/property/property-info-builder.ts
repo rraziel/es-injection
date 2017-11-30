@@ -38,6 +38,15 @@ class PropertyInfoBuilder {
     }
 
     /**
+     * Set the order index
+     * @param index Index
+     * @return this
+     */
+    order(index: number): PropertyInfoBuilder {
+        return this.update(propertyInfo => propertyInfo.order = index);
+    }
+
+    /**
      * Manipulate a property information
      * @param callback Callback
      * @return this

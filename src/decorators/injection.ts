@@ -1,7 +1,7 @@
 import {ComponentInfoBuilder, MethodInfoBuilder, PropertyInfoBuilder} from '../metadata';
 
 type ParameterOrPropertyDecorator = (target: Object|Function, propertyKey: string|symbol, parameterIndex?: number) => void;
-type MethodOrPropertyDecorator = <T>(target: Object|Function, propertyKey: string|symbol, descriptor: TypedPropertyDescriptor<T>) => void;
+type MethodOrPropertyDecorator = <T>(target: Object|Function, propertyKey: string|symbol, descriptor?: TypedPropertyDescriptor<T>) => void;
 type PropertyInfoCallback = (propertyInfoBuilder: PropertyInfoBuilder, propertyClass: Function) => void;
 type MethodInfoCallback = (methodInfoBuilder: MethodInfoBuilder, parameterIndex: number, parameterClass: Function) => void;
 
@@ -101,9 +101,17 @@ const Optional: ParameterDecorator|PropertyDecorator = (target, propertyKey, par
  * @param index Index
  * @return Decorator
  */
-function Order(index: number): ParameterDecorator|PropertyDecorator|MethodDecorator {
-    return () => {
-        console.log('Order ' + index);
+function Order(index: number): MethodOrPropertyDecorator {
+    return (target, propertyKey, descriptor) => {
+        if (target instanceof Function) {
+            throw new Error('@Order cannot be used on static method or property ' + target.name + '.' + <string> propertyKey);
+        }
+
+        if (descriptor === undefined) {
+            PropertyInfoBuilder.of(target, propertyKey).order(index);
+        } else {
+            MethodInfoBuilder.of(target, propertyKey).order(index);
+        }
     };
 }
 
@@ -113,7 +121,11 @@ function Order(index: number): ParameterDecorator|PropertyDecorator|MethodDecora
  * @param propertyKey Property key
  */
 const PostConstruct: MethodDecorator = (target, propertyKey) => {
-    // Registry.registerPostConstructMethod(target, <string> propertyKey);
+    if (target instanceof Function) {
+        throw new Error('@PostConstruct cannot be used on static method ' + target.name + '.' + <string> propertyKey);
+    }
+
+    MethodInfoBuilder.of(target, propertyKey).postConstruct();
 };
 
 /**
@@ -122,7 +134,11 @@ const PostConstruct: MethodDecorator = (target, propertyKey) => {
  * @param propertyKey Property key
  */
 const PreDestroy: MethodDecorator = (target, propertyKey) => {
-    // Registry.registerPreDestroyMethod(target, <string> propertyKey);
+    if (target instanceof Function) {
+        throw new Error('@PreDestroy cannot be used on static method ' + target.name + '.' + <string> propertyKey);
+    }
+
+    MethodInfoBuilder.of(target, propertyKey).preDestroy();
 };
 
 export {

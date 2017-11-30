@@ -17,6 +17,9 @@ interface MethodParameterInfo extends DependencyInfo {
  */
 interface MethodInfo {
     parameters?: MethodParameterInfo[];
+    postConstruct?: boolean;
+    preDestroy?: boolean;
+    order?: number;
 }
 
 /**

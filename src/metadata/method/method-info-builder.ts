@@ -38,6 +38,30 @@ class MethodInfoBuilder {
     }
 
     /**
+     * Mark a method as being used for post-construction
+     */
+    postConstruct(): MethodInfoBuilder {
+        return this.update(methodInfo => methodInfo.postConstruct = true);
+    }
+
+    /**
+     * Mark a method as being used for pre-destruction
+     * @return this
+     */
+    preDestroy(): MethodInfoBuilder {
+        return this.update(methodInfo => methodInfo.preDestroy = true);
+    }
+
+    /**
+     * Set the order index for the method
+     * @param index Index
+     * @return this
+     */
+    order(index: number): MethodInfoBuilder {
+        return this.update(methodInfo => methodInfo.order = index);
+    }
+
+    /**
      * Get a method parameter's information
      * @param methodInfo     Method information
      * @param parameterIndex Parameter index

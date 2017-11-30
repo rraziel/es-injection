@@ -10,7 +10,7 @@ const PropertyInfoMetadata: Symbol = Symbol('es-injection:property');
  * Property information
  */
 interface PropertyInfo extends DependencyInfo {
-    propertyName?: string;
+    order?: number;
 }
 
 /**
