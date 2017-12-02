@@ -1,8 +1,9 @@
 import {TypeUtils} from './type-utils';
 import {ClassConstructor} from './class-constructor';
 
-const DummyProperty: PropertyDecorator = () => { /* empty */ };
+const DummyClass: ClassDecorator = () => { /* empty */ };
 const DummyMethod: MethodDecorator = () => { /* empty */ };
+const DummyProperty: PropertyDecorator = () => { /* empty */ };
 
 describe('Type utility functions', () => {
 
@@ -24,11 +25,28 @@ describe('Type utility functions', () => {
         expect(prop3Class).toEqual(TestPropertyClass);
     });
 
-    it('can get a method parameter s class', () => {
+    it('can get a constructor parameter class', () => {
         // given
-        class TestPropertyClass { }
+        class TestParameterClass { }
+        @DummyClass
         class TestClass {
-            @DummyMethod method(p0: number, p1: string, p2: TestPropertyClass): void { /* empty */ }
+            constructor(p0: number, p1: string, p2: TestParameterClass) { /* empty */ }
+        }
+        // when
+        let param0Class: ClassConstructor<any> = TypeUtils.getParameterClass(TestClass, 'constructor', 0);
+        let param1Class: ClassConstructor<any> = TypeUtils.getParameterClass(TestClass, 'constructor', 1);
+        let param2Class: ClassConstructor<any> = TypeUtils.getParameterClass(TestClass, 'constructor', 2);
+        // then
+        expect(param0Class).toEqual(Number);
+        expect(param1Class).toEqual(String);
+        expect(param2Class).toEqual(TestParameterClass);
+    });
+
+    it('can get a method parameter class', () => {
+        // given
+        class TestParameterClass { }
+        class TestClass {
+            @DummyMethod method(p0: number, p1: string, p2: TestParameterClass): void { /* empty */ }
         }
         // when
         let param0Class: ClassConstructor<any> = TypeUtils.getParameterClass(TestClass, 'method', 0);
@@ -37,7 +55,7 @@ describe('Type utility functions', () => {
         // then
         expect(param0Class).toEqual(Number);
         expect(param1Class).toEqual(String);
-        expect(param2Class).toEqual(TestPropertyClass);
+        expect(param2Class).toEqual(TestParameterClass);
     });
 
     it('can iterate over parent classes', () => {

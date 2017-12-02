@@ -5,6 +5,7 @@ import 'reflect-metadata';
  * Type utility functions
  */
 class TypeUtils {
+    static METHODNAME_CONSTRUCTOR: string = 'constructor';
     static METADATAKEY_PARAMETERTYPES: string = 'design:paramtypes';
     static METADATAKEY_TYPE: string = 'design:type';
 
@@ -41,7 +42,14 @@ class TypeUtils {
      * @return List of parameter classes
      */
     static getParameterClasses<T>(typeClass: ClassConstructor<T>, methodName: string): ClassConstructor<any>[] {
-        let parameterClasses: ClassConstructor<any>[] = Reflect.getMetadata(TypeUtils.METADATAKEY_PARAMETERTYPES, typeClass.prototype, methodName);
+        let parameterClasses: ClassConstructor<any>[];
+
+        if (methodName === TypeUtils.METHODNAME_CONSTRUCTOR) {
+            parameterClasses = Reflect.getMetadata(TypeUtils.METADATAKEY_PARAMETERTYPES, typeClass);
+        } else {
+            parameterClasses = Reflect.getMetadata(TypeUtils.METADATAKEY_PARAMETERTYPES, typeClass.prototype, methodName);
+        }
+
         return parameterClasses;
     }
 
