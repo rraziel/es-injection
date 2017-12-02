@@ -4,7 +4,6 @@
  */
 interface DependencyInfo {
     name?: string;
-    type?: Function;
     optional?: boolean;
 }
 

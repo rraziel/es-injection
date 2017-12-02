@@ -1,5 +1,6 @@
 import {ScopeType} from '../scope-type';
 import {Stereotype} from '../stereotype';
+import {ClassConstructor} from '../../utils';
 import 'reflect-metadata';
 
 /**
@@ -14,6 +15,9 @@ interface ComponentInfo {
     name?: string;
     scope?: ScopeType;
     stereotype?: Stereotype;
+    implementations?: ClassConstructor<any>[];
+    properties?: (string|symbol)[];
+    methods?: (string|symbol)[];
 }
 
 /**

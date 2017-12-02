@@ -5,7 +5,6 @@ import 'reflect-metadata';
  * Type utility functions
  */
 class TypeUtils {
-    static METHODNAME_CONSTRUCTOR: string = 'constructor';
     static METADATAKEY_PARAMETERTYPES: string = 'design:paramtypes';
     static METADATAKEY_TYPE: string = 'design:type';
 
@@ -41,10 +40,10 @@ class TypeUtils {
      * @param <T>        Type
      * @return List of parameter classes
      */
-    static getParameterClasses<T>(typeClass: ClassConstructor<T>, methodName: string): ClassConstructor<any>[] {
+    static getParameterClasses<T>(typeClass: ClassConstructor<T>, methodName?: string): ClassConstructor<any>[] {
         let parameterClasses: ClassConstructor<any>[];
 
-        if (methodName === TypeUtils.METHODNAME_CONSTRUCTOR) {
+        if (methodName === undefined) {
             parameterClasses = Reflect.getMetadata(TypeUtils.METADATAKEY_PARAMETERTYPES, typeClass);
         } else {
             parameterClasses = Reflect.getMetadata(TypeUtils.METADATAKEY_PARAMETERTYPES, typeClass.prototype, methodName);
@@ -80,6 +79,23 @@ class TypeUtils {
         }
 
         return parentClass;
+    }
+
+    /**
+     * Instantiate a class
+     * @param typeClass Type class
+     * @param resolver  Resolver
+     * @return Instance
+     */
+    static instantiateClass<T>(typeClass: ClassConstructor<T>, resolver?: (requiredClass: ClassConstructor<any>, parameterIndex: number) => any): T {
+        let parameterClasses: ClassConstructor<any>[] = TypeUtils.getParameterClasses(typeClass);
+        let parameters: any[] = [];
+
+        if (parameterClasses) {
+            parameterClasses.forEach((parameterClass, parameterIndex) => parameters.push(resolver(parameterClass, parameterIndex)));
+        }
+
+        return new typeClass(... parameters);
     }
 
 }

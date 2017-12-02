@@ -1,5 +1,6 @@
 import {getPropertyInfo, PropertyInfo, setPropertyInfo} from './property-info';
-import {classFromPrototype} from '../helper';
+import {ComponentInfoBuilder} from '../component';
+import {ClassConstructor} from '../../utils';
 
 /**
  * Property information builder
@@ -19,22 +20,30 @@ class PropertyInfoBuilder {
     }
 
     /**
-     * Set the name
-     * @param propertyName Property name
+     * Mark the property for injection
      * @return this
      */
-    name(propertyName: string): PropertyInfoBuilder {
-        return this.update(propertyInfo => propertyInfo.name = propertyName);
+    inject(): PropertyInfoBuilder {
+        ComponentInfoBuilder.of(<ClassConstructor<any>> this.target.constructor).method(this.propertyKey);
+        return this;
     }
 
     /**
-     * Set the class
-     * @param propertyClass Property class
-     * @param <C>           Property type
+     * Set the dependency name
+     * @param dependencyName Dependency name
      * @return this
      */
-    class<C extends Function>(propertyClass: C): PropertyInfoBuilder {
-        return this.update(propertyInfo => propertyInfo.type = propertyClass);
+    name(dependencyName: string): PropertyInfoBuilder {
+        return this.update(propertyInfo => propertyInfo.name = dependencyName);
+    }
+
+    /**
+     * Set whether the dependency is optional
+     * @param optional true if the dependency is optional
+     * @return this
+     */
+    optional(optional: boolean): PropertyInfoBuilder {
+        return this.update(propertyInfo => propertyInfo.optional = optional);
     }
 
     /**

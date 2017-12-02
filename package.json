@@ -1,7 +1,7 @@
 {
   "name": "es-injection",
   "version": "0.1.0",
-  "description": "A modern, lightweight dependency injection library inspired by JSR-303 and Spring",
+  "description": "A modern, lightweight dependency injection library inspired by JSR-303 and Spring.",
   "homepage": "https://github.com/rraziel/es-injection",
   "bugs": "https://github.com/rraziel/es-injection/issues",
   "license": "Apache-2.0",

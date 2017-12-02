@@ -1,4 +1,5 @@
 import {DependencyInfo} from '../dependency';
+import 'reflect-metadata';
 
 /**
  * Method information metadata
@@ -9,7 +10,7 @@ const MethodInfoMetadata: Symbol = Symbol('es-injection:method');
  * Method parameter information
  */
 interface MethodParameterInfo extends DependencyInfo {
-    parameterName?: string;
+
 }
 
 /**
@@ -28,7 +29,7 @@ interface MethodInfo {
  * @param methodName     Method name
  * @return Property information
  */
-function getMethodInfo<C extends Function>(componentClass: C, methodName: string): MethodInfo {
+function getMethodInfo<C extends Function>(componentClass: C, methodName?: string): MethodInfo {
     let methodInfo: MethodInfo = Reflect.getMetadata(MethodInfoMetadata, componentClass, methodName);
     return methodInfo;
 }

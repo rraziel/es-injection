@@ -1,20 +1,22 @@
 import {ComponentInfo, getComponentInfo, setComponentInfo} from './component-info';
 import {ScopeType} from '../scope-type';
 import {Stereotype} from '../stereotype';
+import {ClassConstructor, TypeUtils} from '../../utils';
 
 /**
  * Component information builder
- * @param <C> Constructor type
+ * @param <T> Component type
  */
-class ComponentInfoBuilder<C extends Function> {
-    private target: C;
+class ComponentInfoBuilder<T> {
+    private componentClass: ClassConstructor<T>;
 
     /**
      * Class constructor
-     * @param target Target
+     * @param componentClass Component class
      */
-    private constructor(target: C) {
-        this.target = target;
+    private constructor(componentClass: ClassConstructor<T>) {
+        this.componentClass = componentClass;
+        this.registerBaseClasses();
     }
 
     /**
@@ -22,7 +24,7 @@ class ComponentInfoBuilder<C extends Function> {
      * @param name Name
      * @return this
      */
-    name(name: string): ComponentInfoBuilder<C> {
+    name(name: string): ComponentInfoBuilder<T> {
         return this.update(componentInfo => componentInfo.name = name);
     }
 
@@ -31,7 +33,7 @@ class ComponentInfoBuilder<C extends Function> {
      * @param stereotype Stereotype
      * @return this
      */
-    stereotype(stereotype: Stereotype): ComponentInfoBuilder<C> {
+    stereotype(stereotype: Stereotype): ComponentInfoBuilder<T> {
         return this.update(componentInfo => componentInfo.stereotype = stereotype);
     }
 
@@ -40,30 +42,84 @@ class ComponentInfoBuilder<C extends Function> {
      * @param scope Scope
      * @return this
      */
-    scope(scope: ScopeType): ComponentInfoBuilder<C> {
+    scope(scope: ScopeType): ComponentInfoBuilder<T> {
         return this.update(componentInfo => componentInfo.scope = scope);
     }
 
     /**
-     * Manipulate a component information
+     * Mark a method for injection
+     * @param propertyKey Property key
+     * @return this
+     */
+    method(propertyKey: string|symbol): ComponentInfoBuilder<T> {
+        return this.update(componentInfo => {
+            componentInfo.methods = componentInfo.methods || [];
+            componentInfo.methods.push(propertyKey);
+        });
+    }
+
+    /**
+     * Mark a property for injection
+     * @param propertyKey Property key
+     * @return this
+     */
+    property(propertyKey: string|symbol): ComponentInfoBuilder<T> {
+        return this.update(componentInfo => {
+            componentInfo.properties = componentInfo.properties || [];
+            componentInfo.properties.push(propertyKey);
+        });
+    }
+
+    /**
+     * Manipulate component information
      * @param callback Callback
      * @return this
      */
-    private update(callback: (componentInfo: ComponentInfo) => void): ComponentInfoBuilder<C> {
-        let componentInfo: ComponentInfo = getComponentInfo(this.target) || {};
+    private update(callback: (componentInfo: ComponentInfo) => void): ComponentInfoBuilder<T> {
+        return this.updateClass(this.componentClass, callback);
+    }
+
+    /**
+     * Manipulate component information for a specific target
+     * @param componentClass Component class
+     * @param callback       Callback
+     * @param <T2>           Component type
+     * @return this
+     */
+    private updateClass<T2>(componentClass: ClassConstructor<T2>, callback: (componentInfo: ComponentInfo) => void): ComponentInfoBuilder<T> {
+        let componentInfo: ComponentInfo = getComponentInfo(componentClass) || {};
         callback(componentInfo);
-        setComponentInfo(this.target, componentInfo);
+        setComponentInfo(componentClass, componentInfo);
         return this;
     }
 
     /**
+     * Register base classes
+     */
+    private registerBaseClasses(): void {
+        TypeUtils.forEachBaseClass(this.componentClass, baseClass => this.registerBaseClass(baseClass));
+    }
+
+    /**
+     * Register a base class
+     * @param baseClass Base class
+     * @param <U>       Base type
+     */
+    private registerBaseClass<U>(baseClass: ClassConstructor<U>): void {
+        this.updateClass(baseClass, componentInfo => {
+            componentInfo.implementations = componentInfo.implementations || [];
+            componentInfo.implementations.push(this.componentClass);
+        });
+    }
+
+    /**
      * Get a component information builder for the specified class
-     * @param target Class constructor
-     * @param <C>    Class constructor type
+     * @param componentClass Component class
+     * @param <T>            Component type
      * @return Component information builder
      */
-    static of<C extends Function>(target: C): ComponentInfoBuilder<C> {
-        return new ComponentInfoBuilder(target);
+    static of<T>(componentClass: ClassConstructor<T>): ComponentInfoBuilder<T> {
+        return new ComponentInfoBuilder(componentClass);
     }
 
 }

@@ -33,9 +33,9 @@ describe('Type utility functions', () => {
             constructor(p0: number, p1: string, p2: TestParameterClass) { /* empty */ }
         }
         // when
-        let param0Class: ClassConstructor<any> = TypeUtils.getParameterClass(TestClass, 'constructor', 0);
-        let param1Class: ClassConstructor<any> = TypeUtils.getParameterClass(TestClass, 'constructor', 1);
-        let param2Class: ClassConstructor<any> = TypeUtils.getParameterClass(TestClass, 'constructor', 2);
+        let param0Class: ClassConstructor<any> = TypeUtils.getParameterClass(TestClass, undefined, 0);
+        let param1Class: ClassConstructor<any> = TypeUtils.getParameterClass(TestClass, undefined, 1);
+        let param2Class: ClassConstructor<any> = TypeUtils.getParameterClass(TestClass, undefined, 2);
         // then
         expect(param0Class).toEqual(Number);
         expect(param1Class).toEqual(String);
@@ -104,6 +104,49 @@ describe('Type utility functions', () => {
             let parentClass: ClassConstructor<any> = TypeUtils.getParentClass(TestClass);
             // then
             expect(parentClass).toBeUndefined();
+        });
+
+    });
+
+    describe('can instantiate a class', () => {
+
+        it('with no constructor parameters', () => {
+            // given
+            class TestClass {
+                constructor() { /* empty */ }
+            }
+            // when
+            let instance: TestClass = TypeUtils.instantiateClass(TestClass);
+            // then
+            expect(instance).not.toBeUndefined();
+            expect(instance).toBeInstanceOf(TestClass);
+        });
+
+        it('with constructor parameters', () => {
+            // given
+            class TestParameterClass { }
+            @DummyClass
+            class TestClass {
+                constructor(public p0: number, public p1: string, public p2: TestParameterClass) { /* empty */ }
+            }
+            // when
+            let instance: TestClass = TypeUtils.instantiateClass(TestClass, (requiredClass, parameterIndex) => {
+                if (parameterIndex === 0 && requiredClass === Number) {
+                    return 123;
+                } else if (parameterIndex === 1 && requiredClass === String) {
+                    return 'test-value';
+                } else if (parameterIndex === 2 && requiredClass === TestParameterClass) {
+                    return new TestParameterClass();
+                } else {
+                    throw new Error('unexpected required class ' + requiredClass.name + ' for constructor parameter at index ' + parameterIndex);
+                }
+            });
+            // then
+            expect(instance).not.toBeUndefined();
+            expect(instance).toBeInstanceOf(TestClass);
+            expect(instance.p0).toEqual(123);
+            expect(instance.p1).toEqual('test-value');
+            expect(instance.p2).toBeInstanceOf(TestParameterClass);
         });
 
     });
