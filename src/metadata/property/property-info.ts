@@ -10,7 +10,7 @@ const PropertyInfoMetadata: Symbol = Symbol('es-injection:property');
  * Property information
  */
 interface PropertyInfo extends DependencyInfo {
-    order?: number;
+
 }
 
 /**
@@ -21,7 +21,7 @@ interface PropertyInfo extends DependencyInfo {
  * @return Property information
  */
 function getPropertyInfo<C extends Function>(componentClass: C, propertyName: string): PropertyInfo {
-    let propertyInfo: PropertyInfo = Reflect.getMetadata(PropertyInfoMetadata, componentClass, propertyName);
+    let propertyInfo: PropertyInfo = Reflect.getOwnMetadata(PropertyInfoMetadata, componentClass, propertyName);
     return propertyInfo;
 }
 

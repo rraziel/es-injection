@@ -16,11 +16,10 @@ interface MethodParameterInfo extends DependencyInfo {
 /**
  * Method information
  */
-interface MethodInfo {
+interface MethodInfo extends DependencyInfo {
     parameters?: MethodParameterInfo[];
     postConstruct?: boolean;
     preDestroy?: boolean;
-    order?: number;
 }
 
 /**
@@ -30,7 +29,7 @@ interface MethodInfo {
  * @return Property information
  */
 function getMethodInfo<C extends Function>(componentClass: C, methodName?: string): MethodInfo {
-    let methodInfo: MethodInfo = Reflect.getMetadata(MethodInfoMetadata, componentClass, methodName);
+    let methodInfo: MethodInfo = Reflect.getOwnMetadata(MethodInfoMetadata, componentClass, methodName);
     return methodInfo;
 }
 

@@ -24,7 +24,7 @@ function createStereotypeSpecification(decoratorInfo: DecoratorInfo): void {
                 let componentInfo: ComponentInfo = getComponentInfo(TestComponent);
                 // then
                 expect(componentInfo).not.toBeUndefined();
-                expect(componentInfo.name).toBeUndefined();
+                expect(componentInfo.name).toEqual('testComponent');
                 expect(componentInfo.stereotype).toEqual(stereotype);
             });
 

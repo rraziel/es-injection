@@ -48,25 +48,25 @@ class ComponentInfoBuilder<T> {
 
     /**
      * Mark a method for injection
-     * @param propertyKey Property key
+     * @param methodName Method name
      * @return this
      */
-    method(propertyKey: string|symbol): ComponentInfoBuilder<T> {
+    method(methodName: string): ComponentInfoBuilder<T> {
         return this.update(componentInfo => {
             componentInfo.methods = componentInfo.methods || [];
-            componentInfo.methods.push(propertyKey);
+            componentInfo.methods.push(methodName);
         });
     }
 
     /**
      * Mark a property for injection
-     * @param propertyKey Property key
+     * @param propertyName Property name
      * @return this
      */
-    property(propertyKey: string|symbol): ComponentInfoBuilder<T> {
+    property(propertyName: string): ComponentInfoBuilder<T> {
         return this.update(componentInfo => {
             componentInfo.properties = componentInfo.properties || [];
-            componentInfo.properties.push(propertyKey);
+            componentInfo.properties.push(propertyName);
         });
     }
 

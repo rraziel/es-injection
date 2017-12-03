@@ -16,8 +16,8 @@ interface ComponentInfo {
     scope?: ScopeType;
     stereotype?: Stereotype;
     implementations?: ClassConstructor<any>[];
-    properties?: (string|symbol)[];
-    methods?: (string|symbol)[];
+    properties?: string[];
+    methods?: string[];
 }
 
 /**
@@ -26,7 +26,7 @@ interface ComponentInfo {
  * @return Component information
  */
 function getComponentInfo<C extends Function>(componentClass: C): ComponentInfo {
-    let componentInfo: ComponentInfo = Reflect.getMetadata(ComponentInfoMetadata, componentClass);
+    let componentInfo: ComponentInfo = Reflect.getOwnMetadata(ComponentInfoMetadata, componentClass);
     return componentInfo;
 }
 

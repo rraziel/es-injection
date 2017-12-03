@@ -1,6 +1,6 @@
-import {Registry} from './registry';
+import {NameUtils} from './name-utils';
 
-describe('Registry', () => {
+describe('Name utility functions', () => {
 
     describe('can generate a component name', () => {
 
@@ -8,7 +8,7 @@ describe('Registry', () => {
             // given
             class TestCapitalizedClassName { }
             // when
-            let componentName = Registry.buildComponentName(TestCapitalizedClassName);
+            let componentName = NameUtils.buildComponentName(TestCapitalizedClassName);
             // then
             expect(componentName).toEqual('testCapitalizedClassName');
         });
@@ -17,7 +17,7 @@ describe('Registry', () => {
             // given
             class TESTConsecutiveUPPERCASEClassNAME { }
             // when
-            let componentName = Registry.buildComponentName(TESTConsecutiveUPPERCASEClassNAME);
+            let componentName = NameUtils.buildComponentName(TESTConsecutiveUPPERCASEClassNAME);
             // then
             expect(componentName).toEqual('testConsecutiveUppercaseClassName');
         });

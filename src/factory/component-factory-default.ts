@@ -1,6 +1,14 @@
 import {ComponentFactory} from './component-factory';
 import {ClassConstructor, TypeUtils} from '../utils';
-import {ComponentInfo, getComponentInfo, ScopeType} from '../metadata';
+import {ComponentInfo, DependencyInfo, getComponentInfo, getMethodInfo, getPropertyInfo, MethodInfo, MethodParameterInfo, PropertyInfo, ScopeType} from '../metadata';
+
+/**
+ * Ordered element
+ */
+interface OrderedElement<T extends DependencyInfo> {
+    info?: T;
+    name: string;
+}
 
 /**
  * Default component factory
@@ -24,7 +32,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>            Component type
      * @return Component instance
      */
-    getComponent<T>(componentNameOrClass: ClassConstructor<T>|string, componentClass?: ClassConstructor<T>): T {
+    getComponent<T>(componentNameOrClass: ClassConstructor<T>|Function|string, componentClass?: ClassConstructor<T>|Function): T {
         let componentInstance: T;
         let componentName: string;
         let componentInfo: ComponentInfo;
@@ -41,12 +49,28 @@ class DefaultComponentFactory implements ComponentFactory {
         }
 
         if (componentInfo.scope && componentInfo.scope as ScopeType === ScopeType.PROTOTYPE) {
-            return this.newInstance(componentClass, componentInfo);
+            // TODO: return this.newInstance(componentClass, componentInfo);
+            return null;
         }
 
         this.instantiateSingletonsIfNecessary(componentClass, componentInfo);
 
-        return <T> this.singletonComponents.get(componentClass);
+        if (componentInfo.stereotype === undefined) {
+            if (componentInfo.implementations.length > 1) {
+                let availableImplementations: string[] = componentInfo.implementations.map(implementation => implementation.name);
+                throw new Error('multiple component instances found for type ' + componentClass.name + ': ' + availableImplementations.join(', '));
+            }
+
+            componentInstance = this.getComponent(componentName, componentInfo.implementations[0]);
+        } else {
+            componentInstance = <T> this.singletonComponents.get(componentClass);
+        }
+
+        if (componentInstance === undefined) {
+            throw new Error('no component instance found for type ' + componentClass.name);
+        }
+
+        return componentInstance;
     }
 
     /**
@@ -91,7 +115,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param componentInfo  Component info
      * @param <T>            Component type
      */
-    private instantiateSingletonsIfNecessary<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo): void {
+    private instantiateSingletonsIfNecessary<T>(componentClass: ClassConstructor<T>|Function, componentInfo: ComponentInfo): void {
         let componentInstance: T = <T> this.singletonComponents.get(componentClass);
         if (componentInstance) {
             return;
@@ -99,14 +123,13 @@ class DefaultComponentFactory implements ComponentFactory {
 
         if (componentInfo.implementations) {
             componentInfo.implementations.forEach(implementationClass => {
-                console.log('implementation: ' + implementationClass.name);
                 let implementationClassInfo: ComponentInfo = getComponentInfo(implementationClass);
                 this.instantiateSingletonsIfNecessary(implementationClass, implementationClassInfo);
             });
         }
 
         if (componentInfo.stereotype !== undefined) {
-            componentInstance = this.newInstance(componentClass, componentInfo);
+            componentInstance = this.newInstance(<ClassConstructor<T>> componentClass, componentInfo);
             this.singletonComponents.set(componentClass, componentInstance);
         }
     }
@@ -120,8 +143,20 @@ class DefaultComponentFactory implements ComponentFactory {
      */
     private newInstance<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo): T {
         let parameterClasses: ClassConstructor<any>[] = TypeUtils.getParameterClasses(componentClass);
+        let methodInfo: MethodInfo = getMethodInfo(componentClass);
         let componentInstance: T = TypeUtils.instantiateClass(componentClass, (requiredClass, parameterIndex) => {
-            console.log('requires ' + requiredClass.name);
+            let methodParameterInfo: MethodParameterInfo = methodInfo && methodInfo.parameters && methodInfo.parameters[parameterIndex];
+            let requiredComponent: any;
+
+            try {
+                requiredComponent = this.getComponent(methodParameterInfo && methodParameterInfo.name, requiredClass);
+            } catch (e) {
+                if (!methodParameterInfo || !methodParameterInfo.optional) {
+                    throw e;
+                }
+            }
+
+            return requiredComponent;
         });
 
         this.injectProperties(componentClass, componentInfo, componentInstance);
@@ -138,7 +173,40 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>               Component type
      */
     private injectProperties<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo, componentInstance: T): void {
-        // TODO
+        if (!componentInfo.properties) {
+            return;
+        }
+
+        this.buildOrderedElementList(componentInfo.properties, propertyName => getPropertyInfo(componentClass, propertyName))
+            .forEach(sortedProperty => this.injectProperty(componentClass, componentInfo, componentInstance, sortedProperty.name, sortedProperty.info))
+        ;
+    }
+
+    /**
+     * Inject a property
+     * @param componentClass    Component class
+     * @param componentInfo     Component information
+     * @param componentInstance Component instance
+     * @param propertyName      Property name
+     * @param <T>               Component type
+     */
+    private injectProperty<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo, componentInstance: T, propertyName: string, propertyInfo: PropertyInfo): void {
+        let propertyClass: ClassConstructor<any> = TypeUtils.getPropertyClass(componentClass, propertyName);
+        let propertyInstance: any;
+
+        try {
+            if (propertyInfo.name) {
+                propertyInstance = this.getComponent(propertyInfo.name, propertyClass);
+            } else {
+                propertyInstance = this.getComponent(propertyClass);
+            }
+        } catch (e) {
+            if (!propertyInfo.optional) {
+                throw e;
+            }
+        }
+
+        componentInstance[propertyName] = propertyInstance;
     }
 
     /**
@@ -149,7 +217,84 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>               Component type
      */
     private injectMethods<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo, componentInstance: T): void {
-        // TODO
+        if (!componentInfo.methods) {
+            return;
+        }
+
+        this.buildOrderedElementList(componentInfo.methods, methodName => getMethodInfo(componentClass, methodName))
+            .forEach(sortedMethod => this.injectMethod(componentClass, componentInfo, componentInstance, sortedMethod.name, sortedMethod.info))
+        ;
+    }
+
+    /**
+     * Inject a method
+     * @param componentClass    Component class
+     * @param componentInfo     Component information
+     * @param componentInstance Component instance
+     * @param methodName        Method name
+     * @param methodInfo        Method information
+     * @param <T>               Component type
+     */
+    private injectMethod<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo, componentInstance: T, methodName: string, methodInfo: MethodInfo): void {
+        let methodParameterClasses: ClassConstructor<any>[] = TypeUtils.getParameterClasses(componentClass, methodName);
+        let methodParameters: any[] = [];
+
+        methodParameterClasses.forEach((methodParameterClass, parameterIndex) => {
+            let methodParameterInfo: MethodParameterInfo = methodInfo && methodInfo.parameters && methodInfo.parameters[parameterIndex];
+            let methodParameter: any;
+
+            try {
+                methodParameter = this.getComponent(methodParameterInfo && methodParameterInfo.name, methodParameterClass);
+            } catch (e) {
+                if (!methodParameterInfo || !methodParameterInfo.optional) {
+                    throw e;
+                }
+            }
+
+            methodParameters.push(methodParameter);
+        });
+
+        componentInstance[methodName].apply(componentInstance, methodParameters);
+    }
+
+    /**
+     * Build an ordered element list
+     * @param elementNames Element names
+     * @param infoResolver Information resolver
+     * @param <T>          Dependency information type
+     * @return Ordered element list
+     */
+    private buildOrderedElementList<T extends DependencyInfo>(elementNames: string[], infoResolver: (elementName: string) => T): OrderedElement<T>[] {
+        return elementNames
+            .map(elementName => <OrderedElement<T>> {
+                info: infoResolver(elementName),
+                name: elementName
+            })
+            .sort(DefaultComponentFactory.OrderPredicate)
+        ;
+    }
+
+    /**
+     * Order elements based on their Order decorator
+     * @param lhs Left-hand element
+     * @param rhs Right-hand element
+     * @return Comparison result
+     */
+    private static OrderPredicate<T extends DependencyInfo>(lhs: OrderedElement<T>, rhs: OrderedElement<T>): number {
+        let lhsOrder: number = lhs.info && lhs.info.order;
+        let rhsOrder: number = rhs.info && rhs.info.order;
+
+        if (lhsOrder < rhsOrder) {
+            return -1;
+        } else if (lhsOrder > rhsOrder) {
+            return 1;
+        } else if (lhs.name < rhs.name) {
+            return -1;
+        } else if (lhs.name > rhs.name) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
 }

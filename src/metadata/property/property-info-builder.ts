@@ -24,8 +24,8 @@ class PropertyInfoBuilder {
      * @return this
      */
     inject(): PropertyInfoBuilder {
-        ComponentInfoBuilder.of(<ClassConstructor<any>> this.target.constructor).method(this.propertyKey);
-        return this;
+        ComponentInfoBuilder.of(<ClassConstructor<any>> this.target.constructor).property(<string> this.propertyKey);
+        return this.update(() => { /* empty */ });
     }
 
     /**
