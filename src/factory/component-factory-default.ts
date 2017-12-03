@@ -1,14 +1,6 @@
 import {ComponentFactory} from './component-factory';
-import {ClassConstructor, TypeUtils} from '../utils';
-import {ComponentInfo, DependencyInfo, getComponentInfo, getMethodInfo, getPropertyInfo, MethodInfo, MethodParameterInfo, PropertyInfo, ScopeType} from '../metadata';
-
-/**
- * Ordered element
- */
-interface OrderedElement<T extends DependencyInfo> {
-    info?: T;
-    name: string;
-}
+import {ClassConstructor, OrderedElement, OrderUtils, TypeUtils} from '../utils';
+import {ComponentInfo, getComponentInfo, getMethodInfo, getPropertyInfo, MethodInfo, MethodParameterInfo, PropertyInfo, ScopeType} from '../metadata';
 
 /**
  * Default component factory
@@ -33,9 +25,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * @return Component instance
      */
     getComponent<T>(componentNameOrClass: ClassConstructor<T>|Function|string, componentClass?: ClassConstructor<T>|Function): T {
-        let componentInstance: T;
         let componentName: string;
-        let componentInfo: ComponentInfo;
 
         if (componentNameOrClass instanceof Function) {
             componentClass = componentNameOrClass;
@@ -43,15 +33,46 @@ class DefaultComponentFactory implements ComponentFactory {
             componentName = componentNameOrClass;
         }
 
-        componentInfo = getComponentInfo(componentClass);
+        return this.dispatchGetComponent(componentName, componentClass);
+    }
+
+    private dispatchGetComponent<T>(componentName: string, componentClass: ClassConstructor<T>|Function): T {
+        let componentInfo: ComponentInfo = getComponentInfo(componentClass);
         if (!componentInfo) {
             throw new Error('unknown component class ' + componentClass.name);
         }
 
         if (componentInfo.scope && componentInfo.scope as ScopeType === ScopeType.PROTOTYPE) {
-            // TODO: return this.newInstance(componentClass, componentInfo);
-            return null;
+            return this.getPrototypeComponent(componentName, componentClass, componentInfo);
+        } else {
+            return this.getSingletonComponent(componentName, componentClass, componentInfo);
         }
+    }
+
+    /**
+     * Get a prototype component
+     * @param componentName  Component name
+     * @param componentClass Component class
+     * @param componentInfo  Component information
+     * @param <T>            Component type
+     * @return Component instance
+     */
+    private getPrototypeComponent<T>(componentName: string, componentClass: ClassConstructor<T>|Function, componentInfo: ComponentInfo): T {
+        let componentInstance: T;
+        // TODO: return this.newInstance(componentClass, componentInfo);
+        return componentInstance;
+    }
+
+    /**
+     * Get a singleton component
+     * @param componentName  Component name
+     * @param componentClass Component class
+     * @param componentInfo  Component information
+     * @param <T>            Component type
+     * @return Component instance
+     */
+    private getSingletonComponent<T>(componentName: string, componentClass: ClassConstructor<T>|Function, componentInfo: ComponentInfo): T {
+        let componentInstance: T;
 
         this.instantiateSingletonsIfNecessary(componentClass, componentInfo);
 
@@ -177,7 +198,7 @@ class DefaultComponentFactory implements ComponentFactory {
             return;
         }
 
-        this.buildOrderedElementList(componentInfo.properties, propertyName => getPropertyInfo(componentClass, propertyName))
+        OrderUtils.buildOrderedElementList(componentInfo.properties, propertyName => getPropertyInfo(componentClass, propertyName))
             .forEach(sortedProperty => this.injectProperty(componentClass, componentInfo, componentInstance, sortedProperty.name, sortedProperty.info))
         ;
     }
@@ -221,7 +242,7 @@ class DefaultComponentFactory implements ComponentFactory {
             return;
         }
 
-        this.buildOrderedElementList(componentInfo.methods, methodName => getMethodInfo(componentClass, methodName))
+        OrderUtils.buildOrderedElementList(componentInfo.methods, methodName => getMethodInfo(componentClass, methodName))
             .forEach(sortedMethod => this.injectMethod(componentClass, componentInfo, componentInstance, sortedMethod.name, sortedMethod.info))
         ;
     }
@@ -255,46 +276,6 @@ class DefaultComponentFactory implements ComponentFactory {
         });
 
         componentInstance[methodName].apply(componentInstance, methodParameters);
-    }
-
-    /**
-     * Build an ordered element list
-     * @param elementNames Element names
-     * @param infoResolver Information resolver
-     * @param <T>          Dependency information type
-     * @return Ordered element list
-     */
-    private buildOrderedElementList<T extends DependencyInfo>(elementNames: string[], infoResolver: (elementName: string) => T): OrderedElement<T>[] {
-        return elementNames
-            .map(elementName => <OrderedElement<T>> {
-                info: infoResolver(elementName),
-                name: elementName
-            })
-            .sort(DefaultComponentFactory.OrderPredicate)
-        ;
-    }
-
-    /**
-     * Order elements based on their Order decorator
-     * @param lhs Left-hand element
-     * @param rhs Right-hand element
-     * @return Comparison result
-     */
-    private static OrderPredicate<T extends DependencyInfo>(lhs: OrderedElement<T>, rhs: OrderedElement<T>): number {
-        let lhsOrder: number = lhs.info && lhs.info.order;
-        let rhsOrder: number = rhs.info && rhs.info.order;
-
-        if (lhsOrder < rhsOrder) {
-            return -1;
-        } else if (lhsOrder > rhsOrder) {
-            return 1;
-        } else if (lhs.name < rhs.name) {
-            return -1;
-        } else if (lhs.name > rhs.name) {
-            return 1;
-        } else {
-            return 0;
-        }
     }
 
 }
