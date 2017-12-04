@@ -1,5 +1,6 @@
 import {ComponentInfoBuilder, ScopeType, Stereotype} from '../metadata';
 import {ClassConstructor, NameUtils} from '../utils';
+import {ComponentRegistry} from '../registry';
 
 interface StereotypeDecorator {
     <F extends Function>(target: F): void|F;
@@ -18,12 +19,18 @@ function processStereotypeDecorator<T>(componentName: ClassConstructor<T>|string
             .name(NameUtils.buildComponentName(componentName))
             .stereotype(stereotype)
         ;
+
+        ComponentRegistry.registerComponentClass(componentName);
     } else {
         return target => {
-            ComponentInfoBuilder.of(<ClassConstructor<any>> <any> target)
+            let componentClass: ClassConstructor<any> = <ClassConstructor<any>> <any> target;
+
+            ComponentInfoBuilder.of(componentClass)
                 .name(componentName)
                 .stereotype(stereotype)
             ;
+
+            ComponentRegistry.registerComponentClass(componentClass);
         };
     }
 }

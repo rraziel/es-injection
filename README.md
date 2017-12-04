@@ -24,77 +24,18 @@ This loose coupling tends to make code more self-contained and easier to test, a
 
 ## Installation
 
-At the moment, the module is not available through npm. This is being sorted out.
+The module can be installed through npm:
 
-## Declaring Components
-
-While not required, it is considered best practice to inject interfaces and to define injected dependencies in the interface's implementation.
-
-```typescript
-interface MyDependency {
-    myMethod(): void;
-}
-
-@Component
-class MyDependencyImpl implements MyDependency {
-    myMethod(): void {
-        console.log('Hello World!');
-    }
-}
-
-@Component
-class MyOtherComponent {
-    @Inject
-    setMyDependency(myDependency: MyDependency): void {
-        myDependency.myMethod();
-    }
-}
+```
+npm install ts-injection --save
 ```
 
-In this example, the `MyOtherComponent` class does not need to know anything about `MyDependency`'s implementation details.
+## User Guide
 
-### Component Stereotypes
-
-The `@Component` decorator is used to declare a generic component.
-
-As an alternative, it is also possible to use one of the three more specific stereotypes:
-
-- `@Controller`, which is dedicated to the presentation layer
-- `@Repository`, which is dedicated to the persistence layer
-- `@Service`, which is dedicated to the service layer
-
-All four decorators exhibit the same behavior, but the annotated code is usually more readable when using the proper stereotype.
-
-It also makes it possible to filter components based on their stereotype.
-
-### Named Components
-
-The decorators also make it possible to specify a name for the component. This enables the ability to refer to a component by name rather than by type when injecting it, using the `@Named` decorator.
-
-```typescript
-@Component('myDependencyImpl')
-class MyDependencyImpl implements MyDependency { /* ... */ }
-
-@Component
-class MyOtherComponent {
-    @Inject
-    setMyDependency(@Named('myDependencyImpl') myDependency: MyDependency): void { /* ... */ }
-}
-```
-
-Although not frequently happening, a possible scenario for this would be the case of having multiple implementations for a single interface and wanting to inject a specific implementation.
-
-When no name is specified, the library generates one based on the component class name.
-
-### Injecting Components
-
-Dependency injection can occur at three different points:
-
-- On a constructor
-- On a method
-- On a property
-
-Injecting via a method is usually the most flexible method, as it can also work around cyclic dependency issues.
+* [Declaring Components](blob/master/component-declaration.md)
+* [Injecting Components](blob/master/component-injection.md)
+* [Injecting Constants](blob/master/constant-injection.md)
+* [Application Context](blob/master/context.md)
 
 ## Development
 
