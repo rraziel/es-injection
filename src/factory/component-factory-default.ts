@@ -185,25 +185,35 @@ class DefaultComponentFactory implements ComponentFactory {
     private newInstance<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo): T {
         let parameterClasses: ClassConstructor<any>[] = TypeUtils.getParameterClasses(componentClass);
         let methodInfo: MethodInfo = getMethodInfo(componentClass);
-        let componentInstance: T = TypeUtils.instantiateClass(componentClass, (requiredClass, parameterIndex) => {
-            let methodParameterInfo: MethodParameterInfo = methodInfo && methodInfo.parameters && methodInfo.parameters[parameterIndex];
-            let requiredComponent: any;
-
-            try {
-                requiredComponent = this.getComponent(methodParameterInfo && methodParameterInfo.name, requiredClass);
-            } catch (e) {
-                if (!methodParameterInfo || !methodParameterInfo.optional) {
-                    throw e;
-                }
-            }
-
-            return requiredComponent;
-        });
+        let componentInstance: T = TypeUtils.instantiateClass(componentClass, (requiredClass, parameterIndex) => this.resolveConstructorDependency(methodInfo, requiredClass, parameterIndex));
 
         this.injectProperties(componentClass, componentInfo, componentInstance);
         this.injectMethods(componentClass, componentInfo, componentInstance);
 
         return componentInstance;
+    }
+
+    /**
+     * Resolve a constructor dependency
+     * @param methodInfo     Method information
+     * @param requiredClass  Required class
+     * @param parameterIndex Parameter index
+     * @param <T>            Required type
+     * @return Dependency instance
+     */
+    private resolveConstructorDependency<T>(methodInfo: MethodInfo, requiredClass: ClassConstructor<T>, parameterIndex: number): T {
+        let methodParameterInfo: MethodParameterInfo = methodInfo && methodInfo.parameters && methodInfo.parameters[parameterIndex];
+        let requiredComponent: any;
+
+        try {
+            requiredComponent = this.getComponent(methodParameterInfo && methodParameterInfo.name, requiredClass);
+        } catch (e) {
+            if (!methodParameterInfo || !methodParameterInfo.optional) {
+                throw e;
+            }
+        }
+
+        return requiredComponent;
     }
 
     /**

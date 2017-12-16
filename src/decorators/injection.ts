@@ -6,25 +6,37 @@ type PropertyInfoCallback = (propertyInfoBuilder: PropertyInfoBuilder) => void;
 type MethodInfoCallback = (methodInfoBuilder: MethodInfoBuilder, parameterIndex: number) => void;
 
 /**
- * Apply a parameter or property decorator
- * @param decoratorName        Decorator name
- * @param target               Target
- * @param propertyKey          Property key
- * @param parameterIndex       Parameter index
- * @param propertyInfoCallback Property information callback
- * @param methodInfoCallback   Method information callback
+ * Applied decorator parameters
  */
-function applyParameterOrPropertyDecorator(decoratorName: string, target: Object, propertyKey: string|symbol, parameterIndex: number, propertyInfoCallback: PropertyInfoCallback, methodInfoCallback: MethodInfoCallback): void {
+class AppliedDecoratorParameters {
+    decoratorName: string;
+    target: Object;
+    propertyKey: string|symbol;
+    parameterIndex: number;
+    propertyInfoCallback: PropertyInfoCallback;
+    methodInfoCallback: MethodInfoCallback;
+}
+
+/**
+ * Apply a parameter or property decorator
+ * @param parameters Applied decorator parameters
+ */
+function applyParameterOrPropertyDecorator(parameters: AppliedDecoratorParameters): void {
+    let decoratorName: string = parameters.decoratorName;
+    let target: Object = parameters.target;
+    let propertyKey: string|symbol = parameters.propertyKey;
+    let parameterIndex: number = parameters.parameterIndex;
+
     if (target instanceof Function && propertyKey !== undefined) {
         throw new Error('the @' + decoratorName + ' decorator cannot be applied to static method or property ' + target.name + '.' + <string> propertyKey);
     }
 
     if (parameterIndex === undefined) {
         let propertyInfoBuilder: PropertyInfoBuilder = PropertyInfoBuilder.of(target, propertyKey);
-        propertyInfoCallback(propertyInfoBuilder);
+        parameters.propertyInfoCallback(propertyInfoBuilder);
     } else {
         let methodInfoBuilder: MethodInfoBuilder = MethodInfoBuilder.of(target, propertyKey);
-        methodInfoCallback(methodInfoBuilder, parameterIndex);
+        parameters.methodInfoCallback(methodInfoBuilder, parameterIndex);
     }
 }
 
@@ -35,7 +47,14 @@ function applyParameterOrPropertyDecorator(decoratorName: string, target: Object
  * @return Decorator
  */
 function createParameterOrPropertyDecorator(decoratorName: string, propertyInfoCallback: PropertyInfoCallback, methodInfoCallback: MethodInfoCallback): ParameterOrPropertyDecorator {
-    return (target, propertyKey, parameterIndex?) => applyParameterOrPropertyDecorator(decoratorName, target, propertyKey, parameterIndex, propertyInfoCallback, methodInfoCallback);
+    return (target, propertyKey, parameterIndex?) => applyParameterOrPropertyDecorator({
+        decoratorName: decoratorName,
+        target: target,
+        propertyKey: propertyKey,
+        parameterIndex: parameterIndex,
+        propertyInfoCallback: propertyInfoCallback,
+        methodInfoCallback: methodInfoCallback
+    });
 }
 
 /**
@@ -71,10 +90,14 @@ function Named(componentName: string): ParameterOrPropertyDecorator {
  * @param propertyKey    Property key
  * @param parameterIndex Parameter index
  */
-const Optional: ParameterOrPropertyDecorator = (target, propertyKey, parameterIndex?) => applyParameterOrPropertyDecorator('Optional', target, propertyKey, parameterIndex,
-    propertyInfoBuilder => propertyInfoBuilder.optional(true),
-    methodInfoBuilder => methodInfoBuilder.optional(parameterIndex, true)
-);
+const Optional: ParameterOrPropertyDecorator = (target, propertyKey, parameterIndex?) => applyParameterOrPropertyDecorator({
+    decoratorName: 'Optional',
+    target: target,
+    propertyKey: propertyKey,
+    parameterIndex: parameterIndex,
+    propertyInfoCallback: propertyInfoBuilder => propertyInfoBuilder.optional(true),
+    methodInfoCallback: methodInfoBuilder => methodInfoBuilder.optional(parameterIndex, true)
+});
 
 /**
  * Create an Order decorator, used to specify in which other injection is performed
