@@ -37,7 +37,7 @@
     }
   },
   "dependencies": {
-    "reflect-metadata": "^0.1.10"
+    "reflect-metadata": "0.1.10"
   },
   "devDependencies": {
     "@types/jest": "21.1.8",

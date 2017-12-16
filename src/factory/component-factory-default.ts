@@ -7,6 +7,18 @@ import {ComponentInfo, getComponentInfo, getMethodInfo, getPropertyInfo, MethodI
  */
 class DefaultComponentFactory implements ComponentFactory {
     private singletonComponents: Map<Function, Object> = new Map<Function, Object>();
+    private componentClasses: ClassConstructor<any>[] = [];
+    private componentNames: {[componentName: string]: ClassConstructor<any>} = {};
+
+    /**
+     * Set the available component classes
+     * @param componentClasses Component classes
+     */
+    setComponentClasses(componentClasses: ClassConstructor<any>[]): void {
+        this.componentNames = {};
+        this.componentClasses = componentClasses;
+        this.componentClasses.forEach(componentClass => this.componentNames[getComponentInfo(componentClass).name] = componentClass);
+    }
 
     /**
      * Test whether the factory contains a component
@@ -14,7 +26,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * @return true if the factory contains the component
      */
     containsComponent(componentName: string): boolean {
-        return false;
+        return !!(componentName in this.componentNames);
     }
 
     /**
@@ -36,6 +48,13 @@ class DefaultComponentFactory implements ComponentFactory {
         return this.dispatchGetComponent(componentName, componentClass);
     }
 
+    /**
+     * Get a component (implementation)
+     * @param componentName  Component name
+     * @param componentClass Component class
+     * @param <T>            Component type
+     * @return Component instance
+     */
     private dispatchGetComponent<T>(componentName: string, componentClass: ClassConstructor<T>|Function): T {
         let componentInfo: ComponentInfo = getComponentInfo(componentClass);
         if (!componentInfo) {
@@ -116,6 +135,7 @@ class DefaultComponentFactory implements ComponentFactory {
     /**
      * Register a component
      * @param component Component
+     * @param <T>       Component type
      */
     registerComponent<T>(component: T): void {
         // TODO
