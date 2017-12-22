@@ -1,4 +1,5 @@
 import {ComponentInfoBuilder, MethodInfoBuilder, PropertyInfoBuilder} from '../metadata';
+import {ClassConstructor} from '../utils';
 
 type ParameterOrPropertyDecorator = (target: Object|Function, propertyKey: string|symbol, parameterIndex?: number) => void;
 type MethodOrPropertyDecorator = <T>(target: Object|Function, propertyKey: string|symbol, descriptor?: TypedPropertyDescriptor<T>) => void;
@@ -55,6 +56,18 @@ function createParameterOrPropertyDecorator(decoratorName: string, propertyInfoC
         propertyInfoCallback: propertyInfoCallback,
         methodInfoCallback: methodInfoCallback
     });
+}
+
+/**
+ * Create an ElementClass decorator, used to specify the class of element contained in a container
+ * @param elementClass Element class
+ */
+function ElementClass(elementClass: Function): ParameterOrPropertyDecorator {
+    return createParameterOrPropertyDecorator(
+        'ElementClass',
+        propertyInfoBuilder => propertyInfoBuilder.elementClass(<any> elementClass),
+        (methodInfoBuilder, parameterIndex) => methodInfoBuilder.elementClass(parameterIndex, <any> elementClass)
+    );
 }
 
 /**
@@ -145,6 +158,7 @@ const PreDestroy: MethodDecorator = (target, propertyKey) => {
 };
 
 export {
+    ElementClass,
     Inject,
     Named,
     Optional,

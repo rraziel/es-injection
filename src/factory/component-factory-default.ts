@@ -49,6 +49,52 @@ class DefaultComponentFactory implements ComponentFactory {
     }
 
     /**
+     * Get a list of components
+     * @param componentClass Component class
+     * @param <T>            Component type
+     * @return Component instances
+     */
+    getComponents<T>(componentClass: ClassConstructor<T>): T[] {
+        let componentInfo: ComponentInfo = getComponentInfo(componentClass);
+        let implementationClasses: ClassConstructor<T>[] = componentInfo.implementations;
+
+        if (!implementationClasses) {
+            throw new Error('no implementation classes found for class ' + componentClass.name);
+        }
+
+        return implementationClasses
+            .map(implementationClass => this.getComponent(implementationClass))
+        ;
+    }
+
+    /**
+     * Get a component's class
+     * @param componentName Component name
+     * @return Component class
+     */
+    getComponentClass(componentName: string): ClassConstructor<any> {
+        return null;
+    }
+
+    /**
+     * Register a component
+     * @param component Component
+     * @param <T>       Component type
+     */
+    registerComponent<T>(component: T): void {
+        // TODO
+    }
+
+    /**
+     * Register a component class
+     * @param componentClass Component class
+     * @param <T>            Component type
+     */
+    registerComponentClass<T>(componentClass: ClassConstructor<T>): void {
+        // TODO
+    }
+
+    /**
      * Get a component (implementation)
      * @param componentName  Component name
      * @param componentClass Component class
@@ -114,43 +160,6 @@ class DefaultComponentFactory implements ComponentFactory {
     }
 
     /**
-     * Get a list of components
-     * @param componentClass Component class
-     * @param <T>            Component type
-     * @return Component instances
-     */
-    getComponents<T>(componentClass: ClassConstructor<T>): T[] {
-        throw new Error('getComponents not implemented');
-    }
-
-    /**
-     * Get a component's class
-     * @param componentName Component name
-     * @return Component class
-     */
-    getComponentClass(componentName: string): ClassConstructor<any> {
-        return null;
-    }
-
-    /**
-     * Register a component
-     * @param component Component
-     * @param <T>       Component type
-     */
-    registerComponent<T>(component: T): void {
-        // TODO
-    }
-
-    /**
-     * Register a component class
-     * @param componentClass Component class
-     * @param <T>            Component type
-     */
-    registerComponentClass<T>(componentClass: ClassConstructor<T>): void {
-        // TODO
-    }
-
-    /**
      * Instantiate singletons if they have not been instantiated yet
      * @param componentClass Component class
      * @param componentInfo  Component info
@@ -204,12 +213,23 @@ class DefaultComponentFactory implements ComponentFactory {
     private resolveConstructorDependency<T>(methodInfo: MethodInfo, requiredClass: ClassConstructor<T>, parameterIndex: number): T {
         let methodParameterInfo: MethodParameterInfo = methodInfo && methodInfo.parameters && methodInfo.parameters[parameterIndex];
         let requiredComponent: any;
+        let isArray: boolean = TypeUtils.isArray(requiredClass);
 
         try {
-            requiredComponent = this.getComponent(methodParameterInfo && methodParameterInfo.name, requiredClass);
+            if (!isArray) {
+                requiredComponent = this.getComponent(methodParameterInfo && methodParameterInfo.name, requiredClass);
+            } else if (!methodParameterInfo.elementClass) {
+                throw new Error('injected array parameter ' + parameterIndex + ' without any element class information (missing @ElementClass decorator)');
+            } else {
+                requiredComponent = this.getComponents(methodParameterInfo.elementClass);
+            }
         } catch (e) {
             if (!methodParameterInfo || !methodParameterInfo.optional) {
                 throw e;
+            }
+
+            if (isArray) {
+                requiredComponent = [];
             }
         }
 

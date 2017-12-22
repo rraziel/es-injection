@@ -29,6 +29,16 @@ class PropertyInfoBuilder {
     }
 
     /**
+     * Set the element class for a container type
+     * @param elementClass Element class
+     * @param <T>          Element type
+     * @return this
+     */
+    elementClass<T>(elementClass: ClassConstructor<T>): PropertyInfoBuilder {
+        return this.update(propertyInfo => propertyInfo.elementClass = elementClass);
+    }
+
+    /**
      * Set the dependency name
      * @param dependencyName Dependency name
      * @return this
