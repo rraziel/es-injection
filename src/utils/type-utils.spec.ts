@@ -116,7 +116,7 @@ describe('Type utility functions', () => {
                 constructor() { /* empty */ }
             }
             // when
-            let instance: TestClass = TypeUtils.instantiateClass(TestClass);
+            let instance: TestClass = TypeUtils.instantiateClass(TestClass, null);
             // then
             expect(instance).not.toBeUndefined();
             expect(instance).toBeInstanceOf(TestClass);
