@@ -2,6 +2,9 @@ import {ComponentInfoBuilder, ScopeType, Stereotype} from '../metadata';
 import {ClassConstructor, NameUtils} from '../utils';
 import {ComponentRegistry} from '../registry';
 
+/**
+ * Stereotype decorator
+ */
 interface StereotypeDecorator {
     <F extends Function>(target: F): void|F;
     (componentName: string): ClassDecorator;
@@ -9,28 +12,34 @@ interface StereotypeDecorator {
 
 /**
  * Process a stereotype decorator
+ * @param componentName  Component name
+ * @param componentClass Component class
+ * @param stereotype     Stereotype
+ * @param <T>            Component type
+ */
+function processStereotypeDecorator<T>(componentName: string, componentClass: ClassConstructor<T>, stereotype: Stereotype): void {
+    ComponentInfoBuilder.of(componentClass)
+        .name(componentName)
+        .stereotype(stereotype)
+    ;
+
+    ComponentRegistry.registerComponentClass(componentClass);
+}
+
+/**
+ * Dispatch stereotype decorator processor
  * @param stereotype Stereotype
  * @param <T>        Component type
  * @return Stereotype decorator
  */
-function processStereotypeDecorator<T>(componentName: ClassConstructor<T>|string, stereotype: Stereotype): ClassDecorator {
+function dispatchStereotypeDecorator<T>(componentName: ClassConstructor<T>|string, stereotype: Stereotype): ClassDecorator {
     if (componentName instanceof Function) {
-        ComponentInfoBuilder.of(componentName)
-            .name(NameUtils.buildComponentName(componentName))
-            .stereotype(stereotype)
-        ;
-
-        ComponentRegistry.registerComponentClass(componentName);
+        let actualComponentName: string = NameUtils.buildComponentName(componentName);
+        processStereotypeDecorator(actualComponentName, componentName, stereotype);
     } else {
         return target => {
             let componentClass: ClassConstructor<any> = <ClassConstructor<any>> <any> target;
-
-            ComponentInfoBuilder.of(componentClass)
-                .name(componentName)
-                .stereotype(stereotype)
-            ;
-
-            ComponentRegistry.registerComponentClass(componentClass);
+            processStereotypeDecorator(componentName, componentClass, stereotype);
         };
     }
 }
@@ -41,7 +50,7 @@ function processStereotypeDecorator<T>(componentName: ClassConstructor<T>|string
  * @return Stereotype decorator
  */
 function createStereotypeDecorator(stereotype: Stereotype): StereotypeDecorator {
-    return componentName => processStereotypeDecorator(componentName, stereotype);
+    return componentName => dispatchStereotypeDecorator(componentName, stereotype);
 }
 
 const Component: StereotypeDecorator = createStereotypeDecorator(Stereotype.COMPONENT);

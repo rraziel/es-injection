@@ -27,7 +27,7 @@ This loose coupling tends to make code more self-contained and easier to test, a
 The module can be installed through npm:
 
 ```
-npm install ts-injection --save
+npm install es-injection --save
 ```
 
 ## User Guide

@@ -29,13 +29,23 @@ class MethodInfoBuilder {
     }
 
     /**
+     * Set a parameter's element class
+     * @param parameterIndex Parameter index
+     * @param elementClass   Element class
+     * @param <T>            Element type
+     */
+    elementClass<T>(parameterIndex: number, elementClass: ClassConstructor<T>): MethodInfoBuilder {
+        return this.updateParameter(parameterIndex, methodParameterInfo => methodParameterInfo.elementClass = elementClass);
+    }
+
+    /**
      * Set a parameter name
      * @param parameterIndex Parameter index
      * @param parameterName  Parameter name
      * @return this
      */
     name(parameterIndex: number, parameterName: string): MethodInfoBuilder {
-        return this.update(methodInfo => this.getMethodParameterInfo(methodInfo, parameterIndex).name = parameterName);
+        return this.updateParameter(parameterIndex, methodParameterInfo => methodParameterInfo.name = parameterName);
     }
 
     /**
@@ -44,7 +54,7 @@ class MethodInfoBuilder {
      * @return this
      */
     optional(parameterIndex: number, optional: boolean): MethodInfoBuilder {
-        return this.update(methodInfo => this.getMethodParameterInfo(methodInfo, parameterIndex).optional = optional);
+        return this.updateParameter(parameterIndex, methodParameterInfo => methodParameterInfo.optional = optional);
     }
 
     /**
@@ -97,6 +107,16 @@ class MethodInfoBuilder {
         callback(methodInfo);
         setMethodInfo(this.propertyKey ? this.target.constructor : <Function> this.target, <string> this.propertyKey, methodInfo);
         return this;
+    }
+
+    /**
+     * Manipulate a method parameter information
+     * @param parameterIndex Parameter index
+     * @param callback       Calback
+     * @return this
+     */
+    private updateParameter(parameterIndex: number, callback: (methodParameterInfo: MethodParameterInfo) => void): MethodInfoBuilder {
+        return this.update(methodInfo => callback(this.getMethodParameterInfo(methodInfo, parameterIndex)));
     }
 
     /**

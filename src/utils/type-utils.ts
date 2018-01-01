@@ -1,6 +1,8 @@
 import {ClassConstructor} from './class-constructor';
 import 'reflect-metadata';
 
+type DependencyResolver = (requiredClass: ClassConstructor<any>, parameterIndex: number) => any;
+
 /**
  * Type utility functions
  */
@@ -87,7 +89,7 @@ class TypeUtils {
      * @param resolver  Resolver
      * @return Instance
      */
-    static instantiateClass<T>(typeClass: ClassConstructor<T>, resolver?: (requiredClass: ClassConstructor<any>, parameterIndex: number) => any): T {
+    static instantiateClass<T>(typeClass: ClassConstructor<T>, resolver: DependencyResolver): T {
         let parameterClasses: ClassConstructor<any>[] = TypeUtils.getParameterClasses(typeClass);
         let parameters: any[] = [];
 
@@ -96,6 +98,16 @@ class TypeUtils {
         }
 
         return new typeClass(... parameters);
+    }
+
+    /**
+     * Test whether a type is an array
+     * @param typeClass Type class
+     * @param <T>       Type
+     * @return true if the type is an array
+     */
+    static isArray<T>(typeClass: ClassConstructor<T>): boolean {
+        return typeClass === <any> Array;
     }
 
 }

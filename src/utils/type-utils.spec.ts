@@ -116,7 +116,7 @@ describe('Type utility functions', () => {
                 constructor() { /* empty */ }
             }
             // when
-            let instance: TestClass = TypeUtils.instantiateClass(TestClass);
+            let instance: TestClass = TypeUtils.instantiateClass(TestClass, null);
             // then
             expect(instance).not.toBeUndefined();
             expect(instance).toBeInstanceOf(TestClass);
@@ -147,6 +147,21 @@ describe('Type utility functions', () => {
             expect(instance.p0).toEqual(123);
             expect(instance.p1).toEqual('test-value');
             expect(instance.p2).toBeInstanceOf(TestParameterClass);
+        });
+
+    });
+
+    describe('can detect', () => {
+
+        it('array types', () => {
+            // given
+            let arrayClass: ClassConstructor<any> = Array;
+            let mapClass: ClassConstructor<any> = Map;
+            let numberClass: ClassConstructor<any> = Number;
+            // expect
+            expect(TypeUtils.isArray(arrayClass)).toEqual(true);
+            expect(TypeUtils.isArray(mapClass)).toEqual(false);
+            expect(TypeUtils.isArray(numberClass)).toEqual(false);
         });
 
     });

@@ -1,14 +1,15 @@
 import {DefaultComponentFactory} from './component-factory-default';
-import {Component, Inject, Order} from '../decorators';
+import {Component, ElementClass, Inject, Order} from '../decorators';
 
 let n: number = 0;
 
+abstract class TestBaseDependencyClass { }
 @Component
-class TestDependencyClass { orderCount: number = n++; }
+class TestDependencyClass extends TestBaseDependencyClass { orderCount: number = n++; }
 @Component
-class TestDependencyClass2 { orderCount: number = n++; }
+class TestDependencyClass2 extends TestBaseDependencyClass { orderCount: number = n++; }
 @Component
-class TestDependencyClass3 { orderCount: number = n++; }
+class TestDependencyClass3 extends TestBaseDependencyClass { orderCount: number = n++; }
 
 describe('Default component factory', () => {
     let componentFactory: DefaultComponentFactory;
@@ -44,6 +45,27 @@ describe('Default component factory', () => {
                 expect(component).not.toBeUndefined();
                 expect(component).toBeInstanceOf(TestClass);
                 expect(component.p).toBeInstanceOf(TestDependencyClass);
+            });
+
+            it('with an injected array', () => {
+                // given
+                @Component
+                class TestClass {
+                    constructor(@ElementClass(TestBaseDependencyClass) public l: TestBaseDependencyClass[]) { /* empty */ }
+                }
+                // when
+                let component: TestClass = componentFactory.getComponent(TestClass);
+                let dependency1: TestDependencyClass = componentFactory.getComponent(TestDependencyClass);
+                let dependency2: TestDependencyClass2 = componentFactory.getComponent(TestDependencyClass2);
+                let dependency3: TestDependencyClass3 = componentFactory.getComponent(TestDependencyClass3);
+                // then
+                expect(component).not.toBeUndefined();
+                expect(component).toBeInstanceOf(TestClass);
+                expect(component.l).not.toBeUndefined();
+                expect(component.l.length).toEqual(3);
+                expect(component.l).toContain(dependency1);
+                expect(component.l).toContain(dependency2);
+                expect(component.l).toContain(dependency3);
             });
 
         });
