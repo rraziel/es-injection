@@ -26,7 +26,7 @@ interface MethodInfo extends DependencyInfo {
  * Get method information
  * @param componentClass Component class
  * @param methodName     Method name
- * @return Property information
+ * @return Method information
  */
 function getMethodInfo<C extends Function>(componentClass: C, methodName?: string): MethodInfo {
     let methodInfo: MethodInfo = Reflect.getOwnMetadata(MethodInfoMetadata, componentClass, methodName);
@@ -37,7 +37,7 @@ function getMethodInfo<C extends Function>(componentClass: C, methodName?: strin
  * Set method information
  * @param componentClass Component class
  * @param methodName     Method name
- * @param propertyInfo   Property information
+ * @param methodInfo     Method information
  */
 function setMethodInfo<C extends Function>(componentClass: C, methodName: string, methodInfo: MethodInfo): void {
     Reflect.defineMetadata(MethodInfoMetadata, methodInfo, componentClass, methodName);

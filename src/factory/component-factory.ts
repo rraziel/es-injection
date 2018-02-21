@@ -47,6 +47,5 @@ interface ComponentFactory {
 }
 
 export {
-    ClassConstructor,
     ComponentFactory
 };

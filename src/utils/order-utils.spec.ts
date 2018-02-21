@@ -15,7 +15,7 @@ describe('Order utility functions', () => {
             case 'f':
                 order = 2;
                 break;
-                case 'c':
+            case 'c':
                 order = 3;
                 break;
             case 'd':

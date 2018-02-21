@@ -3,6 +3,7 @@
  * Stereotype
  */
 enum Stereotype {
+    CONFIGURATION,
     CONTROLLER,
     COMPONENT,
     REPOSITORY,
