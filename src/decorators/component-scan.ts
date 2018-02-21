@@ -5,7 +5,7 @@
  */
 function ComponentScan(...annotatedClasses: Function[]): ClassDecorator {
     return () => {
-
+        // TODO
     };
 }
 
