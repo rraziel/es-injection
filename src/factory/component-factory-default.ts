@@ -212,17 +212,7 @@ class DefaultComponentFactory implements ComponentFactory {
      */
     private resolveConstructorDependency<T>(methodInfo: MethodInfo, requiredClass: ClassConstructor<T>, parameterIndex: number): T {
         let methodParameterInfo: MethodParameterInfo = methodInfo && methodInfo.parameters && methodInfo.parameters[parameterIndex];
-        return this.tryResolveConstructorDependency(methodParameterInfo, requiredClass);
-    }
 
-    /**
-     * Try resolving a constructor dependency, falling back to an unresolved dependency
-     * @param methodParameterInfo Method parameter information
-     * @param requiredClass       Required class
-     * @param <T>                 Required type
-     * @return Dependency instance
-     */
-    private tryResolveConstructorDependency<T>(methodParameterInfo: MethodParameterInfo, requiredClass: ClassConstructor<T>): T {
         try {
             if (TypeUtils.isArray(requiredClass)) {
                 return this.resolveConstructorArrayDependency(methodParameterInfo, requiredClass);
