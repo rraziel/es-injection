@@ -212,28 +212,71 @@ class DefaultComponentFactory implements ComponentFactory {
      */
     private resolveConstructorDependency<T>(methodInfo: MethodInfo, requiredClass: ClassConstructor<T>, parameterIndex: number): T {
         let methodParameterInfo: MethodParameterInfo = methodInfo && methodInfo.parameters && methodInfo.parameters[parameterIndex];
-        let requiredComponent: any;
-        let isArray: boolean = TypeUtils.isArray(requiredClass);
+        return this.tryResolveConstructorDependency(methodParameterInfo, requiredClass);
+    }
 
+    /**
+     * Try resolving a constructor dependency, falling back to an unresolved dependency
+     * @param methodParameterInfo Method parameter information
+     * @param requiredClass       Required class
+     * @param <T>                 Required type
+     * @return Dependency instance
+     */
+    private tryResolveConstructorDependency<T>(methodParameterInfo: MethodParameterInfo, requiredClass: ClassConstructor<T>): T {
         try {
-            if (!isArray) {
-                requiredComponent = this.getComponent(methodParameterInfo && methodParameterInfo.name, requiredClass);
-            } else if (!methodParameterInfo.elementClass) {
-                throw new Error('injected array parameter ' + parameterIndex + ' without any element class information (missing @ElementClass decorator)');
+            if (TypeUtils.isArray(requiredClass)) {
+                return this.resolveConstructorArrayDependency(methodParameterInfo, requiredClass);
             } else {
-                requiredComponent = this.getComponents(methodParameterInfo.elementClass);
+                return this.resolveConstructorInstanceDependency(methodParameterInfo, requiredClass);
             }
         } catch (e) {
-            if (!methodParameterInfo || !methodParameterInfo.optional) {
-                throw e;
-            }
+            return this.buildUnresolvedConstructorDependency(e, methodParameterInfo, requiredClass);
+        }
+    }
 
-            if (isArray) {
-                requiredComponent = [];
-            }
+    /**
+     * Resolve a constructor dependency instance
+     * @param methodParameterInfo Method parameter information
+     * @param requiredClass       Required class
+     * @param <T>                 Required type
+     * @return Dependency instance
+     */
+    private resolveConstructorInstanceDependency<T>(methodParameterInfo: MethodParameterInfo, requiredClass: ClassConstructor<T>): T {
+        return this.getComponent(methodParameterInfo && methodParameterInfo.name, requiredClass);
+    }
+
+    /**
+     * Resolve a constructor dependency array
+     * @param methodParameterInfo Method parameter information
+     * @param requiredClass       Required class
+     * @param <T>                 Required type
+     * @return Dependency array instance
+     */
+    private resolveConstructorArrayDependency<T>(methodParameterInfo: MethodParameterInfo, requiredClass: ClassConstructor<T>): T {
+        if (!methodParameterInfo.elementClass) {
+            throw new Error('injected array parameter without any element class information (missing @ElementClass decorator)');
         }
 
-        return requiredComponent;
+        return <any> this.getComponents(methodParameterInfo.elementClass);
+    }
+
+    /**
+     * Build an unresolved constructor dependency
+     * @param methodParameterInfo Method parameter information
+     * @param requiredClass       Required class
+     * @param <T>                 Required type
+     * @return Unresolved dependency
+     */
+    private buildUnresolvedConstructorDependency<T>(e: any, methodParameterInfo: MethodParameterInfo, requiredClass: ClassConstructor<T>): T {
+        if (!methodParameterInfo || !methodParameterInfo.optional) {
+            throw e;
+        }
+
+        if (TypeUtils.isArray(requiredClass)) {
+            return <any> [];
+        }
+
+        return undefined;
     }
 
     /**
