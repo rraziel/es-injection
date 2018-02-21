@@ -5,7 +5,6 @@ describe('@Optional decorator', () => {
 
     describe('can be applied to', () => {
 
-
         it('a property', () => {
             // given
             class TestClass {
