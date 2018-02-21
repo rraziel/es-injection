@@ -22,7 +22,7 @@ function processStereotypeDecorator<T>(componentName: string, componentClass: Cl
         .stereotype(stereotype)
     ;
 }
-     
+
 /**
  * Dispatch stereotype decorator processor
  * @param stereotype Stereotype
