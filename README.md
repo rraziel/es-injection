@@ -32,10 +32,10 @@ npm install es-injection --save
 
 ## User Guide
 
-* [Declaring Components](blob/master/component-declaration.md)
-* [Injecting Components](blob/master/component-injection.md)
-* [Injecting Constants](blob/master/constant-injection.md)
-* [Application Context](blob/master/context.md)
+* [Declaring Components](doc/component-declaration.md)
+* [Injecting Components](doc/component-injection.md)
+* [Injecting Constants](doc/constant-injection.md)
+* [Application Context](doc/application-context.md)
 
 ## Development
 
