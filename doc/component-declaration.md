@@ -34,4 +34,4 @@ class MyDependency {
 }
 ```
 
-Components with a name can be queried by name, either programmatically through the [application context](context.md) or using the [@Named](component-injection.md#named) decorator.
+Components with a name can be queried by name, either programmatically through the [application context](application-context.md) or using the [@Named](component-injection.md#named-injection) decorator.
