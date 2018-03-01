@@ -71,6 +71,25 @@ class ComponentInfoBuilder<T> {
     }
 
     /**
+     * Set the scanned components
+     * @param annotatedClasses Annotated component clases
+     * @return this
+     */
+    componentScan(...annotatedClasses: ClassConstructor<any>[]): ComponentInfoBuilder<T> {
+        return this.update(componentInfo => {
+            componentInfo.scannedComponents = componentInfo.scannedComponents || [];
+            annotatedClasses.forEach(annotatedClass => {
+                let annotatedClassInfo: ComponentInfo = getComponentInfo(annotatedClass);
+                if (!annotatedClassInfo) {
+                    throw new Error(' invalid @ComponentScan: class ' + annotatedClass.name + ' is not a component');
+                }
+
+                componentInfo.scannedComponents.push(annotatedClass);
+            });
+        });
+    }
+
+    /**
      * Manipulate component information
      * @param callback Callback
      * @return this
