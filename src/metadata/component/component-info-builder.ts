@@ -72,7 +72,7 @@ class ComponentInfoBuilder<T> {
 
     /**
      * Set the scanned components
-     * @param annotatedClasses Annotated component clases
+     * @param annotatedClasses Annotated component classes
      * @return this
      */
     componentScan(...annotatedClasses: ClassConstructor<any>[]): ComponentInfoBuilder<T> {
@@ -81,10 +81,29 @@ class ComponentInfoBuilder<T> {
             annotatedClasses.forEach(annotatedClass => {
                 let annotatedClassInfo: ComponentInfo = getComponentInfo(annotatedClass);
                 if (!annotatedClassInfo) {
-                    throw new Error(' invalid @ComponentScan: class ' + annotatedClass.name + ' is not a component');
+                    throw new Error('invalid @ComponentScan: class ' + annotatedClass.name + ' is not a component class');
                 }
 
                 componentInfo.scannedComponents.push(annotatedClass);
+            });
+        });
+    }
+
+    /**
+     * Set the imported configuration classes
+     * @param configurationClasses Annotated configuration classes
+     * @return this
+     */
+    import(...configurationClasses: ClassConstructor<any>[]): ComponentInfoBuilder<T> {
+        return this.update(componentInfo => {
+            componentInfo.importedConfigurations = componentInfo.importedConfigurations || [];
+            configurationClasses.forEach(configurationClass => {
+                let annotatedClassInfo: ComponentInfo = getComponentInfo(configurationClass);
+                if (!annotatedClassInfo || annotatedClassInfo.stereotype !== Stereotype.CONFIGURATION) {
+                    throw new Error('invalid @Import: class ' + configurationClass.name + ' is not a configuration class');
+                }
+
+                componentInfo.importedConfigurations.push(configurationClass);
             });
         });
     }

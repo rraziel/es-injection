@@ -18,6 +18,7 @@ interface ComponentInfo {
     implementations?: ClassConstructor<any>[];
     properties?: string[];
     methods?: string[];
+    importedConfigurations?: ClassConstructor<any>[];
     scannedComponents?: ClassConstructor<any>[];
 }
 

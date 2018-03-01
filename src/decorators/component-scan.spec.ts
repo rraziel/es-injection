@@ -4,7 +4,7 @@ import {ComponentInfo, getComponentInfo} from '../metadata';
 
 describe('@ComponentScan decorator', () => {
 
-    it('can set scanned components for a configuration', () => {
+    it('can set scanned components for a configuration class', () => {
         // given
         @Component
         class TestComponent { }
@@ -19,7 +19,7 @@ describe('@ComponentScan decorator', () => {
         expect(componentInfo.scannedComponents[0]).toEqual(TestComponent);
     });
 
-    it('throws an exception when a scanned class is not an actual component', () => {
+    it('throws an exception when a scanned class is not an actual component class', () => {
         // given
         class TestComponent { }
         // expect
