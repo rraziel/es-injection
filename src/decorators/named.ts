@@ -1,5 +1,4 @@
-import {ParameterOrPropertyDecorator} from './types';
-import {createParameterOrPropertyDecorator} from './helper';
+import {createParameterOrPropertyDecorator, ParameterOrPropertyDecorator} from './helper';
 
 /**
  * Create a Named decorator, used to inject a dependency by name

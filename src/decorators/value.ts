@@ -1,5 +1,4 @@
-import {ParameterOrPropertyDecorator} from './types';
-import {createParameterOrPropertyDecorator} from './helper';
+import {createParameterOrPropertyDecorator, ParameterOrPropertyDecorator} from './helper';
 
 /**
  * Create a Value decorator, used to inject a constant by name

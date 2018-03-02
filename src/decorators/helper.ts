@@ -1,6 +1,7 @@
-import {ParameterOrPropertyDecorator} from './types';
 import {MethodInfoBuilder, PropertyInfoBuilder} from '../metadata';
 
+type MethodOrPropertyDecorator = <T>(target: Object|Function, propertyKey: string|symbol, descriptor?: TypedPropertyDescriptor<T>) => void;
+type ParameterOrPropertyDecorator = (target: Object|Function, propertyKey: string|symbol, parameterIndex?: number) => void;
 type MethodInfoCallback = (methodInfoBuilder: MethodInfoBuilder, parameterIndex: number) => void;
 type PropertyInfoCallback = (propertyInfoBuilder: PropertyInfoBuilder) => void;
 
@@ -60,5 +61,7 @@ export {
     applyParameterOrPropertyDecorator,
     createParameterOrPropertyDecorator,
     MethodInfoCallback,
+    MethodOrPropertyDecorator,
+    ParameterOrPropertyDecorator,
     PropertyInfoCallback
 };

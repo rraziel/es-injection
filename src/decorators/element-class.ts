@@ -1,5 +1,4 @@
-import {createParameterOrPropertyDecorator} from './helper';
-import {ParameterOrPropertyDecorator} from './types';
+import {createParameterOrPropertyDecorator, ParameterOrPropertyDecorator} from './helper';
 
 /**
  * Create an ElementClass decorator, used to specify the class of element contained in a container
