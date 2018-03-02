@@ -36,6 +36,7 @@ npm install es-injection --save
 * [Injecting Components](doc/component-injection.md)
 * [Injecting Constants](doc/constant-injection.md)
 * [Application Context](doc/application-context.md)
+* [Configuration](doc/configuration.md)
 
 ## Development
 
