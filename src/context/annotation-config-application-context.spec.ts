@@ -32,6 +32,6 @@ describe('Annotation configuration application context', () => {
             expect(() => applicationContext.register(TestConfiguration)).toThrowError(/unable to register/);
         });
 
-    })
+    });
 
 });
