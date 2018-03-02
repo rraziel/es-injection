@@ -61,6 +61,20 @@ class MyConfiguration {
 }
 ```
 
+### Constant Value
+
+Similarly, configuration classes can define constant values:
+
+```typescript
+@Configuration
+class MyConfiguration {
+    @Value('my-value')
+    getMyValue(): number {
+        return 42;
+    }
+}
+```
+
 ## Imported Configuration
 
 As projects grow larger, having multiple configuration classes - one per sub-module - is not uncommon.
@@ -79,3 +93,4 @@ class ModuleBConfiguration { }
 @Import(ModuleBConfiguration)
 class ModuleAConfiguration { }
 ```
+ 
