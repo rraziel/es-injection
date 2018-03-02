@@ -1,4 +1,4 @@
-import {MethodOrPropertyDecorator} from './types';
+import {MethodOrPropertyDecorator} from './helper';
 import {MethodInfoBuilder, PropertyInfoBuilder} from '../metadata';
 
 /**

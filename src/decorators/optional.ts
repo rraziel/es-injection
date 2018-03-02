@@ -1,5 +1,4 @@
-import {ParameterOrPropertyDecorator} from './types';
-import {applyParameterOrPropertyDecorator} from './helper';
+import {applyParameterOrPropertyDecorator, ParameterOrPropertyDecorator} from './helper';
 
 /**
  * Optional decorator, used to mark a dependency as being optional
