@@ -23,4 +23,15 @@ describe('Annotation configuration application context', () => {
 
     });
 
+    describe('throws an exception when', () => {
+
+        it('registering a class that is not a configuration class', () => {
+            // given
+            class TestConfiguration { }
+            // expect
+            expect(() => applicationContext.register(TestConfiguration)).toThrowError(/unable to register/);
+        });
+
+    })
+
 });

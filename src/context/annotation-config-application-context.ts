@@ -1,35 +1,41 @@
 import {ApplicationContext} from './application-context';
 import {DefaultComponentFactory} from '../factory';
-import {ClassConstructor} from '../utils';
+import {getComponentInfo, ComponentInfo} from '../metadata';
+import {ClassConstructor, StereotypeUtils} from '../utils';
 
 /**
- * Application context accepting annotated classes as input
+ * Application context accepting annotated configuration classes as input
  */
 class AnnotationConfigApplicationContext extends DefaultComponentFactory implements ApplicationContext {
 
     /**
      * Class constructor
-     * @param annotatedClasses Annotated classes
+     * @param configurationClasses Configuration classes
      */
-    constructor(...annotatedClasses: ClassConstructor<any>[]) {
+    constructor(...configurationClasses: ClassConstructor<any>[]) {
         super();
-        this.register(...annotatedClasses);
+        this.register(...configurationClasses);
     }
 
     /**
-     * Register annotated classes
-     * @param annotatedClasses Annotated classes
+     * Register configuration classes
+     * @param configurationClasses Configuration classes
      */
-    register(...annotatedClasses: ClassConstructor<any>[]): void {
-        annotatedClasses.forEach(annotatedClass => this.registerAnnotatedClass(annotatedClass));
+    register(...configurationClasses: ClassConstructor<any>[]): void {
+        configurationClasses.forEach(annotatedClass => this.registerAnnotatedClass(annotatedClass));
     }
 
     /**
      * Register an annotated class
-     * @param annotatedClass Annotated class
+     * @param configurationClass Configuration class
      */
-    private registerAnnotatedClass<T>(annotatedClass: ClassConstructor<T>): void {
-        this.registerComponentClass(annotatedClass);
+    private registerAnnotatedClass<T>(configurationClass: ClassConstructor<T>): void {
+        let componentInfo: ComponentInfo = getComponentInfo(configurationClass);
+        if (!StereotypeUtils.isConfiguration(configurationClass)) {
+            throw new Error('unable to register ' + configurationClass.name + ': not marked with @Configuration');
+        }
+
+        this.registerComponentClass(configurationClass);
     }
 
 }
