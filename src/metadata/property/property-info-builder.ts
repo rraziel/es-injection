@@ -48,6 +48,15 @@ class PropertyInfoBuilder {
     }
 
     /**
+     * Set the value name
+     * @param valueName Dependency value name
+     * @return this
+     */
+    value(valueName: string): PropertyInfoBuilder {
+        return this.update(propertyInfo => propertyInfo.value = valueName);
+    }
+
+    /**
      * Set whether the dependency is optional
      * @param optional true if the dependency is optional
      * @return this

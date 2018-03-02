@@ -1,5 +1,6 @@
 export {ComponentScan} from './component-scan';
 export {ElementClass} from './element-class';
+export {Import} from './import';
 export {Inject} from './inject';
 export {Named} from './named';
 export {Optional} from './optional';
@@ -8,3 +9,4 @@ export {PostConstruct} from './post-construct';
 export {PreDestroy} from './pre-destroy';
 export {Scope} from './scope';
 export {Configuration, Component, Controller, Repository, Service} from './stereotypes';
+export {Value} from './value';

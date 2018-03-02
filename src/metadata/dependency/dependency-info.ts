@@ -5,6 +5,7 @@ import {ClassConstructor} from '../../utils';
  */
 interface DependencyInfo {
     name?: string;
+    value?: string;
     optional?: boolean;
     order?: number;
     elementClass?: ClassConstructor<any>;

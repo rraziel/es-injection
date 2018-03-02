@@ -49,6 +49,16 @@ class MethodInfoBuilder {
     }
 
     /**
+     * Set a parameter value name
+     * @param parameterIndex Parameter index
+     * @param valueName      Value name
+     * @return this
+     */
+    value(parameterIndex: number, valueName: string): MethodInfoBuilder {
+        return this.updateParameter(parameterIndex, methodParameterInfo => methodParameterInfo.value = valueName);
+    }
+
+    /**
      * Set whether the dependency is optional
      * @param optional true if the dependency is optional
      * @return this
