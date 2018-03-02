@@ -9,7 +9,6 @@ function ComponentScan(...annotatedClasses: ClassConstructor<any>[]): ClassDecor
     return target => {
         ComponentInfoBuilder.of(<ClassConstructor<any>> <any> target).componentScan(...annotatedClasses);
     };
-
 }
 
 export {
