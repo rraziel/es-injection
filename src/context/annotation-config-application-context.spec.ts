@@ -15,10 +15,8 @@ describe('Annotation configuration application context', () => {
             // given
             @Configuration
             class TestConfiguration {}
-            // when
-            applicationContext.register(TestConfiguration);
-            // then
-            // TODO
+            // expect
+            expect(() => applicationContext.register(TestConfiguration)).not.toThrow();
         });
 
     });
