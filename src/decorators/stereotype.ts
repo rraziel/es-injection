@@ -51,6 +51,6 @@ function createStereotypeDecorator(stereotype: Stereotype): StereotypeDecorator 
 }
 
 export {
-    createStereotypeDecorator,
-    StereotypeDecorator
+    StereotypeDecorator,
+    createStereotypeDecorator
 };

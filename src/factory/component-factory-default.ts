@@ -1,4 +1,5 @@
 import {ComponentFactory} from './component-factory';
+import {ComponentFactorySettings} from './component-factory-settings';
 import {ClassConstructor, OrderedElement, OrderUtils, TypeUtils} from '../utils';
 import {ComponentInfo, getComponentInfo, getMethodInfo, getPropertyInfo, MethodInfo, MethodParameterInfo, PropertyInfo, ScopeType} from '../metadata';
 
@@ -9,6 +10,15 @@ class DefaultComponentFactory implements ComponentFactory {
     private singletonComponents: Map<Function, Object> = new Map<Function, Object>();
     private componentClasses: ClassConstructor<any>[] = [];
     private componentNames: {[componentName: string]: ClassConstructor<any>} = {};
+    private componentFactorySettings: ComponentFactorySettings;
+
+    /**
+     * Class constructor
+     * @param componentFactorySettings Component factory settings
+     */
+    constructor(componentFactorySettings: ComponentFactorySettings) {
+        this.componentFactorySettings = componentFactorySettings;
+    }
 
     /**
      * Set the available component classes

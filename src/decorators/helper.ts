@@ -58,10 +58,11 @@ function createParameterOrPropertyDecorator(decoratorName: string, propertyInfoC
 }
 
 export {
+    MethodInfoCallback,
+    ParameterOrPropertyDecorator,
+    PropertyInfoCallback,
+    AppliedDecoratorParameters,
     applyParameterOrPropertyDecorator,
     createParameterOrPropertyDecorator,
-    MethodInfoCallback,
-    MethodOrPropertyDecorator,
-    ParameterOrPropertyDecorator,
-    PropertyInfoCallback
+    MethodOrPropertyDecorator
 };

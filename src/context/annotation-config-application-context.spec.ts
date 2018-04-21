@@ -6,7 +6,7 @@ describe('Annotation configuration application context', () => {
     let applicationContext: AnnotationConfigApplicationContext;
 
     beforeEach(() => {
-        applicationContext = new AnnotationConfigApplicationContext();
+        applicationContext = new AnnotationConfigApplicationContext({});
     });
 
     describe('can register', () => {

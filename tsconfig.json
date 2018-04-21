@@ -3,15 +3,17 @@
     "compilerOptions": {
         "allowJs": false,
         "baseUrl": "src",
-        "declaration": false,
+        "declaration": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "moduleResolution": "node",
+        "module": "commonjs",
         "noImplicitAny": false,
+        "noImplicitThis": true,
         "outDir": "./dist",
         "sourceMap": true,
         "removeComments": false,
-        "target": "es6",
+        "target": "es2015",
         "typeRoots": [
             "node_modules/@types"
         ],
@@ -20,6 +22,7 @@
         ]
     },
     "exclude": [
+        "dist",
         "node_modules"
     ]
 }

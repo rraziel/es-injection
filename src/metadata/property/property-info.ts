@@ -37,8 +37,8 @@ function setPropertyInfo<C extends Function>(componentClass: C, propertyName: st
 }
 
 export {
-    getPropertyInfo,
     PropertyInfo,
-    setPropertyInfo,
-    PropertyInfoMetadata
+    PropertyInfoMetadata,
+    getPropertyInfo,
+    setPropertyInfo
 };

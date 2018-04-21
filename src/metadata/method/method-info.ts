@@ -44,8 +44,8 @@ function setMethodInfo<C extends Function>(componentClass: C, methodName: string
 }
 
 export {
-    getMethodInfo,
-    MethodInfo,
     MethodParameterInfo,
+    MethodInfo,
+    getMethodInfo,
     setMethodInfo
 };

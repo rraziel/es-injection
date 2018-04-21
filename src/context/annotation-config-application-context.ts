@@ -1,4 +1,5 @@
 import {ApplicationContext} from './application-context';
+import {ApplicationContextSettings} from './application-context-settings';
 import {DefaultComponentFactory} from '../factory';
 import {getComponentInfo, ComponentInfo} from '../metadata';
 import {ClassConstructor, StereotypeUtils} from '../utils';
@@ -10,10 +11,11 @@ class AnnotationConfigApplicationContext extends DefaultComponentFactory impleme
 
     /**
      * Class constructor
-     * @param configurationClasses Configuration classes
+     * @param applicationContextSettings Application context settings
+     * @param configurationClasses       Configuration classes
      */
-    constructor(...configurationClasses: ClassConstructor<any>[]) {
-        super();
+    constructor(applicationContextSettings: ApplicationContextSettings, ...configurationClasses: ClassConstructor<any>[]) {
+        super(applicationContextSettings);
         this.register(...configurationClasses);
     }
 

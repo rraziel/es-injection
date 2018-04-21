@@ -15,7 +15,7 @@ describe('Default component factory', () => {
     let componentFactory: DefaultComponentFactory;
 
     beforeEach(() => {
-        componentFactory = new DefaultComponentFactory();
+        componentFactory = new DefaultComponentFactory({});
     });
 
     describe('can retrieve', () => {

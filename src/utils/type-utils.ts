@@ -113,5 +113,6 @@ class TypeUtils {
 }
 
 export {
+    DependencyResolver,
     TypeUtils
 };

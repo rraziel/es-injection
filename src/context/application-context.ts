@@ -1,4 +1,3 @@
-import {ClassConstructor} from '../utils';
 import {ComponentFactory} from '../factory';
 
 /**
