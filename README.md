@@ -6,7 +6,7 @@
 [![AppVeyor tests](https://img.shields.io/appveyor/tests/rraziel/es-injection/master.svg?label=Tests&style=flat)](https://ci.appveyor.com/project/rraziel/es-injection/build/tests)
 [![Codecov](https://img.shields.io/codecov/c/github/rraziel/es-injection.svg?label=Coverage&style=flat)](https://codecov.io/gh/rraziel/es-injection)
 [![Code Climate](https://img.shields.io/codeclimate/maintainability/rraziel/es-injection.svg?label=Maintainability&style=flat)](https://codeclimate.com/github/rraziel/es-injection)
-[![Code Climate](https://img.shields.io/codeclimate/issues/github/rraziel/es-injection.svg?label=Code%20Issues&style=flat)](https://codeclimate.com/github/rraziel/es-injection/issues)
+[![Code Climate](https://img.shields.io/codeclimate/issues/rraziel/es-injection.svg?label=Code%20Issues&style=flat)](https://codeclimate.com/github/rraziel/es-injection/issues)
 
 [![Dependencies](https://img.shields.io/david/rraziel/es-injection.svg?label=Dependencies&style=flat)](https://david-dm.org/rraziel/es-injection)
 [![Development dependencies](https://img.shields.io/david/dev/rraziel/es-injection.svg?label=Dev%20Dependencies&style=flat)](https://david-dm.org/rraziel/es-injection?type=dev)
