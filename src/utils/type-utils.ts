@@ -31,7 +31,7 @@ class TypeUtils {
      * @return Parameter class
      */
     static getParameterClass<T>(typeClass: ClassConstructor<T>, methodName: string, parameterIndex: number): ClassConstructor<any> {
-        let parameterClasses: ClassConstructor<any>[] = this.getParameterClasses(typeClass, methodName);
+        let parameterClasses: ClassConstructor<any>[] = TypeUtils.getParameterClasses(typeClass, methodName);
         return parameterClasses && parameterClasses[parameterIndex];
     }
 
