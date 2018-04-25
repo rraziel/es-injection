@@ -1,4 +1,5 @@
 import {ComponentInfo, getComponentInfo, setComponentInfo} from './ComponentInfo';
+import {Condition} from '../Condition';
 import {ScopeType} from '../ScopeType';
 import {Stereotype} from '../Stereotype';
 import {ClassConstructor, TypeUtils} from '../../utils';
@@ -86,6 +87,18 @@ class ComponentInfoBuilder<T> {
 
                 componentInfo.scannedComponents.push(annotatedClass);
             });
+        });
+    }
+
+    /**
+     * Set the conditions on a component instantiation
+     * @param conditions Conditions
+     * @return this
+     */
+    conditional(...conditions: Condition[]): ComponentInfoBuilder<T> {
+        return this.update(componentInfo => {
+            componentInfo.conditions = componentInfo.conditions || [];
+            componentInfo.conditions.push(...conditions);
         });
     }
 

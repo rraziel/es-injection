@@ -1,4 +1,5 @@
 export {ComponentScan} from './ComponentScan';
+export {Conditional} from './Conditional';
 export {ElementClass} from './ElementClass';
 export {Import} from './Import';
 export {Inject} from './Inject';

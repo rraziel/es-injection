@@ -81,7 +81,7 @@ function createStereotypeSpecification(decoratorInfo: DecoratorInfo): void {
 
         });
 
-        describe.skip('throws an exception when', () => { // Method descriptors are evaluated before class descriptors, thus the current detection method cannot work
+        describe('throws an exception when', () => { // Method descriptors are evaluated before class descriptors, thus the current detection method cannot work
             if (allowMethod) {
                 it('applied to a static method', () => {
                     // given
@@ -96,7 +96,7 @@ function createStereotypeSpecification(decoratorInfo: DecoratorInfo): void {
                     }).toThrow(/cannot be used on a static method/);
                 });
 
-                it('applied to a method of a class that is not a @Configuration class', () => {
+                it.skip('applied to a method of a class that is not a @Configuration class', () => {
                     // given
                     class TestComponent { }
                     // expect
@@ -108,7 +108,7 @@ function createStereotypeSpecification(decoratorInfo: DecoratorInfo): void {
                     }).toThrow(/class TestConfiguration must be a @Configuration class in order for its methods to declare components/);
                 });
             } else {
-                it('applied to a method', () => {
+                it.skip('applied to a method', () => {
                     // expect
                     expect(() => {
                         class TestComponent {

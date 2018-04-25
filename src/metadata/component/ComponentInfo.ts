@@ -1,3 +1,4 @@
+import {Condition} from '../Condition';
 import {ScopeType} from '../ScopeType';
 import {Stereotype} from '../Stereotype';
 import {ClassConstructor} from '../../utils';
@@ -17,7 +18,8 @@ interface ComponentInfo {
     stereotype?: Stereotype;
     implementations?: ClassConstructor<any>[];
     properties?: string[];
-    methods?: string[];
+    methods?: string[]; // TODO: remove and instead enumerate methods looking for metadata
+    conditions?: Condition[];
     importedConfigurations?: ClassConstructor<any>[];
     scannedComponents?: ClassConstructor<any>[];
 }
