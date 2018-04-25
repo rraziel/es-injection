@@ -35,3 +35,27 @@ class MyDependency {
 ```
 
 Components with a name can be queried by name, either programmatically through the [application context](application-context.md) or using the [@Named](component-injection.md#named-injection) decorator.
+
+## Abstract Class vs. Interface
+
+Currently, interfaces are not concrete types and do not get compiled into an actual object.
+
+Due to this, it is not possible to add decorators to an interface and then retrieve components through this interface.
+
+It, however, possible to achieve something quite similar by creating an abstract class with nothing but abstract methods.
+
+The following interface:
+
+```typescript
+interface MyComponent {
+    myMethod(): void;
+}
+```
+
+Thus becomes:
+
+```typescript
+abstract class MyComponent {
+    abstract myMethod(): void;
+}
+```
