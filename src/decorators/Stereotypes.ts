@@ -1,7 +1,8 @@
 import {createStereotypeDecorator, StereotypeDecorator} from './StereotypeDecorator';
-import {Stereotype} from '../metadata';
+import {getComponentInfo, ComponentInfo, Stereotype} from '../metadata';
+import {ClassConstructor} from '../utils';
 
-const Configuration: StereotypeDecorator = createStereotypeDecorator(Stereotype.CONFIGURATION);
+const Configuration: StereotypeDecorator = createStereotypeDecorator(Stereotype.CONFIGURATION, true);
 const Component: StereotypeDecorator = createStereotypeDecorator(Stereotype.COMPONENT);
 const Controller: StereotypeDecorator = createStereotypeDecorator(Stereotype.CONTROLLER);
 const Repository: StereotypeDecorator = createStereotypeDecorator(Stereotype.REPOSITORY);

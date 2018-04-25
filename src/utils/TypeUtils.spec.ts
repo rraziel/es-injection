@@ -58,6 +58,18 @@ describe('Type utility functions', () => {
         expect(param2Class).toEqual(TestParameterClass);
     });
 
+    it('can get a method return class', () => {
+        // given
+        class TestReturnClass { }
+        class TestClass {
+            @DummyMethod method(): TestReturnClass { return null; }
+        }
+        // when
+        let returnClass: ClassConstructor<any> = TypeUtils.getReturnClass(TestClass, 'method');
+        // then
+        expect(returnClass).toEqual(TestReturnClass);
+    });
+
     it('can iterate over parent classes', () => {
         // given
         class TestClass { }

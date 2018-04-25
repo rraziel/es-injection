@@ -16,7 +16,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * Class constructor
      * @param componentFactorySettings Component factory settings
      */
-    constructor(componentFactorySettings: ComponentFactorySettings) {
+    constructor(componentFactorySettings?: ComponentFactorySettings) {
         this.componentFactorySettings = componentFactorySettings;
     }
 

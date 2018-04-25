@@ -1,14 +1,16 @@
 import {ClassConstructor} from './ClassConstructor';
 import 'reflect-metadata';
 
+const METADATAKEY_PARAMETERTYPES: string = 'design:paramtypes';
+const METADATAKEY_RETURNTYPE: string = 'design:returntype';
+const METADATAKEY_TYPE: string = 'design:type';
+
 type DependencyResolver = (requiredClass: ClassConstructor<any>, parameterIndex: number) => any;
 
 /**
  * Type utility functions
  */
 class TypeUtils {
-    static METADATAKEY_PARAMETERTYPES: string = 'design:paramtypes';
-    static METADATAKEY_TYPE: string = 'design:type';
 
     /**
      * Get a property class
@@ -17,8 +19,8 @@ class TypeUtils {
      * @param <T>          Type
      * @return Property class
      */
-    static getPropertyClass<T>(typeClass: ClassConstructor<T>, propertyName: string): ClassConstructor<any> {
-        let propertyClass: ClassConstructor<any> = Reflect.getMetadata(TypeUtils.METADATAKEY_TYPE, typeClass.prototype, propertyName);
+    static getPropertyClass<T>(typeClass: ClassConstructor<T>, propertyName: string|symbol): ClassConstructor<any> {
+        let propertyClass: ClassConstructor<any> = Reflect.getMetadata(METADATAKEY_TYPE, typeClass.prototype, propertyName);
         return propertyClass;
     }
 
@@ -42,16 +44,27 @@ class TypeUtils {
      * @param <T>        Type
      * @return List of parameter classes
      */
-    static getParameterClasses<T>(typeClass: ClassConstructor<T>, methodName?: string): ClassConstructor<any>[] {
+    static getParameterClasses<T>(typeClass: ClassConstructor<T>, methodName?: string|symbol): ClassConstructor<any>[] {
         let parameterClasses: ClassConstructor<any>[];
 
         if (methodName === undefined) {
-            parameterClasses = Reflect.getMetadata(TypeUtils.METADATAKEY_PARAMETERTYPES, typeClass);
+            parameterClasses = Reflect.getMetadata(METADATAKEY_PARAMETERTYPES, typeClass);
         } else {
-            parameterClasses = Reflect.getMetadata(TypeUtils.METADATAKEY_PARAMETERTYPES, typeClass.prototype, methodName);
+            parameterClasses = Reflect.getMetadata(METADATAKEY_PARAMETERTYPES, typeClass.prototype, methodName);
         }
 
         return parameterClasses;
+    }
+
+    /**
+     * Get a method's return class
+     * @param typeClass  Type class
+     * @param methodName Method name
+     * @param <T>        Type
+     * @return Method return class
+     */
+    static getReturnClass<T>(typeClass: ClassConstructor<T>, methodName: string|symbol): ClassConstructor<any> {
+        return Reflect.getMetadata(METADATAKEY_RETURNTYPE, typeClass.prototype, methodName);
     }
 
     /**

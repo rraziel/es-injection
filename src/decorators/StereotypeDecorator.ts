@@ -1,12 +1,15 @@
 import {ComponentInfoBuilder, Stereotype} from '../metadata';
-import {ClassConstructor, NameUtils} from '../utils';
+import {ClassConstructor, NameUtils, TypeUtils} from '../utils';
+
+type ClassOrMethodStereotypeDecorator = <T>(target: Object|T, propertyKey?: string|symbol, descriptor?: TypedPropertyDescriptor<() => T>) => void;
 
 /**
  * Stereotype decorator
  */
 interface StereotypeDecorator {
-    <F extends Function>(target: F): void|F;
-    (componentName: string): ClassDecorator;
+    (componentName: string): ClassOrMethodStereotypeDecorator;
+    <T extends Function>(target: T): void;
+    <T>(target: Object, propertyKey: string|symbol, descriptor: TypedPropertyDescriptor<() => T>): void;
 }
 
 /**
@@ -24,33 +27,97 @@ function processStereotypeDecorator<T>(componentName: string, componentClass: Cl
 }
 
 /**
- * Dispatch stereotype decorator processor
- * @param stereotype Stereotype
- * @param <T>        Component type
- * @return Stereotype decorator
+ * Process a class stereotype decorator
+ * @param componentClass Component clas
+ * @param stereotype     Stereotype
+ * @param componentName  Component name
  */
-function dispatchStereotypeDecorator<T>(componentName: ClassConstructor<T>|string, stereotype: Stereotype): ClassDecorator {
-    if (componentName instanceof Function) {
-        let actualComponentName: string = NameUtils.buildComponentName(componentName);
-        processStereotypeDecorator(actualComponentName, componentName, stereotype);
+function processClassStereotypeDecorator<T>(componentClass: ClassConstructor<T>, stereotype: Stereotype, componentName?: string): void {
+    if (componentName === undefined) {
+        componentName = NameUtils.buildComponentName(componentClass);
+    }
+
+    processStereotypeDecorator(componentName, componentClass, stereotype);
+}
+
+/**
+ * Dispatch a method stereotype decorator
+ * @param classPrototype Class prototype
+ * @param propertyKey    Property key
+ * @param descriptor     Descriptor
+ * @param stereotype     Stereotype
+ * @param componentName  Component name
+ * @param methodAllowed  true if the component can contain stereotype-decorated methods
+ * @param <T>            Method type
+ */
+function processMethodStereotypeDecorator<T>(classPrototype: Object, propertyKey: string|symbol, descriptor: TypedPropertyDescriptor<T>, stereotype: Stereotype, componentName?: string, methodAllowed?: boolean): void {
+    let classConstructor: ClassConstructor<any> = <ClassConstructor<any>> classPrototype.constructor;
+    let componentClass: ClassConstructor<any> = TypeUtils.getReturnClass(classConstructor, propertyKey);
+
+    if (componentName === undefined) {
+        componentName = NameUtils.buildComponentName(componentClass);
+    }
+
+    if (!methodAllowed) {
+        // TODO
+    }
+
+    processStereotypeDecorator(componentName, componentClass, stereotype);
+}
+
+/**
+ * Dispatch a stereotype decorator with an optional component name
+ * @param target         Target
+ * @param stereotype     Stereotype
+ * @param componentName  Component name
+ * @param propertyKey    Property key
+ * @param descriptor     Descriptor
+ * @param methodAllowed  true if the component can contain stereotype-decorated methods
+ * @param <T>            Component type or method type
+ */
+function dispatchStereotypeDecoratorWithOptionalName<T>(target: Object|ClassConstructor<T>, stereotype: Stereotype, componentName?: string, propertyKey?: string|symbol, descriptor?: TypedPropertyDescriptor<T>, methodAllowed?: boolean): void {
+    if (target instanceof Function) {
+        if (propertyKey) {
+            throw new Error('a component decorator cannot be used on a static method');
+        }
+
+        processClassStereotypeDecorator(target, stereotype, componentName);
     } else {
-        return target => {
-            let componentClass: ClassConstructor<any> = <ClassConstructor<any>> <any> target;
-            processStereotypeDecorator(componentName, componentClass, stereotype);
-        };
+        processMethodStereotypeDecorator(target, propertyKey, descriptor, stereotype, componentName, methodAllowed);
     }
 }
 
 /**
- * Create a stereotype decorator
- * @param stereotype Stereotype
+ * Dispatch stereotype decorator processor
+ * @param targetOrComponentName Target or component name
+ * @param stereotype            Stereotype
+ * @param propertyKey           Property key
+ * @param descriptor            Descriptor
+ * @param methodAllowed         true if the component can contain stereotype-decorated methods
+ * @param <T>                   Component type
  * @return Stereotype decorator
  */
-function createStereotypeDecorator(stereotype: Stereotype): StereotypeDecorator {
-    return componentName => dispatchStereotypeDecorator(componentName, stereotype);
+function dispatchStereotypeDecorator<T>(targetOrComponentName: Object|ClassConstructor<T>|string, stereotype: Stereotype, propertyKey?: string|symbol, descriptor?: TypedPropertyDescriptor<T>, methodAllowed?: boolean): ClassOrMethodStereotypeDecorator|void {
+    if (typeof(targetOrComponentName) === 'string') {
+        let componentName: string = targetOrComponentName;
+        return (target, namedPropertyKey, namedDescriptor) => dispatchStereotypeDecoratorWithOptionalName(target, stereotype, componentName, namedPropertyKey, namedDescriptor, methodAllowed);
+    }
+
+    dispatchStereotypeDecoratorWithOptionalName(targetOrComponentName, stereotype, undefined, propertyKey, descriptor, methodAllowed);
+}
+
+/**
+ * Create a stereotype decorator
+ * @param stereotype     Stereotype
+ * @param methodAllowed  true if the component can contain stereotype-decorated methods
+ * @return Stereotype decorator
+ */
+function createStereotypeDecorator(stereotype: Stereotype, methodAllowed?: boolean): StereotypeDecorator {
+    return <StereotypeDecorator> ((target, propertyKey, descriptor) => dispatchStereotypeDecorator(target, stereotype, propertyKey, descriptor, methodAllowed));
 }
 
 export {
+    ClassOrMethodStereotypeDecorator,
     StereotypeDecorator,
     createStereotypeDecorator
 };

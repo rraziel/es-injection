@@ -14,9 +14,25 @@ class AnnotationConfigApplicationContext extends DefaultComponentFactory impleme
      * @param applicationContextSettings Application context settings
      * @param configurationClasses       Configuration classes
      */
-    constructor(applicationContextSettings: ApplicationContextSettings, ...configurationClasses: ClassConstructor<any>[]) {
+    constructor(applicationContextSettings?: ApplicationContextSettings, ...configurationClasses: ClassConstructor<any>[]) {
         super(applicationContextSettings);
         this.register(...configurationClasses);
+    }
+
+    /**
+     * Refresh the context
+     * @return Promise that resolves once the context is refreshed
+     */
+    async refresh(): Promise<void> {
+        // TODO
+    }
+
+    /**
+     * Close the context
+     * @return Promise that resolves once the context is closed
+     */
+    async close(): Promise<void> {
+        // TODO
     }
 
     /**
