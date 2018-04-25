@@ -1,5 +1,5 @@
-import {ApplicationContext} from './application-context';
-import {ApplicationContextSettings} from './application-context-settings';
+import {ApplicationContext} from './ApplicationContext';
+import {ApplicationContextSettings} from './ApplicationContextSettings';
 import {DefaultComponentFactory} from '../factory';
 import {getComponentInfo, ComponentInfo} from '../metadata';
 import {ClassConstructor, StereotypeUtils} from '../utils';

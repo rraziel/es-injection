@@ -1,4 +1,4 @@
-import {StereotypeUtils} from './stereotype-utils';
+import {StereotypeUtils} from './StereotypeUtils';
 import {Component, Configuration, Controller, Repository, Service} from '../decorators';
 import {Stereotype} from '../metadata';
 

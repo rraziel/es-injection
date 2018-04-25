@@ -1,1 +1,1 @@
-export {DependencyInfo} from './dependency-info';
+export {DependencyInfo} from './DependencyInfo';

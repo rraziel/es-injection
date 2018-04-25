@@ -1,4 +1,4 @@
-import {Optional} from './optional';
+import {Optional} from './Optional';
 import {getMethodInfo, getPropertyInfo, MethodInfo, PropertyInfo} from '../metadata';
 
 describe('@Optional decorator', () => {

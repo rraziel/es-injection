@@ -1,4 +1,4 @@
-import {getPropertyInfo, PropertyInfo, setPropertyInfo} from './property-info';
+import {getPropertyInfo, PropertyInfo, setPropertyInfo} from './PropertyInfo';
 import {ComponentInfoBuilder} from '../component';
 import {ClassConstructor} from '../../utils';
 

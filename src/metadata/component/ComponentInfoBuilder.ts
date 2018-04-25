@@ -1,6 +1,6 @@
-import {ComponentInfo, getComponentInfo, setComponentInfo} from './component-info';
-import {ScopeType} from '../scope-type';
-import {Stereotype} from '../stereotype';
+import {ComponentInfo, getComponentInfo, setComponentInfo} from './ComponentInfo';
+import {ScopeType} from '../ScopeType';
+import {Stereotype} from '../Stereotype';
 import {ClassConstructor, TypeUtils} from '../../utils';
 
 /**

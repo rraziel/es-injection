@@ -1,5 +1,5 @@
-import {Component, Controller, Repository, Service} from './stereotypes';
-import {StereotypeDecorator} from './stereotype';
+import {Component, Controller, Repository, Service} from './Stereotypes';
+import {StereotypeDecorator} from './StereotypeDecorator';
 import {ComponentInfo, ComponentInfoBuilder, getComponentInfo, ScopeType, Stereotype} from '../metadata';
 
 class DecoratorInfo {

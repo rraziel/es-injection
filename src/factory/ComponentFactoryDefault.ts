@@ -1,5 +1,5 @@
-import {ComponentFactory} from './component-factory';
-import {ComponentFactorySettings} from './component-factory-settings';
+import {ComponentFactory} from './ComponentFactory';
+import {ComponentFactorySettings} from './ComponentFactorySettings';
 import {ClassConstructor, OrderedElement, OrderUtils, TypeUtils} from '../utils';
 import {ComponentInfo, getComponentInfo, getMethodInfo, getPropertyInfo, MethodInfo, MethodParameterInfo, PropertyInfo, ScopeType} from '../metadata';
 

@@ -1,5 +1,5 @@
-import {ComponentScan} from './component-scan';
-import {Component} from './stereotypes';
+import {ComponentScan} from './ComponentScan';
+import {Component} from './Stereotypes';
 import {ComponentInfo, getComponentInfo} from '../metadata';
 
 describe('@ComponentScan decorator', () => {

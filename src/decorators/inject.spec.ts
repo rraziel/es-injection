@@ -1,4 +1,4 @@
-import {Inject} from './inject';
+import {Inject} from './Inject';
 
 describe('@Inject decorator', () => {
 

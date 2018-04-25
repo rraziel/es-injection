@@ -1,2 +1,2 @@
-export {getMethodInfo, MethodInfo, MethodParameterInfo, setMethodInfo} from './method-info';
-export {MethodInfoBuilder} from './method-info-builder';
+export {getMethodInfo, MethodInfo, MethodParameterInfo, setMethodInfo} from './MethodInfo';
+export {MethodInfoBuilder} from './MethodInfoBuilder';

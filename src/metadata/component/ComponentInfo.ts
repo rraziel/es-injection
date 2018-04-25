@@ -1,5 +1,5 @@
-import {ScopeType} from '../scope-type';
-import {Stereotype} from '../stereotype';
+import {ScopeType} from '../ScopeType';
+import {Stereotype} from '../Stereotype';
 import {ClassConstructor} from '../../utils';
 import 'reflect-metadata';
 

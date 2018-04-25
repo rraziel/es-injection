@@ -1,4 +1,4 @@
-import {NameUtils} from './name-utils';
+import {NameUtils} from './NameUtils';
 
 describe('Name utility functions', () => {
 

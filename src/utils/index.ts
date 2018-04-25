@@ -1,5 +1,5 @@
-export {ClassConstructor} from './class-constructor';
-export {NameUtils} from './name-utils';
-export {OrderedElement, OrderUtils} from './order-utils';
-export {StereotypeUtils} from './stereotype-utils';
-export {TypeUtils} from './type-utils';
+export {ClassConstructor} from './ClassConstructor';
+export {NameUtils} from './NameUtils';
+export {OrderedElement, OrderUtils} from './OrderUtils';
+export {StereotypeUtils} from './StereotypeUtils';
+export {TypeUtils} from './TypeUtils';

@@ -1,4 +1,4 @@
-import {OrderedElement, OrderUtils} from './order-utils';
+import {OrderedElement, OrderUtils} from './OrderUtils';
 import {DependencyInfo} from '../metadata';
 
 describe('Order utility functions', () => {

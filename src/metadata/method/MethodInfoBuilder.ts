@@ -1,4 +1,4 @@
-import {getMethodInfo, MethodInfo, MethodParameterInfo, setMethodInfo} from './method-info';
+import {getMethodInfo, MethodInfo, MethodParameterInfo, setMethodInfo} from './MethodInfo';
 import {ComponentInfoBuilder} from '../component';
 import {ClassConstructor} from '../../utils';
 

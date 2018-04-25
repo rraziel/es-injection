@@ -1,5 +1,5 @@
-import {AnnotationConfigApplicationContext} from './annotation-config-application-context';
-import {ApplicationContext} from './application-context';
+import {AnnotationConfigApplicationContext} from './AnnotationConfigApplicationContext';
+import {ApplicationContext} from './ApplicationContext';
 import {Configuration} from '../decorators';
 
 describe('Annotation configuration application context', () => {

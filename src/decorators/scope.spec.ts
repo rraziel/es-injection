@@ -1,4 +1,4 @@
-import {Scope} from './scope';
+import {Scope} from './Scope';
 import {ComponentInfo, getComponentInfo, ScopeType} from '../metadata';
 
 describe('@Scope decorator', () => {

@@ -1,5 +1,5 @@
-import {Import} from './import';
-import {Configuration} from './stereotypes';
+import {Import} from './Import';
+import {Configuration} from './Stereotypes';
 import {ComponentInfo, getComponentInfo} from '../metadata';
 
 describe('@Import decorator', () => {

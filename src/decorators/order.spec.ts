@@ -1,4 +1,4 @@
-import {Order} from './order';
+import {Order} from './Order';
 import {getMethodInfo, getPropertyInfo, MethodInfo, PropertyInfo} from '../metadata';
 
 describe('@Order decorator', () => {

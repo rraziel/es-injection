@@ -1,4 +1,4 @@
-import {ElementClass} from './element-class';
+import {ElementClass} from './ElementClass';
 import {getMethodInfo, getPropertyInfo, MethodInfo, PropertyInfo} from '../metadata';
 
 describe('@ElementClass decorator', () => {

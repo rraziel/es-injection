@@ -1,4 +1,4 @@
-import {ClassConstructor} from './class-constructor';
+import {ClassConstructor} from './ClassConstructor';
 import 'reflect-metadata';
 
 type DependencyResolver = (requiredClass: ClassConstructor<any>, parameterIndex: number) => any;

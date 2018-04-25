@@ -1,4 +1,4 @@
-import {createStereotypeDecorator, StereotypeDecorator} from './stereotype';
+import {createStereotypeDecorator, StereotypeDecorator} from './StereotypeDecorator';
 import {Stereotype} from '../metadata';
 
 const Configuration: StereotypeDecorator = createStereotypeDecorator(Stereotype.CONFIGURATION);

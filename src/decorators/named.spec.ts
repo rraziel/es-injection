@@ -1,4 +1,4 @@
-import {Named} from './named';
+import {Named} from './Named';
 import {getMethodInfo, getPropertyInfo, MethodInfo, PropertyInfo} from '../metadata';
 
 describe('@Named decorator', () => {

@@ -1,5 +1,5 @@
-import {TypeUtils} from './type-utils';
-import {ClassConstructor} from './class-constructor';
+import {TypeUtils} from './TypeUtils';
+import {ClassConstructor} from './ClassConstructor';
 
 const DummyClass: ClassDecorator = () => { /* empty */ };
 const DummyMethod: MethodDecorator = () => { /* empty */ };

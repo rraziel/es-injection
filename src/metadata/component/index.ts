@@ -1,2 +1,2 @@
-export {ComponentInfo, getComponentInfo} from './component-info';
-export {ComponentInfoBuilder} from './component-info-builder';
+export {ComponentInfo, getComponentInfo} from './ComponentInfo';
+export {ComponentInfoBuilder} from './ComponentInfoBuilder';

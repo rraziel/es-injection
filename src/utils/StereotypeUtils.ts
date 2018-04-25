@@ -1,4 +1,4 @@
-import {ClassConstructor} from './class-constructor';
+import {ClassConstructor} from './ClassConstructor';
 import {getComponentInfo, ComponentInfo, Stereotype} from '../metadata';
 
 /**

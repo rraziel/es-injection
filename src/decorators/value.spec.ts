@@ -1,4 +1,4 @@
-import {Value} from './value';
+import {Value} from './Value';
 import {getMethodInfo, getPropertyInfo, MethodInfo, PropertyInfo} from '../metadata';
 
 describe('@Value decorator', () => {

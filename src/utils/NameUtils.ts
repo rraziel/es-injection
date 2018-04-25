@@ -1,4 +1,4 @@
-import {ClassConstructor} from './class-constructor';
+import {ClassConstructor} from './ClassConstructor';
 
 /**
  * Name utility functions
