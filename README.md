@@ -43,7 +43,7 @@ npm install es-injection --save
 The module can be built using the following command:
 
 ```
-npm run build
+npm run compile
 ```
 
 It is also possible to keep unit tests executing as a background task:
