@@ -1,4 +1,4 @@
-import {DefaultComponentFactory} from './ComponentFactoryDefault';
+import {DefaultComponentFactory} from './DefaultComponentFactory';
 import {Component, ElementClass, Inject, Order} from '../decorators';
 
 let n: number = 0;
