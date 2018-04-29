@@ -95,24 +95,14 @@ function dispatchStereotypeDecoratorWithOptionalName<T>(target: Object|ClassCons
 /**
  * Dispatch stereotype decorator processor
  * @param targetOrComponentName Target or component name
- * @param stereotype            Stereotype
- * @param propertyKey           Property key
- * @param descriptor            Descriptor
- * @param methodAllowed         true if the component can contain stereotype-decorated methods
+ * @param decoratorParameters   Decorator parameters
  * @param <T>                   Component type
  * @return Stereotype decorator
  */
-function dispatchStereotypeDecorator<T>(targetOrComponentName: Object|ClassConstructor<T>|string, stereotype: Stereotype, propertyKey?: string|symbol, descriptor?: TypedPropertyDescriptor<T>, methodAllowed?: boolean): ClassOrMethodStereotypeDecorator|void {
-    let decoratorParameters: DecoratorParameters<T> = {
-        propertyKey: propertyKey,
-        descriptor: descriptor,
-        stereotype: stereotype,
-        methodAllowed: methodAllowed
-    };
-
+function dispatchStereotypeDecorator<T>(targetOrComponentName: Object|ClassConstructor<T>|string, decoratorParameters: DecoratorParameters<T>): ClassOrMethodStereotypeDecorator|void {
     if (typeof(targetOrComponentName) === 'string') {
-        decoratorParameters.componentName = targetOrComponentName;
         return (target, namedPropertyKey, namedDescriptor) => {
+            decoratorParameters.componentName = targetOrComponentName;
             decoratorParameters.propertyKey = namedPropertyKey;
             decoratorParameters.descriptor = <TypedPropertyDescriptor<any>> namedDescriptor;
             dispatchStereotypeDecoratorWithOptionalName(target, decoratorParameters);
@@ -124,12 +114,21 @@ function dispatchStereotypeDecorator<T>(targetOrComponentName: Object|ClassConst
 
 /**
  * Create a stereotype decorator
- * @param stereotype     Stereotype
- * @param methodAllowed  true if the component can contain stereotype-decorated methods
+ * @param stereotype    Stereotype
+ * @param methodAllowed true if the component can contain stereotype-decorated methods
  * @return Stereotype decorator
  */
 function createStereotypeDecorator(stereotype: Stereotype, methodAllowed?: boolean): StereotypeDecorator {
-    return <StereotypeDecorator> ((target, propertyKey, descriptor) => dispatchStereotypeDecorator(target, stereotype, propertyKey, descriptor, methodAllowed));
+    return <StereotypeDecorator> ((target, propertyKey, descriptor) => {
+        let decoratorParameters: DecoratorParameters<any> = {
+            propertyKey: propertyKey,
+            descriptor: descriptor,
+            stereotype: stereotype,
+            methodAllowed: methodAllowed
+        };
+
+        return dispatchStereotypeDecorator(target, decoratorParameters);
+    });
 }
 
 export {
