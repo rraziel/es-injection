@@ -5,6 +5,17 @@ import {ClassConstructor, TypeUtils} from 'es-decorator-utils';
 type ClassOrMethodStereotypeDecorator = <T>(target: Object|T, propertyKey?: string|symbol, descriptor?: TypedPropertyDescriptor<() => T>) => void;
 
 /**
+ * Decorator parameters
+ */
+interface DecoratorParameters<T> {
+    propertyKey: string|symbol;
+    descriptor: TypedPropertyDescriptor<T>;
+    stereotype: Stereotype;
+    componentName?: string;
+    methodAllowed?: boolean;
+}
+
+/**
  * Stereotype decorator
  */
 interface StereotypeDecorator {
@@ -43,27 +54,24 @@ function processClassStereotypeDecorator<T>(componentClass: ClassConstructor<T>,
 
 /**
  * Dispatch a method stereotype decorator
- * @param classPrototype Class prototype
- * @param propertyKey    Property key
- * @param descriptor     Descriptor
- * @param stereotype     Stereotype
- * @param componentName  Component name
- * @param methodAllowed  true if the component can contain stereotype-decorated methods
- * @param <T>            Method type
+ * @param classPrototype      Class prototype
+ * @param decoratorParameters Decorator parameters
+ * @param <T>                 Method type
  */
-function processMethodStereotypeDecorator<T>(classPrototype: Object, propertyKey: string|symbol, descriptor: TypedPropertyDescriptor<T>, stereotype: Stereotype, componentName?: string, methodAllowed?: boolean): void {
+function processMethodStereotypeDecorator<T>(classPrototype: Object, decoratorParameters: DecoratorParameters<T>): void {
     let classConstructor: ClassConstructor<any> = <ClassConstructor<any>> classPrototype.constructor;
-    let componentClass: ClassConstructor<any> = TypeUtils.getReturnClass(classConstructor, propertyKey);
+    let componentClass: ClassConstructor<any> = TypeUtils.getReturnClass(classConstructor, decoratorParameters.propertyKey);
+    let componentName: string = decoratorParameters.componentName;
 
     if (componentName === undefined) {
         componentName = NameUtils.buildComponentName(componentClass);
     }
 
-    if (!methodAllowed) {
+    if (!decoratorParameters.methodAllowed) {
         // TODO
     }
 
-    processStereotypeDecorator(componentName, componentClass, stereotype);
+    processStereotypeDecorator(componentName, componentClass, decoratorParameters.stereotype);
 }
 
 /**
@@ -84,7 +92,15 @@ function dispatchStereotypeDecoratorWithOptionalName<T>(target: Object|ClassCons
 
         processClassStereotypeDecorator(target, stereotype, componentName);
     } else {
-        processMethodStereotypeDecorator(target, propertyKey, descriptor, stereotype, componentName, methodAllowed);
+        let decoratorParameters: DecoratorParameters<T> = {
+            propertyKey: propertyKey,
+            descriptor: descriptor,
+            stereotype: stereotype,
+            componentName: componentName,
+            methodAllowed: methodAllowed
+        };
+
+        processMethodStereotypeDecorator(target, decoratorParameters);
     }
 }
 
