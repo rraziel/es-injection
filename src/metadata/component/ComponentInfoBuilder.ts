@@ -2,7 +2,7 @@ import {ComponentInfo, getComponentInfo, setComponentInfo} from './ComponentInfo
 import {Condition} from '../Condition';
 import {ScopeType} from '../ScopeType';
 import {Stereotype} from '../Stereotype';
-import {ClassConstructor, TypeUtils} from '../../utils';
+import {ClassConstructor, TypeUtils} from 'es-decorator-utils';
 
 /**
  * Component information builder

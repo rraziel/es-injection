@@ -33,15 +33,15 @@ describe('Order utility functions', () => {
         });
         // then
         expect(orderedElements).not.toBeUndefined();
-        expect(orderedElements[0].name).toEqual('d');
-        expect(orderedElements[1].name).toEqual('b');
-        expect(orderedElements[2].name).toEqual('f');
-        expect(orderedElements[3].name).toEqual('g');
-        expect(orderedElements[4].name).toEqual('h');
-        expect(orderedElements[5].name).toEqual('c');
-        expect(orderedElements[6].name).toEqual('a');
-        expect(orderedElements[7].name).toEqual('a');
-        expect(orderedElements[8].name).toEqual('e');
+        expect(orderedElements[0].name).toBe('d');
+        expect(orderedElements[1].name).toBe('b');
+        expect(orderedElements[2].name).toBe('f');
+        expect(orderedElements[3].name).toBe('g');
+        expect(orderedElements[4].name).toBe('h');
+        expect(orderedElements[5].name).toBe('c');
+        expect(orderedElements[6].name).toBe('a');
+        expect(orderedElements[7].name).toBe('a');
+        expect(orderedElements[8].name).toBe('e');
     });
 
 });

@@ -1,4 +1,4 @@
-import {ClassConstructor} from './ClassConstructor';
+import {ClassConstructor} from 'es-decorator-utils';
 
 /**
  * Name utility functions

@@ -1,7 +1,8 @@
 import {ComponentFactory} from './ComponentFactory';
 import {ComponentFactorySettings} from './ComponentFactorySettings';
-import {ClassConstructor, OrderedElement, OrderUtils, TypeUtils} from '../utils';
+import {ClassUtils, OrderedElement, OrderUtils} from '../utils';
 import {ComponentInfo, getComponentInfo, getMethodInfo, getPropertyInfo, MethodInfo, MethodParameterInfo, PropertyInfo, ScopeType} from '../metadata';
+import {ClassConstructor, TypeUtils} from 'es-decorator-utils';
 
 /**
  * Default component factory
@@ -204,7 +205,7 @@ class DefaultComponentFactory implements ComponentFactory {
     private newInstance<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo): T {
         let parameterClasses: ClassConstructor<any>[] = TypeUtils.getParameterClasses(componentClass);
         let methodInfo: MethodInfo = getMethodInfo(componentClass);
-        let componentInstance: T = TypeUtils.instantiateClass(componentClass, (requiredClass, parameterIndex) => this.resolveConstructorDependency(methodInfo, requiredClass, parameterIndex));
+        let componentInstance: T = ClassUtils.instantiateClass(componentClass, (requiredClass, parameterIndex) => this.resolveConstructorDependency(methodInfo, requiredClass, parameterIndex));
 
         this.injectProperties(componentClass, componentInfo, componentInstance);
         this.injectMethods(componentClass, componentInfo, componentInstance);

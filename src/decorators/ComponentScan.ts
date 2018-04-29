@@ -1,5 +1,5 @@
 import {ComponentInfoBuilder} from '../metadata';
-import {ClassConstructor} from '../utils';
+import {ClassConstructor} from 'es-decorator-utils';
 
 /**
  * Create a ComponentScan decorator, used to specify a list of components to be registered by a @Configuration-decorated class

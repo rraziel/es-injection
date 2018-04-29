@@ -10,7 +10,7 @@ describe('Name utility functions', () => {
             // when
             let componentName = NameUtils.buildComponentName(TestCapitalizedClassName);
             // then
-            expect(componentName).toEqual('testCapitalizedClassName');
+            expect(componentName).toBe('testCapitalizedClassName');
         });
 
         it('with consecutive uppercase characters', () => {
@@ -19,7 +19,7 @@ describe('Name utility functions', () => {
             // when
             let componentName = NameUtils.buildComponentName(TESTConsecutiveUPPERCASEClassNAME);
             // then
-            expect(componentName).toEqual('testConsecutiveUppercaseClassName');
+            expect(componentName).toBe('testConsecutiveUppercaseClassName');
         });
 
     });

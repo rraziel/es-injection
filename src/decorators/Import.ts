@@ -1,5 +1,5 @@
 import {ComponentInfoBuilder} from '../metadata';
-import {ClassConstructor} from '../utils';
+import {ClassConstructor} from 'es-decorator-utils';
 
 /**
  * Create an Import decorator, used to specify a set of configuration classes (classes decorated with @Configuration) to import

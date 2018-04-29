@@ -1,5 +1,5 @@
-import {ClassConstructor} from './ClassConstructor';
 import {getComponentInfo, ComponentInfo, Stereotype} from '../metadata';
+import {ClassConstructor} from 'es-decorator-utils';
 
 /**
  * Stereotype utility functions

@@ -1,5 +1,5 @@
 import {ComponentInfoBuilder, ScopeType} from '../metadata';
-import {ClassConstructor} from '../utils';
+import {ClassConstructor} from 'es-decorator-utils';
 
 /**
  * Scope decorator, used to specify the type of scope used for the component

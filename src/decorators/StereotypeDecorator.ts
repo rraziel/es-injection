@@ -1,5 +1,6 @@
 import {ComponentInfoBuilder, Stereotype} from '../metadata';
-import {ClassConstructor, NameUtils, TypeUtils} from '../utils';
+import {NameUtils} from '../utils';
+import {ClassConstructor, TypeUtils} from 'es-decorator-utils';
 
 type ClassOrMethodStereotypeDecorator = <T>(target: Object|T, propertyKey?: string|symbol, descriptor?: TypedPropertyDescriptor<() => T>) => void;
 

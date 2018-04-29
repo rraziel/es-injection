@@ -2,7 +2,8 @@ import {ApplicationContext} from './ApplicationContext';
 import {ApplicationContextSettings} from './ApplicationContextSettings';
 import {DefaultComponentFactory} from '../factory';
 import {getComponentInfo, ComponentInfo} from '../metadata';
-import {ClassConstructor, StereotypeUtils} from '../utils';
+import {StereotypeUtils} from '../utils';
+import {ClassConstructor} from 'es-decorator-utils';
 
 /**
  * Application context accepting annotated configuration classes as input

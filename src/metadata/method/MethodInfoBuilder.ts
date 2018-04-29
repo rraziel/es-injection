@@ -1,6 +1,6 @@
 import {getMethodInfo, MethodInfo, MethodParameterInfo, setMethodInfo} from './MethodInfo';
 import {ComponentInfoBuilder} from '../component';
-import {ClassConstructor} from '../../utils';
+import {ClassConstructor} from 'es-decorator-utils';
 
 /**
  * Method information builder
