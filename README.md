@@ -13,6 +13,9 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/rraziel/es-injection/badge.svg)](https://snyk.io/test/github/rraziel/es-injection)
 [![Greenkeeper](https://badges.greenkeeper.io/rraziel/es-injection.svg)](https://greenkeeper.io/)
 
+[![Version](https://img.shields.io/npm/v/es-injection.svg?label=Version&style=flat)](https://www.npmjs.com/package/es-injection)
+[![Downloads](https://img.shields.io/npm/dt/es-injection.svg?label=Downloads&style=flat)](https://www.npmjs.com/package/es-injection)
+
 A modern, lightweight implementation of dependency injection inspired by [JSR-330](https://jcp.org/en/jsr/detail?id=330) and [Spring](https://docs.spring.io/spring-boot/docs/current/reference/html/using-boot-spring-beans-and-dependency-injection.html).
 
 The library makes it possible to:
