@@ -242,29 +242,29 @@ class DefaultComponentFactory implements ComponentFactory {
      */
     private instantiateClass<T>(componentClass: ClassConstructor<T>): T {
         let constructorInfo: MethodInfo = getMethodInfo(componentClass);
-        let componentInstance: T = ClassUtils.instantiateClass(componentClass, (requiredClass, parameterIndex) => this.resolveConstructorDependency(constructorInfo, requiredClass, parameterIndex));
+        let componentInstance: T = ClassUtils.instantiateClass(componentClass, (requiredClass, parameterIndex) => this.resolveMethodDependency(constructorInfo, requiredClass, parameterIndex));
         return componentInstance;
     }
 
     /**
-     * Resolve a constructor dependency
+     * Resolve a method dependency
      * @param methodInfo     Method information
      * @param requiredClass  Required class
      * @param parameterIndex Parameter index
      * @param <T>            Required type
      * @return Dependency instance
      */
-    private resolveConstructorDependency<T>(methodInfo: MethodInfo, requiredClass: ClassConstructor<T>, parameterIndex: number): T {
+    private resolveMethodDependency<T>(methodInfo: MethodInfo, requiredClass: ClassConstructor<T>, parameterIndex: number): T {
         let methodParameterInfo: MethodParameterInfo = methodInfo && methodInfo.parameters && methodInfo.parameters[parameterIndex];
 
         try {
             if (TypeUtils.isArray(requiredClass)) {
-                return this.resolveConstructorArrayDependency(methodParameterInfo, requiredClass);
+                return this.resolveMethodArrayDependency(methodParameterInfo, requiredClass);
             } else {
-                return this.resolveConstructorInstanceDependency(methodParameterInfo, requiredClass);
+                return this.resolveMethodInstanceDependency(methodParameterInfo, requiredClass);
             }
         } catch (e) {
-            return this.buildUnresolvedConstructorDependency(e, methodParameterInfo, requiredClass);
+            return this.buildUnresolvedMethodDependency(e, methodParameterInfo, requiredClass);
         }
     }
 
@@ -275,7 +275,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>                 Required type
      * @return Dependency instance
      */
-    private resolveConstructorInstanceDependency<T>(methodParameterInfo: MethodParameterInfo, requiredClass: ClassConstructor<T>): T {
+    private resolveMethodInstanceDependency<T>(methodParameterInfo: MethodParameterInfo, requiredClass: ClassConstructor<T>): T {
         return this.getComponent(methodParameterInfo && methodParameterInfo.name, requiredClass);
     }
 
@@ -286,7 +286,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>                 Required type
      * @return Dependency array instance
      */
-    private resolveConstructorArrayDependency<T>(methodParameterInfo: MethodParameterInfo, requiredClass: ClassConstructor<T>): T {
+    private resolveMethodArrayDependency<T>(methodParameterInfo: MethodParameterInfo, requiredClass: ClassConstructor<T>): T {
         if (!methodParameterInfo.elementClass) {
             throw new Error('injected array parameter without any element class information (missing @ElementClass decorator)');
         }
@@ -301,7 +301,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>                 Required type
      * @return Unresolved dependency
      */
-    private buildUnresolvedConstructorDependency<T>(e: any, methodParameterInfo: MethodParameterInfo, requiredClass: ClassConstructor<T>): T {
+    private buildUnresolvedMethodDependency<T>(e: any, methodParameterInfo: MethodParameterInfo, requiredClass: ClassConstructor<T>): T {
         if (!methodParameterInfo || !methodParameterInfo.optional) {
             throw e;
         }
@@ -389,7 +389,10 @@ class DefaultComponentFactory implements ComponentFactory {
         let methodParameters: any[] = [];
 
         methodParameterClasses.forEach((methodParameterClass, parameterIndex) => {
-            let methodParameterInfo: MethodParameterInfo = methodInfo && methodInfo.parameters && methodInfo.parameters[parameterIndex];
+            let methodParameter: any = this.resolveMethodDependency(methodInfo, methodParameterClass, parameterIndex);
+            methodParameters.push(methodParameter);
+        });
+        /*    let methodParameterInfo: MethodParameterInfo = methodInfo && methodInfo.parameters && methodInfo.parameters[parameterIndex];
             let methodParameter: any;
 
            try {
@@ -401,7 +404,7 @@ class DefaultComponentFactory implements ComponentFactory {
             }
 
             methodParameters.push(methodParameter);
-        });
+        });*/
 
         componentInstance[methodName].apply(componentInstance, methodParameters);
     }

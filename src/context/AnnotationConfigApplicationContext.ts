@@ -25,7 +25,7 @@ class AnnotationConfigApplicationContext extends DefaultComponentFactory impleme
      * @return Promise that resolves once the context is refreshed
      */
     async refresh(): Promise<void> {
-        // TODO
+        // TODO: instantiate all configured components that are singletons
     }
 
     /**
@@ -33,7 +33,7 @@ class AnnotationConfigApplicationContext extends DefaultComponentFactory impleme
      * @return Promise that resolves once the context is closed
      */
     async close(): Promise<void> {
-        // TODO
+        // TODO: "destroy" (i.e. call @PreDestroy) for all instantiated beans
     }
 
     /**

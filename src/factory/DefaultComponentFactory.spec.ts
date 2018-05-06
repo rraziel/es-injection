@@ -51,7 +51,8 @@ describe('Default component factory', () => {
                 // given
                 @Component
                 class TestClass {
-                    constructor(@ElementClass(TestBaseDependencyClass) public l: TestBaseDependencyClass[]) { /* empty */ }
+                    l: TestBaseDependencyClass[];
+                    constructor(@ElementClass(TestBaseDependencyClass) l: TestBaseDependencyClass[]) { this.l = l; }
                 }
                 // when
                 let component: TestClass = componentFactory.getComponent(TestClass);
@@ -85,6 +86,28 @@ describe('Default component factory', () => {
                 expect(component).not.toBeUndefined();
                 expect(component).toBeInstanceOf(TestClass);
                 expect(component.p).toBeInstanceOf(TestDependencyClass);
+            });
+
+            it('with an injected array', () => {
+                // given
+                @Component
+                class TestClass {
+                    l: TestBaseDependencyClass[];
+                    @Inject method(@ElementClass(TestBaseDependencyClass) l: TestBaseDependencyClass[]) { this.l = l; }
+                }
+                // when
+                let component: TestClass = componentFactory.getComponent(TestClass);
+                let dependency1: TestDependencyClass = componentFactory.getComponent(TestDependencyClass);
+                let dependency2: TestDependencyClass2 = componentFactory.getComponent(TestDependencyClass2);
+                let dependency3: TestDependencyClass3 = componentFactory.getComponent(TestDependencyClass3);
+                // then
+                expect(component).not.toBeUndefined();
+                expect(component).toBeInstanceOf(TestClass);
+                expect(component.l).not.toBeUndefined();
+                expect(component.l.length).toEqual(3);
+                expect(component.l).toContain(dependency1);
+                expect(component.l).toContain(dependency2);
+                expect(component.l).toContain(dependency3);
             });
 
             it('with a set order', () => {
