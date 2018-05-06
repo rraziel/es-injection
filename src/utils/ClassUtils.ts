@@ -11,6 +11,7 @@ class ClassUtils {
      * Instantiate a class
      * @param typeClass Type class
      * @param resolver  Resolver
+     * @param <T>       Type
      * @return Instance
      */
     static instantiateClass<T>(typeClass: ClassConstructor<T>, resolver: DependencyResolver): T {
