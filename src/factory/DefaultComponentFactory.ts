@@ -370,7 +370,7 @@ class DefaultComponentFactory implements ComponentFactory {
         TypeUtils.forEachMethod(componentClass, methodName => methodNames.push(methodName));
 
         OrderUtils.buildOrderedElementList(methodNames, methodName => getMethodInfo(componentClass, methodName))
-            .filter(sortedMethod => !sortedMethod.info.postConstruct)
+            .filter(sortedMethod => sortedMethod.info && !sortedMethod.info.postConstruct)
             .forEach(sortedMethod => this.injectMethod(componentClass, componentInfo, componentInstance, sortedMethod.name, sortedMethod.info))
         ;
     }
@@ -418,7 +418,7 @@ class DefaultComponentFactory implements ComponentFactory {
         TypeUtils.forEachMethod(componentClass, methodName => methodNames.push(methodName));
 
         OrderUtils.buildOrderedElementList(methodNames, methodName => getMethodInfo(componentClass, methodName))
-            .filter(sortedMethod => sortedMethod.info.postConstruct === true)
+            .filter(sortedMethod => sortedMethod.info && sortedMethod.info.postConstruct === true)
             .forEach(sortedMethod => this.callPostConstructMethod(componentClass, componentInfo, componentInstance, sortedMethod.name, sortedMethod.info))
         ;
     }

@@ -3,7 +3,7 @@ import {Component, ElementClass, Inject, Order, PostConstruct} from '../decorato
 
 let n: number = 0;
 
-class TestBaseDependencyClass { }
+abstract class TestBaseDependencyClass { }
 @Component
 class TestDependencyClass extends TestBaseDependencyClass { orderCount: number = n++; }
 @Component
@@ -11,16 +11,16 @@ class TestDependencyClass2 extends TestBaseDependencyClass { orderCount: number 
 @Component
 class TestDependencyClass3 extends TestBaseDependencyClass { orderCount: number = n++; }
 
-describe.only('Default component factory', () => {
+describe('Default component factory', () => {
     let componentFactory: DefaultComponentFactory;
 
     beforeEach(() => {
         componentFactory = new DefaultComponentFactory({});
     });
 
-    describe.only('can retrieve', () => {
+    describe('can retrieve', () => {
 
-        it.skip('a simple component', () => {
+        it('a simple component', () => {
             // given
             @Component
             class TestClass { }
@@ -31,7 +31,7 @@ describe.only('Default component factory', () => {
             expect(component).toBeInstanceOf(TestClass);
         });
 
-        describe.skip('a component holding injected constructor parameters', () => {
+        describe('a component holding injected constructor parameters', () => {
 
             it('with no extra decorators', () => {
                 // given
@@ -87,7 +87,7 @@ describe.only('Default component factory', () => {
                 expect(component.p).toBeInstanceOf(TestDependencyClass);
             });
 
-            it.only('with a set order', () => {
+            it('with a set order', () => {
                 // given
                 @Component
                 class TestClass {
@@ -109,7 +109,7 @@ describe.only('Default component factory', () => {
 
         });
 
-        describe.skip('a component holding injected properties', () => {
+        describe('a component holding injected properties', () => {
 
             it('with no extra decorators', () => {
                 // given
@@ -147,7 +147,7 @@ describe.only('Default component factory', () => {
 
         });
 
-        describe.skip('a derived component', () => {
+        describe('a derived component', () => {
 
             it('with no extra decorators', () => {
                 // given
@@ -165,7 +165,7 @@ describe.only('Default component factory', () => {
 
     });
 
-    describe.skip('handles a component\'s lifecycle', () => {
+    describe('handles a component\'s lifecycle', () => {
 
         it('calls methods with a @PostConstruct annotation after construction', () => {
             // given
@@ -173,10 +173,12 @@ describe.only('Default component factory', () => {
             class TestClass {
                 method1Called: boolean = false;
                 method2Called: boolean = false;
+                method3Called: boolean = false;
                 @PostConstruct
                 testMethod1(): void { this.method1Called = true; }
                 @PostConstruct
                 testMethod2(): void { this.method2Called = true; }
+                testMethod3(): void { this.method3Called = true; }
             }
             // when
             let component: TestClass = componentFactory.getComponent(TestClass);
@@ -184,6 +186,7 @@ describe.only('Default component factory', () => {
             expect(component).not.toBeUndefined();
             expect(component.method1Called).toBe(true);
             expect(component.method2Called).toBe(true);
+            expect(component.method3Called).toBe(false);
         });
 
     });
