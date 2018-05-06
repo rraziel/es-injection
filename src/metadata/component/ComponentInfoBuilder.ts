@@ -48,18 +48,6 @@ class ComponentInfoBuilder<T> {
     }
 
     /**
-     * Mark a method for injection
-     * @param methodName Method name
-     * @return this
-     */
-    method(methodName: string): ComponentInfoBuilder<T> {
-        return this.update(componentInfo => {
-            componentInfo.methods = componentInfo.methods || [];
-            componentInfo.methods.push(methodName);
-        });
-    }
-
-    /**
      * Mark a property for injection
      * @param propertyName Property name
      * @return this
@@ -148,7 +136,7 @@ class ComponentInfoBuilder<T> {
      * Register base classes
      */
     private registerBaseClasses(): void {
-        TypeUtils.forEachBaseClass(this.componentClass, baseClass => this.registerBaseClass(baseClass));
+        TypeUtils.forEachAncestor(this.componentClass, baseClass => this.registerBaseClass(baseClass));
     }
 
     /**

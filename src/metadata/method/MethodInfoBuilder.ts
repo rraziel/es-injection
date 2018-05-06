@@ -1,5 +1,4 @@
 import {getMethodInfo, MethodInfo, MethodParameterInfo, setMethodInfo} from './MethodInfo';
-import {ComponentInfoBuilder} from '../component';
 import {ClassConstructor} from 'es-decorator-utils';
 
 /**
@@ -24,7 +23,6 @@ class MethodInfoBuilder {
      * @return this
      */
     inject(): MethodInfoBuilder {
-        ComponentInfoBuilder.of(<ClassConstructor<any>> this.target.constructor).method(<string> this.propertyKey);
         return this.update(() => { /* empty */ });
     }
 

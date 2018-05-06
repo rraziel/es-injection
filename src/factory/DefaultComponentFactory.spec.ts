@@ -1,9 +1,9 @@
 import {DefaultComponentFactory} from './DefaultComponentFactory';
-import {Component, ElementClass, Inject, Order} from '../decorators';
+import {Component, ElementClass, Inject, Order, PostConstruct} from '../decorators';
 
 let n: number = 0;
 
-abstract class TestBaseDependencyClass { }
+class TestBaseDependencyClass { }
 @Component
 class TestDependencyClass extends TestBaseDependencyClass { orderCount: number = n++; }
 @Component
@@ -11,16 +11,16 @@ class TestDependencyClass2 extends TestBaseDependencyClass { orderCount: number 
 @Component
 class TestDependencyClass3 extends TestBaseDependencyClass { orderCount: number = n++; }
 
-describe('Default component factory', () => {
+describe.only('Default component factory', () => {
     let componentFactory: DefaultComponentFactory;
 
     beforeEach(() => {
         componentFactory = new DefaultComponentFactory({});
     });
 
-    describe('can retrieve', () => {
+    describe.only('can retrieve', () => {
 
-        it('a simple component', () => {
+        it.skip('a simple component', () => {
             // given
             @Component
             class TestClass { }
@@ -31,7 +31,7 @@ describe('Default component factory', () => {
             expect(component).toBeInstanceOf(TestClass);
         });
 
-        describe('a component holding injected constructor parameters', () => {
+        describe.skip('a component holding injected constructor parameters', () => {
 
             it('with no extra decorators', () => {
                 // given
@@ -87,32 +87,29 @@ describe('Default component factory', () => {
                 expect(component.p).toBeInstanceOf(TestDependencyClass);
             });
 
-            it('with a set order', () => {
+            it.only('with a set order', () => {
                 // given
                 @Component
                 class TestClass {
-                    p0: TestDependencyClass;
-                    p1: TestDependencyClass2;
-                    p2: TestDependencyClass3;
-                    @Inject @Order(4) method0(p0: TestDependencyClass): void { this.p0 = p0; }
-                    @Inject @Order(2) method1(p1: TestDependencyClass2): void { this.p1 = p1; }
-                    @Inject @Order(7) method2(p2: TestDependencyClass3): void { this.p2 = p2; }
+                    deps: Array<any> = [];
+                    @Inject @Order(4) method0(p0: TestDependencyClass): void { this.deps.push(p0); }
+                    @Inject @Order(2) method1(p1: TestDependencyClass2): void { this.deps.push(p1); }
+                    @Inject @Order(7) method2(p2: TestDependencyClass3): void { this.deps.push(p2); }
                 }
                 // when
                 let component: TestClass = componentFactory.getComponent(TestClass);
                 // then
                 expect(component).not.toBeUndefined();
                 expect(component).toBeInstanceOf(TestClass);
-                expect(component.p0).toBeInstanceOf(TestDependencyClass);
-                expect(component.p1).toBeInstanceOf(TestDependencyClass2);
-                expect(component.p2).toBeInstanceOf(TestDependencyClass3);
-                expect(component.p1.orderCount).toBeLessThan(component.p0.orderCount);
-                expect(component.p0.orderCount).toBeLessThan(component.p2.orderCount);
+                expect(component.deps.length).toBe(3);
+                expect(component.deps[0]).toBeInstanceOf(TestDependencyClass2);
+                expect(component.deps[1]).toBeInstanceOf(TestDependencyClass);
+                expect(component.deps[2]).toBeInstanceOf(TestDependencyClass3);
             });
 
         });
 
-        describe('a component holding injected properties', () => {
+        describe.skip('a component holding injected properties', () => {
 
             it('with no extra decorators', () => {
                 // given
@@ -150,7 +147,7 @@ describe('Default component factory', () => {
 
         });
 
-        describe('a derived component', () => {
+        describe.skip('a derived component', () => {
 
             it('with no extra decorators', () => {
                 // given
@@ -164,6 +161,29 @@ describe('Default component factory', () => {
                 expect(component).toBeInstanceOf(TestClass);
             });
 
+        });
+
+    });
+
+    describe.skip('handles a component\'s lifecycle', () => {
+
+        it('calls methods with a @PostConstruct annotation after construction', () => {
+            // given
+            @Component
+            class TestClass {
+                method1Called: boolean = false;
+                method2Called: boolean = false;
+                @PostConstruct
+                testMethod1(): void { this.method1Called = true; }
+                @PostConstruct
+                testMethod2(): void { this.method2Called = true; }
+            }
+            // when
+            let component: TestClass = componentFactory.getComponent(TestClass);
+            // then
+            expect(component).not.toBeUndefined();
+            expect(component.method1Called).toBe(true);
+            expect(component.method2Called).toBe(true);
         });
 
     });

@@ -203,13 +203,46 @@ class DefaultComponentFactory implements ComponentFactory {
      * @return New component instance
      */
     private newInstance<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo): T {
-        let parameterClasses: ClassConstructor<any>[] = TypeUtils.getParameterClasses(componentClass);
-        let methodInfo: MethodInfo = getMethodInfo(componentClass);
-        let componentInstance: T = ClassUtils.instantiateClass(componentClass, (requiredClass, parameterIndex) => this.resolveConstructorDependency(methodInfo, requiredClass, parameterIndex));
+        interface ComponentIterationInfo {
+            componentClass: ClassConstructor<any>;
+            componentInfo: ComponentInfo;
+        }
 
-        this.injectProperties(componentClass, componentInfo, componentInstance);
-        this.injectMethods(componentClass, componentInfo, componentInstance);
+        let componentInstance: T = this.instantiateClass(componentClass);
+        let componentIteratorInfos: Array<ComponentIterationInfo> = [{
+            componentClass: componentClass,
+            componentInfo: componentInfo
+        }];
 
+        TypeUtils.forEachAncestor(componentClass, baseComponentClass => {
+            let baseComponentInfo: ComponentInfo = getComponentInfo(baseComponentClass);
+            componentIteratorInfos.push({
+                componentClass: baseComponentClass,
+                componentInfo: baseComponentInfo
+            });
+        });
+
+        componentIteratorInfos.reverse().forEach(it => {
+            let itClass: ClassConstructor<any> = it.componentClass;
+            let itInfo: ComponentInfo = it.componentInfo;
+
+            this.injectProperties(itClass, itInfo, componentInstance);
+            this.injectMethods(itClass, itInfo, componentInstance);
+            this.callPostConstructMethods(itClass, itInfo, componentInstance);
+        });
+
+        return componentInstance;
+    }
+
+    /**
+     * Instantiate a component class
+     * @param componentClass Component class
+     * @param <T>            Component type
+     * @return Component instance
+     */
+    private instantiateClass<T>(componentClass: ClassConstructor<T>): T {
+        let constructorInfo: MethodInfo = getMethodInfo(componentClass);
+        let componentInstance: T = ClassUtils.instantiateClass(componentClass, (requiredClass, parameterIndex) => this.resolveConstructorDependency(constructorInfo, requiredClass, parameterIndex));
         return componentInstance;
     }
 
@@ -332,11 +365,12 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>               Component type
      */
     private injectMethods<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo, componentInstance: T): void {
-        if (!componentInfo.methods) {
-            return;
-        }
+        let methodNames: Array<string> = [];
 
-        OrderUtils.buildOrderedElementList(componentInfo.methods, methodName => getMethodInfo(componentClass, methodName))
+        TypeUtils.forEachMethod(componentClass, methodName => methodNames.push(methodName));
+
+        OrderUtils.buildOrderedElementList(methodNames, methodName => getMethodInfo(componentClass, methodName))
+            .filter(sortedMethod => !sortedMethod.info.postConstruct)
             .forEach(sortedMethod => this.injectMethod(componentClass, componentInfo, componentInstance, sortedMethod.name, sortedMethod.info))
         ;
     }
@@ -358,7 +392,7 @@ class DefaultComponentFactory implements ComponentFactory {
             let methodParameterInfo: MethodParameterInfo = methodInfo && methodInfo.parameters && methodInfo.parameters[parameterIndex];
             let methodParameter: any;
 
-            try {
+           try {
                 methodParameter = this.getComponent(methodParameterInfo && methodParameterInfo.name, methodParameterClass);
             } catch (e) {
                 if (!methodParameterInfo || !methodParameterInfo.optional) {
@@ -370,6 +404,36 @@ class DefaultComponentFactory implements ComponentFactory {
         });
 
         componentInstance[methodName].apply(componentInstance, methodParameters);
+    }
+
+    /**
+     * Call methods annotated with @PostConstruct
+     * @param componentClass    Component class
+     * @param componentInfo     Component information
+     * @param componentInstance Component type
+     */
+    private callPostConstructMethods<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo, componentInstance: T): void {
+        let methodNames: Array<string> = [];
+
+        TypeUtils.forEachMethod(componentClass, methodName => methodNames.push(methodName));
+
+        OrderUtils.buildOrderedElementList(methodNames, methodName => getMethodInfo(componentClass, methodName))
+            .filter(sortedMethod => sortedMethod.info.postConstruct === true)
+            .forEach(sortedMethod => this.callPostConstructMethod(componentClass, componentInfo, componentInstance, sortedMethod.name, sortedMethod.info))
+        ;
+    }
+
+    /**
+     * Call a method annotated with @PostConstruct
+     * @param componentClass    Component class
+     * @param componentInfo     Component information
+     * @param componentInstance Component instance
+     * @param methodName        Method name
+     * @param methodInfo        Method information
+     * @param <T>               Component type
+     */
+    private callPostConstructMethod<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo, componentInstance: T, methodName: string, methodInfo: MethodInfo): void {
+        componentInstance[methodName].apply(componentInstance); // TODO: handle methods that return a promise
     }
 
 }
