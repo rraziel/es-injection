@@ -1,5 +1,6 @@
 import {DefaultComponentFactory} from './DefaultComponentFactory';
-import {Component, ElementClass, Inject, Order, PostConstruct} from '../decorators';
+import {Component, ElementClass, Inject, Order, PostConstruct, Scope} from '../decorators';
+import {ScopeType} from '../metadata';
 
 let n: number = 0;
 
@@ -210,6 +211,36 @@ describe('Default component factory', () => {
             expect(component.method1Called).toBe(true);
             expect(component.method2Called).toBe(true);
             expect(component.method3Called).toBe(false);
+        });
+
+    });
+
+    describe('handles prototype components', () => {
+
+        it.only('creates a new instance for each requested component', () => {
+            // given
+            let n: number = 0;
+            @Component
+            @Scope(ScopeType.PROTOTYPE)
+            class TestPrototype { value: number = n++; }
+            @Component
+            class TestClass {
+                instances: Array<TestPrototype>;
+                @Inject
+                testMethod(instance1: TestPrototype, instance2: TestPrototype, instance3: TestPrototype): void {
+                    this.instances = [instance1, instance2, instance3];
+                }
+            }
+            // when
+            let component: TestClass = componentFactory.getComponent(TestClass);
+            // then
+            expect(component).not.toBeUndefined();
+            expect(component.instances[0]).not.toBeUndefined();
+            expect(component.instances[1]).not.toBeUndefined();
+            expect(component.instances[2]).not.toBeUndefined();
+            expect(component.instances[0].value).not.toBe(component.instances[1].value);
+            expect(component.instances[0].value).not.toBe(component.instances[2].value);
+            expect(component.instances[1].value).not.toBe(component.instances[2].value);
         });
 
     });

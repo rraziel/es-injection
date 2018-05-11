@@ -118,7 +118,7 @@ class DefaultComponentFactory implements ComponentFactory {
             throw new Error('unknown component class ' + componentClass.name);
         }
 
-        if (componentInfo.scope && componentInfo.scope as ScopeType === ScopeType.PROTOTYPE) {
+        if ((componentInfo.scope as ScopeType) === ScopeType.PROTOTYPE) {
             return this.getPrototypeComponent(componentName, componentClass, componentInfo);
         } else {
             return this.getSingletonComponent(componentName, componentClass, componentInfo);
@@ -134,8 +134,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * @return Component instance
      */
     private getPrototypeComponent<T>(componentName: string, componentClass: ClassConstructor<T>|Function, componentInfo: ComponentInfo): T {
-        let componentInstance: T;
-        // TODO: return this.newInstance(componentClass, componentInfo);
+        let componentInstance: T = this.newInstance(<ClassConstructor<T>> componentClass, componentInfo);
         return componentInstance;
     }
 
