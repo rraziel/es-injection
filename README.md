@@ -27,10 +27,16 @@ This loose coupling tends to make code more self-contained and easier to test, a
 
 ## Installation
 
-The module can be installed through npm:
+The library can be installed using `npm`:
 
 ```
 npm install es-injection --save
+```
+
+Or using `yarn`:
+
+```
+yarn add es-injection
 ```
 
 ## User Guide
