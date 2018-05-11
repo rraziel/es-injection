@@ -217,9 +217,8 @@ describe('Default component factory', () => {
 
     describe('handles prototype components', () => {
 
-        it.only('creates a new instance for each requested component', () => {
+        it('creates a new instance for each requested component', () => {
             // given
-            let n: number = 0;
             @Component
             @Scope(ScopeType.PROTOTYPE)
             class TestPrototype { value: number = n++; }
