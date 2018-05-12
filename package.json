@@ -1,6 +1,6 @@
 {
   "name": "es-injection",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A modern, lightweight dependency injection library inspired by JSR-303 and Spring.",
   "homepage": "https://github.com/rraziel/es-injection",
   "bugs": "https://github.com/rraziel/es-injection/issues",
