@@ -85,20 +85,38 @@ class AnnotationConfigApplicationContext extends ApplicationContext {
      * @param configurationClasses Configuration classes
      */
     register(...configurationClasses: Array<ClassConstructor<any>>): void {
-        configurationClasses.forEach(annotatedClass => this.registerAnnotatedClass(annotatedClass));
+        configurationClasses.forEach(annotatedClass => this.registerConfigurationClass(annotatedClass));
     }
 
     /**
      * Register an annotated class
      * @param configurationClass Configuration class
      */
-    private registerAnnotatedClass<T>(configurationClass: ClassConstructor<T>): void {
+    private registerConfigurationClass<T>(configurationClass: ClassConstructor<T>): void {
         let componentInfo: ComponentInfo = getComponentInfo(configurationClass);
+
+        this.validateConfigurationClass(configurationClass, componentInfo);
+
+        this.componentFactory.registerComponentClass(configurationClass);
+
+        if (componentInfo.importedConfigurations) {
+            this.register(...componentInfo.importedConfigurations);
+        }
+
+        if (componentInfo.scannedComponents) {
+            componentInfo.scannedComponents.forEach(scannedComponentClass => this.componentFactory.registerComponentClass(scannedComponentClass));
+        }
+    }
+
+    /**
+     * Validate a configuration class, i.e. ensure it is decorated with @Configuration
+     * @param configurationClass Configuration class
+     * @param componentInfo      Component info
+     */
+    private validateConfigurationClass<T>(configurationClass: ClassConstructor<T>, componentInfo: ComponentInfo): void {
         if (!StereotypeUtils.isConfiguration(configurationClass)) {
             throw new Error('unable to register ' + configurationClass.name + ': not marked with @Configuration');
         }
-
-        this.componentFactory.registerComponentClass(configurationClass);
     }
 
 }
