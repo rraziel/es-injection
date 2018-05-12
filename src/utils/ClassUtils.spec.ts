@@ -6,19 +6,19 @@ describe('Classs utility functions', () => {
 
     describe('can instantiate a class', () => {
 
-        it('with no constructor parameters', () => {
+        it('with no constructor parameters', async () => {
             // given
             class TestClass {
                 constructor() { /* empty */ }
             }
             // when
-            let instance: TestClass = ClassUtils.instantiateClass(TestClass, null);
+            let instance: TestClass = await ClassUtils.instantiateClass(TestClass, null);
             // then
             expect(instance).not.toBeUndefined();
             expect(instance).toBeInstanceOf(TestClass);
         });
 
-        it('with constructor parameters', () => {
+        it('with constructor parameters', async () => {
             // given
             class TestParameterClass { }
             @DummyClass
@@ -26,7 +26,7 @@ describe('Classs utility functions', () => {
                 constructor(public p0: number, public p1: string, public p2: TestParameterClass) { /* empty */ }
             }
             // when
-            let instance: TestClass = ClassUtils.instantiateClass(TestClass, (requiredClass, parameterIndex) => {
+            let instance: TestClass = await ClassUtils.instantiateClass(TestClass, async (requiredClass, parameterIndex) => {
                 if (parameterIndex === 0 && requiredClass === Number) {
                     return 123;
                 } else if (parameterIndex === 1 && requiredClass === String) {

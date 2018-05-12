@@ -41,9 +41,10 @@ yarn add es-injection
 
 ## User Guide
 
-* [Declaring Components](doc/component-declaration.md)
-* [Injecting Components](doc/component-injection.md)
-* [Injecting Constants](doc/constant-injection.md)
+* [Component Declaration](doc/component-declaration.md)
+* [Component Injection](doc/component-injection.md)
+* [Component Lifecycle](doc/component-lifecycle.md)
+* [Constant Injection](doc/constant-injection.md)
 * [Application Context](doc/application-context.md)
 * [Configuration](doc/configuration.md)
 

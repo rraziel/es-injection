@@ -1,6 +1,6 @@
 import {ClassConstructor, TypeUtils} from 'es-decorator-utils';
 
-type DependencyResolver = (requiredClass: ClassConstructor<any>, parameterIndex: number) => any;
+type DependencyResolver = (requiredClass: ClassConstructor<any>, parameterIndex: number) => Promise<any>;
 
 /**
  * Class utility functions
@@ -14,12 +14,13 @@ class ClassUtils {
      * @param <T>       Type
      * @return Instance
      */
-    static instantiateClass<T>(typeClass: ClassConstructor<T>, resolver: DependencyResolver): T {
+    static async instantiateClass<T>(typeClass: ClassConstructor<T>, resolver: DependencyResolver): Promise<T> {
         let parameterClasses: ClassConstructor<any>[] = TypeUtils.getParameterClasses(typeClass);
-        let parameters: any[] = [];
+        let parameters: Array<any> = [];
 
         if (parameterClasses) {
-            parameterClasses.forEach((parameterClass, parameterIndex) => parameters.push(resolver(parameterClass, parameterIndex)));
+            let parameterPromises: Array<Promise<any>> = parameterClasses.map((parameterClass, parameterIndex) => resolver(parameterClass, parameterIndex));
+            parameters = await Promise.all(parameterPromises);
         }
 
         return new typeClass(... parameters);

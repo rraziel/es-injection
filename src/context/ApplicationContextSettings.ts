@@ -1,9 +1,9 @@
-import {ComponentFactorySettings} from '../factory';
+import {ComponentFactory, ComponentFactorySettings} from '../factory';
 
 /**
  * Application context settings
  */
-interface ApplicationContextSettings extends ComponentFactorySettings{
+interface ApplicationContextSettings extends ComponentFactorySettings {
 
 }
 

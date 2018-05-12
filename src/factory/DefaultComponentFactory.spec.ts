@@ -17,16 +17,21 @@ describe('Default component factory', () => {
 
     beforeEach(() => {
         componentFactory = new DefaultComponentFactory({});
+        componentFactory.registerComponentClass(TestDependencyClass);
+        componentFactory.registerComponentClass(TestDependencyClass2);
+        componentFactory.registerComponentClass(TestDependencyClass3);
     });
 
     describe('can retrieve', () => {
 
-        it('a simple component', () => {
+        it('a simple component', async () => {
             // given
             @Component
             class TestClass { }
+            componentFactory.registerComponentClass(TestClass);
+            await componentFactory.start();
             // when
-            let component: TestClass = componentFactory.getComponent(TestClass);
+            let component: TestClass = await componentFactory.getComponent(TestClass);
             // then
             expect(component).not.toBeUndefined();
             expect(component).toBeInstanceOf(TestClass);
@@ -34,32 +39,36 @@ describe('Default component factory', () => {
 
         describe('a component holding injected constructor parameters', () => {
 
-            it('with no extra decorators', () => {
+            it('with no extra decorators', async () => {
                 // given
                 @Component
                 class TestClass {
                     constructor(public p: TestDependencyClass) { /* empty */ }
                 }
+                componentFactory.registerComponentClass(TestClass);
+                await componentFactory.start();
                 // when
-                let component: TestClass = componentFactory.getComponent(TestClass);
+                let component: TestClass = await componentFactory.getComponent(TestClass);
                 // then
                 expect(component).not.toBeUndefined();
                 expect(component).toBeInstanceOf(TestClass);
                 expect(component.p).toBeInstanceOf(TestDependencyClass);
             });
 
-            it('with an injected array', () => {
+            it('with an injected array', async () => {
                 // given
                 @Component
                 class TestClass {
                     l: TestBaseDependencyClass[];
                     constructor(@ElementClass(TestBaseDependencyClass) l: TestBaseDependencyClass[]) { this.l = l; }
                 }
+                componentFactory.registerComponentClass(TestClass);
+                await componentFactory.start();
                 // when
-                let component: TestClass = componentFactory.getComponent(TestClass);
-                let dependency1: TestDependencyClass = componentFactory.getComponent(TestDependencyClass);
-                let dependency2: TestDependencyClass2 = componentFactory.getComponent(TestDependencyClass2);
-                let dependency3: TestDependencyClass3 = componentFactory.getComponent(TestDependencyClass3);
+                let component: TestClass = await componentFactory.getComponent(TestClass);
+                let dependency1: TestDependencyClass = await componentFactory.getComponent(TestDependencyClass);
+                let dependency2: TestDependencyClass2 = await componentFactory.getComponent(TestDependencyClass2);
+                let dependency3: TestDependencyClass3 = await componentFactory.getComponent(TestDependencyClass3);
                 // then
                 expect(component).not.toBeUndefined();
                 expect(component).toBeInstanceOf(TestClass);
@@ -74,33 +83,37 @@ describe('Default component factory', () => {
 
         describe('a component holding injected method parameters', () => {
 
-            it('with no extra decorators', () => {
+            it('with no extra decorators', async () => {
                 // given
                 @Component
                 class TestClass {
                     p: TestDependencyClass;
                     @Inject method(p: TestDependencyClass): void { this.p = p; }
                 }
+                componentFactory.registerComponentClass(TestClass);
+                await componentFactory.start();
                 // when
-                let component: TestClass = componentFactory.getComponent(TestClass);
+                let component: TestClass = await componentFactory.getComponent(TestClass);
                 // then
                 expect(component).not.toBeUndefined();
                 expect(component).toBeInstanceOf(TestClass);
                 expect(component.p).toBeInstanceOf(TestDependencyClass);
             });
 
-            it('with an injected array', () => {
+            it('with an injected array', async () => {
                 // given
                 @Component
                 class TestClass {
                     l: TestBaseDependencyClass[];
-                    @Inject method(@ElementClass(TestBaseDependencyClass) l: TestBaseDependencyClass[]) { this.l = l; }
+                    @Inject method(@ElementClass(TestBaseDependencyClass) l: TestBaseDependencyClass[]): void { this.l = l; }
                 }
+                componentFactory.registerComponentClass(TestClass);
+                await componentFactory.start();
                 // when
-                let component: TestClass = componentFactory.getComponent(TestClass);
-                let dependency1: TestDependencyClass = componentFactory.getComponent(TestDependencyClass);
-                let dependency2: TestDependencyClass2 = componentFactory.getComponent(TestDependencyClass2);
-                let dependency3: TestDependencyClass3 = componentFactory.getComponent(TestDependencyClass3);
+                let component: TestClass = await componentFactory.getComponent(TestClass);
+                let dependency1: TestDependencyClass = await componentFactory.getComponent(TestDependencyClass);
+                let dependency2: TestDependencyClass2 = await componentFactory.getComponent(TestDependencyClass2);
+                let dependency3: TestDependencyClass3 = await componentFactory.getComponent(TestDependencyClass3);
                 // then
                 expect(component).not.toBeUndefined();
                 expect(component).toBeInstanceOf(TestClass);
@@ -111,7 +124,7 @@ describe('Default component factory', () => {
                 expect(component.l).toContain(dependency3);
             });
 
-            it('with a set order', () => {
+            it('with a set order', async () => {
                 // given
                 @Component
                 class TestClass {
@@ -120,8 +133,10 @@ describe('Default component factory', () => {
                     @Inject @Order(2) method1(p1: TestDependencyClass2): void { this.deps.push(p1); }
                     @Inject @Order(7) method2(p2: TestDependencyClass3): void { this.deps.push(p2); }
                 }
+                componentFactory.registerComponentClass(TestClass);
+                await componentFactory.start();
                 // when
-                let component: TestClass = componentFactory.getComponent(TestClass);
+                let component: TestClass = await componentFactory.getComponent(TestClass);
                 // then
                 expect(component).not.toBeUndefined();
                 expect(component).toBeInstanceOf(TestClass);
@@ -135,21 +150,23 @@ describe('Default component factory', () => {
 
         describe('a component holding injected properties', () => {
 
-            it('with no extra decorators', () => {
+            it('with no extra decorators', async () => {
                 // given
                 @Component
                 class TestClass {
                     @Inject p: TestDependencyClass;
                 }
+                componentFactory.registerComponentClass(TestClass);
+                await componentFactory.start();
                 // when
-                let component: TestClass = componentFactory.getComponent(TestClass);
+                let component: TestClass = await componentFactory.getComponent(TestClass);
                 // then
                 expect(component).not.toBeUndefined();
                 expect(component).toBeInstanceOf(TestClass);
                 expect(component.p).toBeInstanceOf(TestDependencyClass);
             });
 
-            it('with a set order', () => {
+            it('with a set order', async () => {
                 // given
                 @Component
                 class TestClass {
@@ -157,8 +174,10 @@ describe('Default component factory', () => {
                     @Inject @Order(2) p1: TestDependencyClass2;
                     @Inject @Order(7) p2: TestDependencyClass3;
                 }
+                componentFactory.registerComponentClass(TestClass);
+                await componentFactory.start();
                 // when
-                let component: TestClass = componentFactory.getComponent(TestClass);
+                let component: TestClass = await componentFactory.getComponent(TestClass);
                 // then
                 expect(component).not.toBeUndefined();
                 expect(component).toBeInstanceOf(TestClass);
@@ -173,13 +192,15 @@ describe('Default component factory', () => {
 
         describe('a derived component', () => {
 
-            it('with no extra decorators', () => {
+            it('with no extra decorators', async () => {
                 // given
                 abstract class TestClass { }
                 @Component
                 class TestDerivedClass extends TestClass { }
+                componentFactory.registerComponentClass(TestDerivedClass);
+                await componentFactory.start();
                 // when
-                let component: TestClass = componentFactory.getComponent(TestClass);
+                let component: TestClass = await componentFactory.getComponent(TestClass);
                 // then
                 expect(component).not.toBeUndefined();
                 expect(component).toBeInstanceOf(TestClass);
@@ -191,7 +212,7 @@ describe('Default component factory', () => {
 
     describe('handles a component\'s lifecycle', () => {
 
-        it('calls methods with a @PostConstruct annotation after construction', () => {
+        it('calls methods with a @PostConstruct annotation after construction', async () => {
             // given
             @Component
             class TestClass {
@@ -204,8 +225,10 @@ describe('Default component factory', () => {
                 testMethod2(): void { this.method2Called = true; }
                 testMethod3(): void { this.method3Called = true; }
             }
+            componentFactory.registerComponentClass(TestClass);
+            await componentFactory.start();
             // when
-            let component: TestClass = componentFactory.getComponent(TestClass);
+            let component: TestClass = await componentFactory.getComponent(TestClass);
             // then
             expect(component).not.toBeUndefined();
             expect(component.method1Called).toBe(true);
@@ -217,7 +240,7 @@ describe('Default component factory', () => {
 
     describe('handles prototype components', () => {
 
-        it('creates a new instance for each requested component', () => {
+        it('creates a new instance for each requested component', async () => {
             // given
             @Component
             @Scope(ScopeType.PROTOTYPE)
@@ -230,8 +253,11 @@ describe('Default component factory', () => {
                     this.instances = [instance1, instance2, instance3];
                 }
             }
+            componentFactory.registerComponentClass(TestPrototype);
+            componentFactory.registerComponentClass(TestClass);
+            await componentFactory.start();
             // when
-            let component: TestClass = componentFactory.getComponent(TestClass);
+            let component: TestClass = await componentFactory.getComponent(TestClass);
             // then
             expect(component).not.toBeUndefined();
             expect(component.instances[0]).not.toBeUndefined();
@@ -246,22 +272,26 @@ describe('Default component factory', () => {
 
     describe('throws an exception when', () => {
 
-        it('attempting to get a component using a class that is not decorated', () => {
+        it('attempting to get a component using a class that is not decorated', async () => {
             // given
             class TestClass { }
+            await componentFactory.start();
             // expect
-            expect(() => componentFactory.getComponent(TestClass)).toThrowError(/unknown component class/);
+            expect(componentFactory.getComponent(TestClass)).rejects.toThrowError(/unknown component class/);
         });
 
-        it('attempting to get a component that has multiple implementations', () => {
+        it('attempting to get a component that has multiple implementations', async () => {
             // given
             abstract class TestClass { }
             @Component
             class TestDerivedClass1 extends TestClass { }
             @Component
             class TestDerivedClass2 extends TestClass { }
+            componentFactory.registerComponentClass(TestDerivedClass1);
+            componentFactory.registerComponentClass(TestDerivedClass2);
+            await componentFactory.start();
             // expect
-            expect(() => componentFactory.getComponent(TestClass)).toThrowError(/multiple component instances found for type/);
+            expect(componentFactory.getComponent(TestClass)).rejects.toThrowError(/multiple component instances found for type/);
         });
 
     });

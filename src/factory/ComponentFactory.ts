@@ -3,46 +3,46 @@ import {ClassConstructor} from 'es-decorator-utils';
 /**
  * Component factory
  */
-interface ComponentFactory {
+abstract class ComponentFactory {
 
     /**
      * Test whether the factory contains a component
      * @param componentName Component name
      * @return true if the factory contains the component
      */
-    containsComponent(componentName: string): boolean;
+    abstract containsComponent(componentName: string): boolean;
 
     /**
      * Get a component
      * @param componentClass Component class
      * @param <T>            Component type
-     * @return Component instance
+     * @return Promise that resolves to the component instance
      */
-    getComponent<T>(componentClass: ClassConstructor<T>): T;
+    abstract getComponent<T>(componentClass: ClassConstructor<T>): Promise<T>;
 
     /**
      * Get a component
      * @param componentName  Component name
      * @param componentClass Component class
      * @param <T>            Component type
-     * @return Component instance
+     * @return Promise that resolves to the component instance
      */
-    getComponent<T>(componentName: string, componentClass?: ClassConstructor<T>): T;
+    abstract getComponent<T>(componentName: string, componentClass?: ClassConstructor<T>): Promise<T>;
 
     /**
      * Get a list of components
      * @param componentClass Component class
      * @param <T>            Component type
-     * @return Component instances
+     * @return Promise that resolves to the list of component instances
      */
-    getComponents<T>(componentClass: ClassConstructor<T>): T[];
+    abstract getComponents<T>(componentClass: ClassConstructor<T>): Promise<Array<T>>;
 
     /**
      * Get a component's class
      * @param componentName Component name
      * @return Component class
      */
-    getComponentClass(componentName: string): ClassConstructor<any>;
+    abstract getComponentClass(componentName: string): ClassConstructor<any>;
 
 }
 

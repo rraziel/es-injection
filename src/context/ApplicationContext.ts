@@ -1,21 +1,22 @@
 import {ComponentFactory} from '../factory';
+import {ClassConstructor} from 'es-decorator-utils';
 
 /**
  * Application context
  */
-interface ApplicationContext extends ComponentFactory {
+abstract class ApplicationContext extends ComponentFactory {
 
     /**
      * Refresh the context
      * @return Promise that resolves once the context is refreshed
      */
-    refresh(): Promise<void>;
+    abstract refresh(): Promise<void>;
 
     /**
      * Close the context
      * @return Promise that resolves once the context is closed
      */
-    close(): Promise<void>;
+    abstract close(): Promise<void>;
 
 }
 

@@ -61,6 +61,18 @@ class MyConfiguration {
 }
 ```
 
+The method may also return a promise that will eventually resolve to the component:
+
+```typescript
+@Configuration
+class MyConfiguration {
+    @Component
+    async instantiateThirdPartyComponentAsynchronously(): Promise<ThirdPartyComponent> {
+        return new ThirdPartyComponent();
+    }
+}
+```
+
 ### Constant Value
 
 Similarly, configuration classes can define constant values:
@@ -70,6 +82,18 @@ Similarly, configuration classes can define constant values:
 class MyConfiguration {
     @Value('my-value')
     getMyValue(): number {
+        return 42;
+    }
+}
+```
+
+And just like component instances, constants may also be resolved asynchronously:
+
+```typescript
+@Configuration
+class MyConfiguration {
+    @Value('my-value')
+    async getMyValue(): Promise<number> {
         return 42;
     }
 }
@@ -85,7 +109,7 @@ For such a scenario, requiring the user of sub-module A to know they need to add
 
 To work around this, the @Import decorator can be used:
 
-```
+```typescript
 @Configuration
 class ModuleBConfiguration { }
 
