@@ -1,24 +1,24 @@
-import {ClassUtils} from './ClassUtils';
+import {InjectionUtils} from './InjectionUtils';
 
 const DummyClass: ClassDecorator = () => { /* empty */ };
 
-describe('Classs utility functions', () => {
+describe('Injection utility functions', () => {
 
-    describe('can instantiate a class', () => {
+    describe('can inject a constructor', () => {
 
-        it('with no constructor parameters', async () => {
+        it('with no parameters', async () => {
             // given
             class TestClass {
                 constructor() { /* empty */ }
             }
             // when
-            let instance: TestClass = await ClassUtils.instantiateClass(TestClass, null);
+            let instance: TestClass = await InjectionUtils.injectConstructor(TestClass);
             // then
             expect(instance).not.toBeUndefined();
             expect(instance).toBeInstanceOf(TestClass);
         });
 
-        it('with constructor parameters', async () => {
+        it('with parameters', async () => {
             // given
             class TestParameterClass { }
             @DummyClass
@@ -26,7 +26,7 @@ describe('Classs utility functions', () => {
                 constructor(public p0: number, public p1: string, public p2: TestParameterClass) { /* empty */ }
             }
             // when
-            let instance: TestClass = await ClassUtils.instantiateClass(TestClass, async (requiredClass, parameterIndex) => {
+            let instance: TestClass = await InjectionUtils.injectConstructor(TestClass, async (requiredClass, parameterIndex): Promise<any> => {
                 if (parameterIndex === 0 && requiredClass === Number) {
                     return 123;
                 } else if (parameterIndex === 1 && requiredClass === String) {

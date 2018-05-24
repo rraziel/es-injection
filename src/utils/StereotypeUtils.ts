@@ -1,5 +1,5 @@
 import {getComponentInfo, ComponentInfo, Stereotype} from '../metadata';
-import {ClassConstructor} from 'es-decorator-utils';
+import {ComponentClass} from './ComponentClass';
 
 /**
  * Stereotype utility functions
@@ -12,7 +12,7 @@ class StereotypeUtils {
      * @param <T>            Component type
      * @return true if the component has a component stereotype
      */
-    static isComponent<T>(componentClass: ClassConstructor<T>): boolean {
+    static isComponent<T>(componentClass: ComponentClass<T>): boolean {
         return StereotypeUtils.getStereotype(componentClass) === Stereotype.COMPONENT;
     }
 
@@ -22,7 +22,7 @@ class StereotypeUtils {
      * @param <T>            Component type
      * @return true if the component has a configuration stereotype
      */
-    static isConfiguration<T>(componentClass: ClassConstructor<T>): boolean {
+    static isConfiguration<T>(componentClass: ComponentClass<T>): boolean {
         return StereotypeUtils.getStereotype(componentClass) === Stereotype.CONFIGURATION;
     }
 
@@ -32,7 +32,7 @@ class StereotypeUtils {
      * @param <T>            Component type
      * @return true if the component has a controller stereotype
      */
-    static isController<T>(componentClass: ClassConstructor<T>): boolean {
+    static isController<T>(componentClass: ComponentClass<T>): boolean {
         return StereotypeUtils.getStereotype(componentClass) === Stereotype.CONTROLLER;
     }
 
@@ -42,7 +42,7 @@ class StereotypeUtils {
      * @param <T>            Component type
      * @return true if the component has a repository stereotype
      */
-    static isRepository<T>(componentClass: ClassConstructor<T>): boolean {
+    static isRepository<T>(componentClass: ComponentClass<T>): boolean {
         return StereotypeUtils.getStereotype(componentClass) === Stereotype.REPOSITORY;
     }
 
@@ -52,7 +52,7 @@ class StereotypeUtils {
      * @param <T>            Component type
      * @return true if the component has a service stereotype
      */
-    static isService<T>(componentClass: ClassConstructor<T>): boolean {
+    static isService<T>(componentClass: ComponentClass<T>): boolean {
         return StereotypeUtils.getStereotype(componentClass) === Stereotype.SERVICE;
     }
 
@@ -62,7 +62,7 @@ class StereotypeUtils {
      * @param <T>            Component type
      * @return Component stereotype
      */
-    static getStereotype<T>(componentClass: ClassConstructor<T>): Stereotype {
+    static getStereotype<T>(componentClass: ComponentClass<T>): Stereotype {
         let componentInfo: ComponentInfo = getComponentInfo(componentClass);
         return componentInfo && componentInfo.stereotype;
     }

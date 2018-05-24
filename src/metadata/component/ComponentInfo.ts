@@ -1,7 +1,7 @@
 import {Condition} from '../Condition';
 import {ScopeType} from '../ScopeType';
 import {Stereotype} from '../Stereotype';
-import {ClassConstructor} from 'es-decorator-utils';
+import {ClassConstructor, ComponentClass} from '../../utils';
 import 'reflect-metadata';
 
 /**
@@ -16,19 +16,20 @@ interface ComponentInfo {
     name?: string;
     scope?: ScopeType;
     stereotype?: Stereotype;
-    implementations?: ClassConstructor<any>[];
-    properties?: string[];
-    conditions?: Condition[];
-    importedConfigurations?: ClassConstructor<any>[];
-    scannedComponents?: ClassConstructor<any>[];
+    implementations?: Array<ClassConstructor<any>>;
+    properties?: Array<string>;
+    conditions?: Array<Condition>;
+    importedConfigurations?: Array<ClassConstructor<any>>;
+    scannedComponents?: Array<ClassConstructor<any>>;
 }
 
 /**
  * Get component information
  * @param componentClass Component class
+ * @param <T>            Component type
  * @return Component information
  */
-function getComponentInfo<C extends Function>(componentClass: C): ComponentInfo {
+function getComponentInfo<T>(componentClass: ComponentClass<T>): ComponentInfo {
     let componentInfo: ComponentInfo = Reflect.getOwnMetadata(ComponentInfoMetadata, componentClass);
     return componentInfo;
 }
@@ -37,8 +38,9 @@ function getComponentInfo<C extends Function>(componentClass: C): ComponentInfo 
  * Set component information
  * @param componentClass Component class
  * @param componentInfo  Component information
+ * @param <T>            Component type
  */
-function setComponentInfo<C extends Function>(componentClass: C, componentInfo: ComponentInfo): void {
+function setComponentInfo<T>(componentClass: ComponentClass<T>, componentInfo: ComponentInfo): void {
     Reflect.defineMetadata(ComponentInfoMetadata, componentInfo, componentClass);
 }
 

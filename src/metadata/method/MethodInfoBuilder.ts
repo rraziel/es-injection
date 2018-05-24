@@ -1,5 +1,5 @@
 import {getMethodInfo, MethodInfo, MethodParameterInfo, setMethodInfo} from './MethodInfo';
-import {ClassConstructor} from 'es-decorator-utils';
+import {ComponentClass} from '../../utils';
 
 /**
  * Method information builder
@@ -32,7 +32,7 @@ class MethodInfoBuilder {
      * @param elementClass   Element class
      * @param <T>            Element type
      */
-    elementClass<T>(parameterIndex: number, elementClass: ClassConstructor<T>): MethodInfoBuilder {
+    elementClass<T>(parameterIndex: number, elementClass: ComponentClass<T>): MethodInfoBuilder {
         return this.updateParameter(parameterIndex, methodParameterInfo => methodParameterInfo.elementClass = elementClass);
     }
 

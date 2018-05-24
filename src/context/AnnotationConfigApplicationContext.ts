@@ -3,8 +3,7 @@ import {ApplicationContextSettings} from './ApplicationContextSettings';
 import {Component} from '../decorators';
 import {ComponentFactory, DefaultComponentFactory} from '../factory';
 import {getComponentInfo, ComponentInfo} from '../metadata';
-import {StereotypeUtils} from '../utils';
-import {ClassConstructor} from 'es-decorator-utils';
+import {ClassConstructor, ComponentClass, StereotypeUtils} from '../utils';
 
 /**
  * Application context accepting annotated configuration classes as input
@@ -57,7 +56,7 @@ class AnnotationConfigApplicationContext extends ApplicationContext {
      * @param <T>            Component type
      * @return Component instance
      */
-    async getComponent<T>(componentNameOrClass: ClassConstructor<T>|Function|string, componentClass?: ClassConstructor<T>|Function): Promise<T> {
+    async getComponent<T>(componentNameOrClass: ComponentClass<T>|string, componentClass?: ComponentClass<T>): Promise<T> {
         return this.componentFactory.getComponent(componentNameOrClass, componentClass);
     }
 
@@ -67,7 +66,7 @@ class AnnotationConfigApplicationContext extends ApplicationContext {
      * @param <T>            Component type
      * @return Promise that resolves to the list of component instances
      */
-    getComponents<T>(componentClass: ClassConstructor<T>): Promise<Array<T>> {
+    getComponents<T>(componentClass: ComponentClass<T>): Promise<Array<T>> {
         return this.componentFactory.getComponents(componentClass);
     }
 

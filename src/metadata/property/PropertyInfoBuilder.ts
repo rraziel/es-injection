@@ -1,6 +1,6 @@
 import {getPropertyInfo, PropertyInfo, setPropertyInfo} from './PropertyInfo';
 import {ComponentInfoBuilder} from '../component';
-import {ClassConstructor} from 'es-decorator-utils';
+import {ComponentClass} from '../../utils';
 
 /**
  * Property information builder
@@ -24,7 +24,7 @@ class PropertyInfoBuilder {
      * @return this
      */
     inject(): PropertyInfoBuilder {
-        ComponentInfoBuilder.of(<ClassConstructor<any>> this.target.constructor).property(<string> this.propertyKey);
+        ComponentInfoBuilder.of(this.target.constructor).property(<string> this.propertyKey);
         return this.update(() => { /* empty */ });
     }
 
@@ -34,7 +34,7 @@ class PropertyInfoBuilder {
      * @param <T>          Element type
      * @return this
      */
-    elementClass<T>(elementClass: ClassConstructor<T>): PropertyInfoBuilder {
+    elementClass<T>(elementClass: ComponentClass<T>): PropertyInfoBuilder {
         return this.update(propertyInfo => propertyInfo.elementClass = elementClass);
     }
 

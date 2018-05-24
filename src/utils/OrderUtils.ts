@@ -1,12 +1,5 @@
+import {OrderedElement} from './OrderedElement';
 import {DependencyInfo} from '../metadata';
-
-/**
- * Ordered element
- */
-interface OrderedElement<T extends DependencyInfo> {
-    info?: T;
-    name: string;
-}
 
 /**
  * Order utility functions
@@ -20,7 +13,7 @@ class OrderUtils {
      * @param <T>          Dependency information type
      * @return Ordered element list
      */
-    static buildOrderedElementList<T extends DependencyInfo>(elementNames: string[], infoResolver: (elementName: string) => T): OrderedElement<T>[] {
+    static buildOrderedElementList<T extends DependencyInfo>(elementNames: string[], infoResolver: (elementName: string) => T): Array<OrderedElement<T>> {
         return elementNames
             .map(elementName => <OrderedElement<T>> {
                 info: infoResolver(elementName),
@@ -68,6 +61,5 @@ class OrderUtils {
 }
 
 export {
-    OrderedElement,
     OrderUtils
 };

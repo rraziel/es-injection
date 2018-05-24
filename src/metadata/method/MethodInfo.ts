@@ -1,4 +1,5 @@
 import {DependencyInfo} from '../dependency';
+import {ComponentClass} from '../../utils';
 import 'reflect-metadata';
 
 /**
@@ -26,9 +27,10 @@ interface MethodInfo extends DependencyInfo {
  * Get method information
  * @param componentClass Component class
  * @param methodName     Method name
+ * @param <T>            Component type
  * @return Method information
  */
-function getMethodInfo<C extends Function>(componentClass: C, methodName?: string): MethodInfo {
+function getMethodInfo<T>(componentClass: ComponentClass<T>, methodName?: string): MethodInfo {
     let methodInfo: MethodInfo = Reflect.getOwnMetadata(MethodInfoMetadata, componentClass, methodName);
     return methodInfo;
 }
@@ -38,8 +40,9 @@ function getMethodInfo<C extends Function>(componentClass: C, methodName?: strin
  * @param componentClass Component class
  * @param methodName     Method name
  * @param methodInfo     Method information
+ * @param <T>            Component type
  */
-function setMethodInfo<C extends Function>(componentClass: C, methodName: string, methodInfo: MethodInfo): void {
+function setMethodInfo<T>(componentClass: ComponentClass<T>, methodName: string, methodInfo: MethodInfo): void {
     Reflect.defineMetadata(MethodInfoMetadata, methodInfo, componentClass, methodName);
 }
 

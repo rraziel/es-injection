@@ -1,6 +1,5 @@
 import {ComponentInfoBuilder, Stereotype} from '../metadata';
-import {NameUtils} from '../utils';
-import {ClassConstructor, TypeUtils} from 'es-decorator-utils';
+import {ClassConstructor, ComponentClass, NameUtils, ReflectionUtils} from '../utils';
 
 type ClassOrMethodStereotypeDecorator = <T>(target: Object|T, propertyKey?: string|symbol, descriptor?: TypedPropertyDescriptor<() => T>) => void;
 
@@ -31,7 +30,7 @@ interface StereotypeDecorator {
  * @param stereotype     Stereotype
  * @param <T>            Component type
  */
-function processStereotypeDecorator<T>(componentName: string, componentClass: ClassConstructor<T>, stereotype: Stereotype): void {
+function processStereotypeDecorator<T>(componentName: string, componentClass: ComponentClass<T>, stereotype: Stereotype): void {
     ComponentInfoBuilder.of(componentClass)
         .name(componentName)
         .stereotype(stereotype)
@@ -40,11 +39,12 @@ function processStereotypeDecorator<T>(componentName: string, componentClass: Cl
 
 /**
  * Process a class stereotype decorator
- * @param componentClass Component clas
+ * @param componentClass Component class
  * @param stereotype     Stereotype
  * @param componentName  Component name
+ * @param <T>            Component type
  */
-function processClassStereotypeDecorator<T>(componentClass: ClassConstructor<T>, stereotype: Stereotype, componentName?: string): void {
+function processClassStereotypeDecorator<T>(componentClass: ComponentClass<T>, stereotype: Stereotype, componentName?: string): void {
     if (componentName === undefined) {
         componentName = NameUtils.buildComponentName(componentClass);
     }
@@ -59,8 +59,8 @@ function processClassStereotypeDecorator<T>(componentClass: ClassConstructor<T>,
  * @param <T>                 Method type
  */
 function processMethodStereotypeDecorator<T>(classPrototype: Object, decoratorParameters: DecoratorParameters<T>): void {
-    let classConstructor: ClassConstructor<any> = <ClassConstructor<any>> classPrototype.constructor;
-    let componentClass: ClassConstructor<any> = TypeUtils.getReturnClass(classConstructor, decoratorParameters.propertyKey);
+    let componentConstructor: ClassConstructor<any> = classPrototype.constructor as ClassConstructor<any>;
+    let componentClass: ComponentClass<any> = ReflectionUtils.getReturnClass(componentConstructor, decoratorParameters.propertyKey);
     let componentName: string = decoratorParameters.componentName;
 
     if (componentName === undefined) {
@@ -80,7 +80,7 @@ function processMethodStereotypeDecorator<T>(classPrototype: Object, decoratorPa
  * @param decoratorParameters Decorator parameters
  * @param <T>                 Component type or method type
  */
-function dispatchStereotypeDecoratorWithOptionalName<T>(target: Object|ClassConstructor<T>, decoratorParameters: DecoratorParameters<T>): void {
+function dispatchStereotypeDecoratorWithOptionalName<T>(target: Object|ComponentClass<T>, decoratorParameters: DecoratorParameters<T>): void {
     if (target instanceof Function) {
         if (decoratorParameters.propertyKey) {
             throw new Error('a component decorator cannot be used on a static method');
@@ -99,7 +99,7 @@ function dispatchStereotypeDecoratorWithOptionalName<T>(target: Object|ClassCons
  * @param <T>                   Component type
  * @return Stereotype decorator
  */
-function dispatchStereotypeDecorator<T>(targetOrComponentName: Object|ClassConstructor<T>|string, decoratorParameters: DecoratorParameters<T>): ClassOrMethodStereotypeDecorator|void {
+function dispatchStereotypeDecorator<T>(targetOrComponentName: Object|ComponentClass<T>|string, decoratorParameters: DecoratorParameters<T>): ClassOrMethodStereotypeDecorator|void {
     if (typeof(targetOrComponentName) === 'string') {
         return (target, namedPropertyKey, namedDescriptor) => {
             decoratorParameters.componentName = targetOrComponentName;

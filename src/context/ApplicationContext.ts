@@ -1,5 +1,4 @@
 import {ComponentFactory} from '../factory';
-import {ClassConstructor} from 'es-decorator-utils';
 
 /**
  * Application context

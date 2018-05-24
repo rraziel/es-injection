@@ -1,12 +1,12 @@
-import {ClassConstructor} from 'es-decorator-utils';
+import {ComponentClass} from './ComponentClass';
 
 /**
  * Name utility functions
  */
 class NameUtils {
-    private static REGEXP_COMPONENTNAME_SPLIT: RegExp = /([A-Z]+|[A-Z]?[a-z]+)(?=[A-Z]|\b)/;
-    private static REGEXP_COMPONENTNAME_PATTERN: RegExp = /(?:^\w|[A-Z]|\b\w)/g;
-    private static REGEXP_COMPONENTNAME_LCFIRST: RegExp = /^[A-Z]{1}/;
+    private static readonly REGEXP_COMPONENTNAME_SPLIT: RegExp = /([A-Z]+|[A-Z]?[a-z]+)(?=[A-Z]|\b)/;
+    private static readonly REGEXP_COMPONENTNAME_PATTERN: RegExp = /(?:^\w|[A-Z]|\b\w)/g;
+    private static readonly REGEXP_COMPONENTNAME_LCFIRST: RegExp = /^[A-Z]{1}/;
 
     /**
      * Generate a component name from a class
@@ -14,18 +14,16 @@ class NameUtils {
      * @param <T>            Component type
      * @return Component name
      */
-    static buildComponentName<T>(componentClass: ClassConstructor<T>): string {
+    static buildComponentName<T>(componentClass: ComponentClass<T>): string {
         let componentName: string = '';
         let className: string = componentClass.name;
-        let matches: string[] = className.split(NameUtils.REGEXP_COMPONENTNAME_SPLIT);
 
-        for (let match of matches) {
-            componentName += match.replace(NameUtils.REGEXP_COMPONENTNAME_PATTERN, (c, i) => i === 0 ? c.toUpperCase() : c.toLowerCase());
-        }
+        componentName = className.split(NameUtils.REGEXP_COMPONENTNAME_SPLIT)
+            .map(namePart => namePart.replace(NameUtils.REGEXP_COMPONENTNAME_PATTERN, (c, i) => i === 0 ? c.toUpperCase() : c.toLowerCase()))
+            .join('')
+        ;
 
-        componentName = componentName.replace(NameUtils.REGEXP_COMPONENTNAME_LCFIRST, c => c.toLowerCase());
-
-        return componentName;
+        return componentName.replace(NameUtils.REGEXP_COMPONENTNAME_LCFIRST, c => c.toLowerCase());
     }
 
 }

@@ -1,7 +1,10 @@
 import {ConditionContext} from './ConditionContext';
-import {ClassConstructor} from 'es-decorator-utils';
+import {ClassConstructor} from '../utils';
 
-type Condition = <T>(conditionContext: ConditionContext, componentClass: ClassConstructor<T>) => boolean;
+/**
+ * Condition
+ */
+type Condition = <T>(conditionContext: ConditionContext, componentClass: ClassConstructor<T>) => Promise<boolean>|boolean;
 
 export {
     Condition

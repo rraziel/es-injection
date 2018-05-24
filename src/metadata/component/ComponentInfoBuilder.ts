@@ -2,20 +2,20 @@ import {ComponentInfo, getComponentInfo, setComponentInfo} from './ComponentInfo
 import {Condition} from '../Condition';
 import {ScopeType} from '../ScopeType';
 import {Stereotype} from '../Stereotype';
-import {ClassConstructor, TypeUtils} from 'es-decorator-utils';
+import {ClassConstructor, ComponentClass, TypeUtils} from '../../utils';
 
 /**
  * Component information builder
  * @param <T> Component type
  */
 class ComponentInfoBuilder<T> {
-    private componentClass: ClassConstructor<T>;
+    private readonly componentClass: ComponentClass<T>;
 
     /**
      * Class constructor
      * @param componentClass Component class
      */
-    private constructor(componentClass: ClassConstructor<T>) {
+    private constructor(componentClass: ComponentClass<T>) {
         this.componentClass = componentClass;
         this.registerBaseClasses();
     }
@@ -64,7 +64,7 @@ class ComponentInfoBuilder<T> {
      * @param annotatedClasses Annotated component classes
      * @return this
      */
-    componentScan(...annotatedClasses: ClassConstructor<any>[]): ComponentInfoBuilder<T> {
+    componentScan(...annotatedClasses: Array<ClassConstructor<any>>): ComponentInfoBuilder<T> {
         return this.update(componentInfo => {
             componentInfo.scannedComponents = componentInfo.scannedComponents || [];
             annotatedClasses.forEach(annotatedClass => {
@@ -125,7 +125,7 @@ class ComponentInfoBuilder<T> {
      * @param <T2>           Component type
      * @return this
      */
-    private updateClass<T2>(componentClass: ClassConstructor<T2>, callback: (componentInfo: ComponentInfo) => void): ComponentInfoBuilder<T> {
+    private updateClass<T2>(componentClass: ComponentClass<T2>, callback: (componentInfo: ComponentInfo) => void): ComponentInfoBuilder<T> {
         let componentInfo: ComponentInfo = getComponentInfo(componentClass) || {};
         callback(componentInfo);
         setComponentInfo(componentClass, componentInfo);
@@ -136,7 +136,7 @@ class ComponentInfoBuilder<T> {
      * Register base classes
      */
     private registerBaseClasses(): void {
-        TypeUtils.forEachAncestor(this.componentClass, baseClass => this.registerBaseClass(baseClass));
+        TypeUtils.forEachAncestor(this.componentClass, baseClass => this.registerBaseClass(baseClass)); // TODO: check this is not an abstract class
     }
 
     /**
@@ -144,10 +144,10 @@ class ComponentInfoBuilder<T> {
      * @param baseClass Base class
      * @param <U>       Base type
      */
-    private registerBaseClass<U>(baseClass: ClassConstructor<U>): void {
+    private registerBaseClass<U>(baseClass: ComponentClass<U>): void {
         this.updateClass(baseClass, componentInfo => {
             componentInfo.implementations = componentInfo.implementations || [];
-            componentInfo.implementations.push(this.componentClass);
+            componentInfo.implementations.push(this.componentClass as ClassConstructor<T>);
         });
     }
 
@@ -157,7 +157,7 @@ class ComponentInfoBuilder<T> {
      * @param <T>            Component type
      * @return Component information builder
      */
-    static of<T>(componentClass: ClassConstructor<T>): ComponentInfoBuilder<T> {
+    static of<T>(componentClass: ComponentClass<T>): ComponentInfoBuilder<T> {
         return new ComponentInfoBuilder(componentClass);
     }
 

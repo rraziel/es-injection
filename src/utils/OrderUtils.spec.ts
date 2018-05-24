@@ -1,4 +1,5 @@
-import {OrderedElement, OrderUtils} from './OrderUtils';
+import {OrderUtils} from './OrderUtils';
+import {OrderedElement} from './OrderedElement';
 import {DependencyInfo} from '../metadata';
 
 describe('Order utility functions', () => {
@@ -7,7 +8,7 @@ describe('Order utility functions', () => {
         // given
         let elementNames: string[] = ['g', 'h', 'f', 'e', 'd', 'c', 'b', 'a', 'a'];
         // when
-        let orderedElements: OrderedElement<DependencyInfo>[] = OrderUtils.buildOrderedElementList(elementNames, elementName => {
+        let orderedElements: Array<OrderedElement<DependencyInfo>> = OrderUtils.buildOrderedElementList(elementNames, elementName => {
             let order: number;
 
             switch (elementName) {

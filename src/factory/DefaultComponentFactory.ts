@@ -1,15 +1,14 @@
 import {ComponentFactory} from './ComponentFactory';
 import {ComponentFactorySettings} from './ComponentFactorySettings';
-import {ClassUtils, OrderedElement, OrderUtils} from '../utils';
 import {ComponentInfo, getComponentInfo, getMethodInfo, getPropertyInfo, MethodInfo, MethodParameterInfo, PropertyInfo, ScopeType} from '../metadata';
-import {ClassConstructor, TypeUtils} from 'es-decorator-utils';
+import {ClassConstructor, ComponentClass, InjectedProperty, InjectionTarget, InjectionUtils, InvocationUtils, OrderedElement, OrderUtils, TypeUtils} from '../utils';
 
 /**
  * Default component factory
  */
 class DefaultComponentFactory implements ComponentFactory {
     private singletonComponents: Map<Function, Object> = new Map<Function, Object>();
-    private componentClasses: Set<ClassConstructor<any>> = new Set<ClassConstructor<any>>();
+    private componentClasses: Set<ComponentClass<any>> = new Set<ComponentClass<any>>();
     private componentNames: Map<string, ClassConstructor<any>> = new Map<string, ClassConstructor<any>>();
     private componentFactorySettings: ComponentFactorySettings;
 
@@ -19,17 +18,6 @@ class DefaultComponentFactory implements ComponentFactory {
      */
     constructor(componentFactorySettings?: ComponentFactorySettings) {
         this.componentFactorySettings = componentFactorySettings;
-    }
-
-    /**
-     * Set the available component classes
-     * @param componentClasses Component classes
-     */
-    setComponentClasses(componentClasses: ClassConstructor<any>[]): void {
-        this.componentNames.clear();
-        this.componentClasses.clear();
-        componentClasses.forEach(componentClass => this.componentClasses.add(componentClass));
-        this.componentClasses.forEach(componentClass => this.componentNames.set(getComponentInfo(componentClass).name, componentClass));
     }
 
     /**
@@ -48,7 +36,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>            Component type
      * @return Component instance
      */
-    async getComponent<T>(componentNameOrClass: ClassConstructor<T>|Function|string, componentClass?: ClassConstructor<T>|Function): Promise<T> {
+    async getComponent<T>(componentNameOrClass: ComponentClass<T>|string, componentClass?: ComponentClass<T>): Promise<T> {
         let componentName: string;
 
         if (componentNameOrClass instanceof Function) {
@@ -66,9 +54,9 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>            Component type
      * @return Component instances
      */
-    async getComponents<T>(componentClass: ClassConstructor<T>): Promise<Array<T>> {
+    async getComponents<T>(componentClass: ComponentClass<T>): Promise<Array<T>> {
         let componentInfo: ComponentInfo = getComponentInfo(componentClass);
-        let implementationClasses: ClassConstructor<T>[] = componentInfo.implementations;
+        let implementationClasses: Array<ClassConstructor<T>> = componentInfo.implementations;
         let promises: Array<Promise<T>>;
 
         if (!implementationClasses) {
@@ -132,7 +120,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>            Component type
      * @return Component instance
      */
-    private async dispatchGetComponent<T>(componentName: string, componentClass: ClassConstructor<T>|Function): Promise<T> {
+    private async dispatchGetComponent<T>(componentName: string, componentClass: ComponentClass<T>): Promise<T> {
         this.validateRegisteredComponent(componentName, componentClass);
 
         let componentInfo: ComponentInfo = getComponentInfo(componentClass);
@@ -151,9 +139,10 @@ class DefaultComponentFactory implements ComponentFactory {
      * Test whether a component has been registered within the factory
      * @param componentName  Component name
      * @param componentClass Component class
+     * @param <T>            Component type
      */
-    private validateRegisteredComponent<T>(componentName: string, componentClass: ClassConstructor<T>|Function): void {
-        if (!this.componentClasses.has(<ClassConstructor<T>> componentClass)) {
+    private validateRegisteredComponent<T>(componentName: string, componentClass: ComponentClass<T>): void {
+        if (!this.componentClasses.has(componentClass)) {
             throw new Error('unknown component class ' + componentClass.name + ' (unregistered)');
         }
     }
@@ -166,9 +155,8 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>            Component type
      * @return Component instance
      */
-    private async getPrototypeComponent<T>(componentName: string, componentClass: ClassConstructor<T>|Function, componentInfo: ComponentInfo): Promise<T> {
-        let componentInstance: T = await this.newInstance(<ClassConstructor<T>> componentClass, componentInfo);
-        return componentInstance;
+    private async getPrototypeComponent<T>(componentName: string, componentClass: ComponentClass<T>, componentInfo: ComponentInfo): Promise<T> {
+        return await this.newInstance(componentClass, componentInfo);
     }
 
     /**
@@ -179,10 +167,10 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>            Component type
      * @return Component instance
      */
-    private async getSingletonComponent<T>(componentName: string, componentClass: ClassConstructor<T>|Function, componentInfo: ComponentInfo): Promise<T> {
+    private async getSingletonComponent<T>(componentName: string, componentClass: ComponentClass<T>, componentInfo: ComponentInfo): Promise<T> {
         let componentInstance: T;
 
-        await this.instantiateSingletonsIfNecessary(componentClass, componentInfo);
+        await this.instantiateSingletonsIfNecessary(componentClass, componentInfo); // TODO: move to refresh
 
         if (componentInfo.stereotype === undefined) {
             if (componentInfo.implementations.length > 1) {
@@ -208,7 +196,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param componentInfo  Component info
      * @param <T>            Component type
      */
-    private async instantiateSingletonsIfNecessary<T>(componentClass: ClassConstructor<T>|Function, componentInfo: ComponentInfo): Promise<void> {
+    private async instantiateSingletonsIfNecessary<T>(componentClass: ComponentClass<T>, componentInfo: ComponentInfo): Promise<void> {
         let componentInstance: T = <T> this.singletonComponents.get(componentClass);
         if (componentInstance) {
             return;
@@ -224,7 +212,7 @@ class DefaultComponentFactory implements ComponentFactory {
         }
 
         if (componentInfo.stereotype !== undefined) {
-            componentInstance = await this.newInstance(<ClassConstructor<T>> componentClass, componentInfo);
+            componentInstance = await this.newInstance(componentClass, componentInfo);
             this.singletonComponents.set(componentClass, componentInstance);
         }
     }
@@ -236,9 +224,9 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>            Component type
      * @return New component instance
      */
-    private async newInstance<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo): Promise<T> {
+    private async newInstance<T>(componentClass: ComponentClass<T>, componentInfo: ComponentInfo): Promise<T> {
         interface ComponentIterationInfo {
-            componentClass: ClassConstructor<any>;
+            componentClass: ComponentClass<any>;
             componentInfo: ComponentInfo;
         }
 
@@ -257,7 +245,8 @@ class DefaultComponentFactory implements ComponentFactory {
         });
 
         for (let it of componentIteratorInfos.reverse()) {
-            await this.prepareNewInstance(it.componentClass, it.componentInfo, componentInstance);
+            let target: InjectionTarget<T> = new InjectionTarget(it.componentClass, it.componentInfo, componentInstance);
+            await this.prepareNewInstance(target);
         }
 
         return componentInstance;
@@ -265,16 +254,14 @@ class DefaultComponentFactory implements ComponentFactory {
 
     /**
      * Prepare a new instance, injecting its properties and methods, then calling its post construction methods
-     * @param componentClass    Component class
-     * @param componentInfo     Component info
-     * @param componentInstance Component instance
-     * @param <T>               Component type
+     * @param target Injection target
+     * @param <T>    Component type
      * @return Promise that resolves once the new instance is prepared
      */
-    private async prepareNewInstance<T>(componentClass: ClassConstructor<any>, componentInfo: ComponentInfo, componentInstance: T): Promise<void> {
-        await this.injectProperties(componentClass, componentInfo, componentInstance);
-        await this.injectMethods(componentClass, componentInfo, componentInstance);
-        await this.callPostConstructMethods(componentClass, componentInfo, componentInstance);
+    private async prepareNewInstance<T>(target: InjectionTarget<T>): Promise<void> {
+        await this.injectProperties(target);
+        await this.injectMethods(target);
+        await this.callLifecycleMethods(target, methodInfo => methodInfo.postConstruct === true);
     }
 
     /**
@@ -283,13 +270,9 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>            Component type
      * @return Component instance
      */
-    private async instantiateClass<T>(componentClass: ClassConstructor<T>): Promise<T> {
+    private async instantiateClass<T>(componentClass: ComponentClass<T>): Promise<T> {
         let constructorInfo: MethodInfo = getMethodInfo(componentClass);
-        let componentInstance: T = await ClassUtils.instantiateClass(componentClass, async (requiredClass, parameterIndex) => {
-            return await this.resolveMethodDependency(constructorInfo, requiredClass, parameterIndex);
-        });
-
-        return componentInstance;
+        return await InjectionUtils.injectConstructor(componentClass, (requiredClass, parameterIndex) => this.resolveMethodDependency(constructorInfo, requiredClass, parameterIndex));
     }
 
     /**
@@ -300,7 +283,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>            Required type
      * @return Dependency instance
      */
-    private async resolveMethodDependency<T>(methodInfo: MethodInfo, requiredClass: ClassConstructor<T>, parameterIndex: number): Promise<T> {
+    private async resolveMethodDependency<T>(methodInfo: MethodInfo, requiredClass: ComponentClass<T>, parameterIndex: number): Promise<T> {
         let methodParameterInfo: MethodParameterInfo = methodInfo && methodInfo.parameters && methodInfo.parameters[parameterIndex];
 
         try {
@@ -321,7 +304,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>                 Required type
      * @return Dependency instance
      */
-    private resolveMethodInstanceDependency<T>(methodParameterInfo: MethodParameterInfo, requiredClass: ClassConstructor<T>): Promise<T> {
+    private resolveMethodInstanceDependency<T>(methodParameterInfo: MethodParameterInfo, requiredClass: ComponentClass<T>): Promise<T> {
         return this.getComponent(methodParameterInfo && methodParameterInfo.name, requiredClass);
     }
 
@@ -332,7 +315,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>                 Required type
      * @return Dependency array instance
      */
-    private resolveMethodArrayDependency<T>(methodParameterInfo: MethodParameterInfo, requiredClass: ClassConstructor<T>): Promise<T> {
+    private resolveMethodArrayDependency<T>(methodParameterInfo: MethodParameterInfo, requiredClass: ComponentClass<T>): Promise<T> {
         if (!methodParameterInfo.elementClass) {
             throw new Error('injected array parameter without any element class information (missing @ElementClass decorator)');
         }
@@ -347,7 +330,7 @@ class DefaultComponentFactory implements ComponentFactory {
      * @param <T>                 Required type
      * @return Unresolved dependency
      */
-    private buildUnresolvedMethodDependency<T>(e: any, methodParameterInfo: MethodParameterInfo, requiredClass: ClassConstructor<T>): T {
+    private buildUnresolvedMethodDependency<T>(e: any, methodParameterInfo: MethodParameterInfo, requiredClass: ComponentClass<T>): T {
         if (!methodParameterInfo || !methodParameterInfo.optional) {
             throw e;
         }
@@ -356,160 +339,77 @@ class DefaultComponentFactory implements ComponentFactory {
             return <any> [];
         }
 
+        if (TypeUtils.isMap(requiredClass)) {
+            return <any> {};
+        }
+
         return undefined;
     }
 
     /**
      * Inject properties
-     * @param componentClass    Component class
-     * @param componentInfo     Component information
-     * @param componentInstance Component instance
-     * @param <T>               Component type
+     * @param target Target object
+     * @param <T>    Component type
      * @return Promise that resolves once all properties have been injected
      */
-    private async injectProperties<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo, componentInstance: T): Promise<void> {
-        if (!componentInfo.properties) {
+    private async injectProperties<T>(target: InjectionTarget<T>): Promise<void> {
+        if (!target.info.properties) {
             return;
         }
 
-        let orderedPropertyInfos: Array<OrderedElement<PropertyInfo>>;
+        let injectedProperties: Array<InjectedProperty> = OrderUtils.buildOrderedElementList(target.info.properties, propertyName => getPropertyInfo(target.class, propertyName))
+            .map(orderedPropertyInfo => new InjectedProperty(orderedPropertyInfo.name, orderedPropertyInfo.info))
+        ;
 
-        orderedPropertyInfos = OrderUtils.buildOrderedElementList(componentInfo.properties, propertyName => getPropertyInfo(componentClass, propertyName));
-
-        for (let orderedPropertyInfo of orderedPropertyInfos) {
-            await this.injectProperty(componentClass, componentInfo, componentInstance, orderedPropertyInfo.name, orderedPropertyInfo.info);
+        for (let injectedProperty of injectedProperties) {
+            await InjectionUtils.injectProperty(target, injectedProperty, (componentClass, componentName) => {
+                if (componentName) {
+                    return this.getComponent(componentName, componentClass);
+                } else {
+                    return this.getComponent(componentClass);
+                }
+            });
         }
-    }
-
-    /**
-     * Inject a property
-     * @param componentClass    Component class
-     * @param componentInfo     Component information
-     * @param componentInstance Component instance
-     * @param propertyName      Property name
-     * @param propertyInfo      Property info
-     * @param <T>               Component type
-     * @return Promise that resolves once the property has been injected
-     */
-    private async injectProperty<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo, componentInstance: T, propertyName: string, propertyInfo: PropertyInfo): Promise<void> {
-        let propertyClass: ClassConstructor<any> = TypeUtils.getPropertyClass(componentClass, propertyName);
-        let propertyInstance: any;
-
-        try {
-            if (propertyInfo.name) {
-                propertyInstance = await this.getComponent(propertyInfo.name, propertyClass);
-            } else {
-                propertyInstance = await this.getComponent(propertyClass);
-            }
-        } catch (e) {
-            if (!propertyInfo.optional) {
-                throw e;
-            }
-        }
-
-        componentInstance[propertyName] = propertyInstance;
     }
 
     /**
      * Inject methods
-     * @param componentClass    Component class
-     * @param componentInfo     Component information
-     * @param componentInstance Component instance
-     * @param <T>               Component type
+     * @param target Injection target
+     * @param <T>    Component type
      * @return Promise that resolves once all injection methods have been called
      */
-    private async injectMethods<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo, componentInstance: T): Promise<void> {
+    private async injectMethods<T>(target: InjectionTarget<T>): Promise<void> {
         let orderedMethodInfos: Array<OrderedElement<MethodInfo>>;
         let methodNames: Array<string> = [];
 
-        TypeUtils.forEachMethod(componentClass, methodName => methodNames.push(methodName));
+        TypeUtils.forEachMethod(target.class, methodName => methodNames.push(methodName));
 
-        orderedMethodInfos = OrderUtils.buildOrderedElementList(methodNames, methodName => getMethodInfo(componentClass, methodName))
-            .filter(sortedMethod => sortedMethod.info && !sortedMethod.info.postConstruct)
+        orderedMethodInfos = OrderUtils.buildOrderedElementList(methodNames, methodName => getMethodInfo(target.class, methodName))
+            .filter(sortedMethod => sortedMethod.info && !sortedMethod.info.postConstruct && !sortedMethod.info.preDestroy)
         ;
 
         for (let orderedMethodInfo of orderedMethodInfos) {
-            await this.injectMethod(componentClass, componentInfo, componentInstance, orderedMethodInfo.name, orderedMethodInfo.info);
+            await InjectionUtils.injectMethod(target, orderedMethodInfo.name, (parameterClass, parameterIndex) => this.resolveMethodDependency(orderedMethodInfo.info, parameterClass, parameterIndex));
         }
     }
 
     /**
-     * Inject a method
-     * @param componentClass    Component class
-     * @param componentInfo     Component information
-     * @param componentInstance Component instance
-     * @param methodName        Method name
-     * @param methodInfo        Method information
-     * @param <T>               Component type
-     * @return Promise that resolves once the injection method has been called
+     * Call lifecycle methods, i.e. annotated with @PostConstruct or @PreDestroy
+     * @param target Injection target
+     * @preturn Promise that resolves once all methods have been called
      */
-    private async injectMethod<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo, componentInstance: T, methodName: string, methodInfo: MethodInfo): Promise<void> {
-        let methodParameterClasses: Array<ClassConstructor<any>> = TypeUtils.getParameterClasses(componentClass, methodName);
-        let methodParameters: Array<any> = [];
-        let methodResult: Promise<void>;
-
-        if (methodParameterClasses) {
-            for (let i: number = 0; i !== methodParameterClasses.length; ++i) {
-                let methodParameterClass: ClassConstructor<any> = methodParameterClasses[i];
-                let methodParameter: any = await this.resolveMethodDependency(methodInfo, methodParameterClass, i);
-                methodParameters.push(methodParameter);
-            }
-        }
-
-        await this.callPotentiallyAsynchronousMethod(componentInstance, methodName, methodParameters);
-    }
-
-    /**
-     * Call methods annotated with @PostConstruct
-     * @param componentClass    Component class
-     * @param componentInfo     Component information
-     * @param componentInstance Component type
-     * @preturn Promise that resolves once all post construction methods have been called
-     */
-    private async callPostConstructMethods<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo, componentInstance: T): Promise<void> {
-        let orderedMethodInfos: Array<OrderedElement<MethodInfo>>;
+    private async callLifecycleMethods<T>(target: InjectionTarget<T>, filter: (methodInfo: MethodInfo) => boolean): Promise<void> {
         let methodNames: Array<string> = [];
 
-        TypeUtils.forEachMethod(componentClass, methodName => methodNames.push(methodName));
+        TypeUtils.forEachMethod(target.class, methodName => methodNames.push(methodName));
 
-        orderedMethodInfos = OrderUtils.buildOrderedElementList(methodNames, methodName => getMethodInfo(componentClass, methodName))
-            .filter(sortedMethod => sortedMethod.info && sortedMethod.info.postConstruct === true)
+        methodNames = OrderUtils.buildOrderedElementList(methodNames, methodName => getMethodInfo(target.class, methodName))
+            .filter(sortedMethod => sortedMethod.info && filter(sortedMethod.info))
+            .map(orderedMethodInfo => orderedMethodInfo.name)
         ;
 
-        for (let orderedMethodInfo of orderedMethodInfos) {
-            await this.callPostConstructMethod(componentClass, componentInfo, componentInstance, orderedMethodInfo.name, orderedMethodInfo.info);
-        }
-    }
-
-    /**
-     * Call a method annotated with @PostConstruct
-     * @param componentClass    Component class
-     * @param componentInfo     Component information
-     * @param componentInstance Component instance
-     * @param methodName        Method name
-     * @param methodInfo        Method information
-     * @param <T>               Component type
-     * @return Promise that resolves once the post construction method has been called
-     */
-    private async callPostConstructMethod<T>(componentClass: ClassConstructor<T>, componentInfo: ComponentInfo, componentInstance: T, methodName: string, methodInfo: MethodInfo): Promise<void> {
-        let methodResult: Promise<void>;
-
-        await this.callPotentiallyAsynchronousMethod(componentInstance, methodName);
-    }
-
-    /**
-     * Call a method and wait for it to complete if it is asynchronous
-     * @param instance         Instance
-     * @param methodName       Method name
-     * @param methodParameters Method parameters
-     * @return Promise that resolves once the method has been called
-     */
-    private async callPotentiallyAsynchronousMethod<T>(instance: T, methodName: string, methodParameters?: Array<any>): Promise<void> {
-        let methodResult: Promise<void>;
-
-        methodResult = instance[methodName].apply(instance, methodParameters);
-        if (methodResult) {
-            await methodResult;
+        for (let methodName of methodNames) {
+            await InvocationUtils.waitForResult(target.instance, methodName);
         }
     }
 

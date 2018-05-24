@@ -1,4 +1,4 @@
-import {ClassConstructor} from 'es-decorator-utils';
+import {ClassConstructor, ComponentClass} from '../utils';
 
 /**
  * Component factory
@@ -18,7 +18,7 @@ abstract class ComponentFactory {
      * @param <T>            Component type
      * @return Promise that resolves to the component instance
      */
-    abstract getComponent<T>(componentClass: ClassConstructor<T>): Promise<T>;
+    abstract getComponent<T>(componentClass: ComponentClass<T>): Promise<T>;
 
     /**
      * Get a component
@@ -27,7 +27,7 @@ abstract class ComponentFactory {
      * @param <T>            Component type
      * @return Promise that resolves to the component instance
      */
-    abstract getComponent<T>(componentName: string, componentClass?: ClassConstructor<T>): Promise<T>;
+    abstract getComponent<T>(componentName: string, componentClass?: ComponentClass<T>): Promise<T>;
 
     /**
      * Get a list of components
@@ -35,7 +35,7 @@ abstract class ComponentFactory {
      * @param <T>            Component type
      * @return Promise that resolves to the list of component instances
      */
-    abstract getComponents<T>(componentClass: ClassConstructor<T>): Promise<Array<T>>;
+    abstract getComponents<T>(componentClass: ComponentClass<T>): Promise<Array<T>>;
 
     /**
      * Get a component's class

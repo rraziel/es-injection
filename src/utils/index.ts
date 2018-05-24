@@ -1,4 +1,12 @@
-export {ClassUtils, DependencyResolver} from './ClassUtils';
+export {ClassConstructor} from './ClassConstructor';
+export {ComponentClass} from './ComponentClass';
+export {InjectedProperty} from './InjectedProperty';
+export {InjectionTarget} from './InjectionTarget';
+export {InjectionUtils} from './InjectionUtils';
+export {InvocationUtils} from './InvocationUtils';
 export {NameUtils} from './NameUtils';
-export {OrderedElement, OrderUtils} from './OrderUtils';
+export {OrderedElement} from './OrderedElement';
+export {OrderUtils} from './OrderUtils';
+export {ReflectionUtils} from './ReflectionUtils';
 export {StereotypeUtils} from './StereotypeUtils';
+export {TypeUtils} from './TypeUtils';

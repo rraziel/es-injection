@@ -1,4 +1,4 @@
-import {ClassConstructor} from 'es-decorator-utils';
+import {ComponentClass} from '../../utils';
 
 /**
  * Dependency information
@@ -8,7 +8,7 @@ interface DependencyInfo {
     value?: string;
     optional?: boolean;
     order?: number;
-    elementClass?: ClassConstructor<any>;
+    elementClass?: ComponentClass<any>;
 }
 
 export {
