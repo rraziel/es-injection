@@ -298,7 +298,7 @@ class DefaultComponentFactory implements ComponentFactory {
     }
 
     /**
-     * Resolve a constructor dependency instance
+     * Resolve a method instance dependency
      * @param methodParameterInfo Method parameter information
      * @param requiredClass       Required class
      * @param <T>                 Required type
@@ -309,7 +309,7 @@ class DefaultComponentFactory implements ComponentFactory {
     }
 
     /**
-     * Resolve a constructor dependency array
+     * Resolve a method array dependency
      * @param methodParameterInfo Method parameter information
      * @param requiredClass       Required class
      * @param <T>                 Required type

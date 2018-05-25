@@ -13,7 +13,7 @@ describe('@Scope decorator', () => {
             let componentInfo: ComponentInfo = getComponentInfo(TestComponent);
             // then
             expect(componentInfo).not.toBeUndefined();
-            expect(componentInfo.scope).toEqual(ScopeType.PROTOTYPE);
+            expect(componentInfo.scope).toBe(ScopeType.PROTOTYPE);
         });
 
         it('singleton', () => {
@@ -24,7 +24,7 @@ describe('@Scope decorator', () => {
             let componentInfo: ComponentInfo = getComponentInfo(TestComponent);
             // then
             expect(componentInfo).not.toBeUndefined();
-            expect(componentInfo.scope).toEqual(ScopeType.SINGLETON);
+            expect(componentInfo.scope).toBe(ScopeType.SINGLETON);
         });
 
     });
