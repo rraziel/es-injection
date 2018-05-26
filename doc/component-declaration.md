@@ -1,16 +1,30 @@
-# Declaring Components
+# Component Declaration
+
+- [Introduction](#introduction)
+- [Basic Declaration](#basic-declaration)
+- [Component Stereotypes](#component-stereotypes)
+- [Named Components](#named-components)
+
+## Introduction
+
+Not documented yet.
+
+## Basic Declaration
 
 Declaring a component is as simple as adding a `@Component` decorator to a class.
 
 ```typescript
+import {Component} from 'es-injection';
+
 @Component
 class MyDependency {
+
 }
 ```
 
 Once declared a component, the dependency can be [injected](component-injection.md) into other components.
 
-## Stereotypes
+## Component Stereotypes
 
 The `@Component` decorator is used to declare a generic component.
 
@@ -24,17 +38,20 @@ All four decorators exhibit the same behavior, but the annotated code is usually
 
 It also makes it possible to filter components based on their stereotype.
 
-## Names
+## Named Components
 
 The aforementioned decorators also make it possible to give a name to a component.
 
 ```typescript
+import {Component} from 'es-injection';
+
 @Component('my-dependency-name')
 class MyDependency {
+
 }
 ```
 
-Components with a name can be queried by name, either programmatically through the [application context](application-context.md) or using the [@Named](component-injection.md#named-injection) decorator.
+Components with a name can be queried by name, either programmatically through the [application context](application-context.md) or using the [@Named](component-injection.md#named-dependencies) decorator.
 
 ## Abstract Class vs. Interface
 

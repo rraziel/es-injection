@@ -6,11 +6,11 @@ TODO
 
 TODO.
 
-### Method-based
+### Constructor-based
 
 TODO.
 
-### Constructor-based
+### Method-based
 
 TODO.
 
@@ -27,5 +27,9 @@ TODO.
 TODO.
 
 ## List Dependencies
+
+TODO.
+
+## Map Dependencies
 
 TODO.

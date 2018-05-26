@@ -1,4 +1,4 @@
-# Configuration
+# Annotation-Based Configuration
 
 A context needs to be configured in order to know what type of components or constants can be injected.
 
