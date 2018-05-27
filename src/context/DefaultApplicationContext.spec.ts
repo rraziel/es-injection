@@ -47,9 +47,9 @@ describe('Default application context', () => {
             class TestSingleton { }
             componentRegistry.getComponentClass.mockImplementation(componentName => TestSingleton);
             componentFactory.newInstance.mockImplementationOnce(() => new TestSingleton());
+            // when
             applicationContext.registerComponentClass(TestSingleton);
             await applicationContext.start();
-            // when
             let singleton1: TestSingleton = await applicationContext.getComponent(TestSingleton);
             let singleton2: TestSingleton = await applicationContext.getComponent(TestSingleton);
             // then
@@ -65,15 +65,63 @@ describe('Default application context', () => {
             class TestPrototype { }
             componentRegistry.getComponentClass.mockImplementation(componentName => TestPrototype);
             componentFactory.newInstance.mockImplementation(() => new TestPrototype());
+            // when
             applicationContext.registerComponentClass(TestPrototype);
             await applicationContext.start();
-            // when
             let prototype1: TestPrototype = await applicationContext.getComponent(TestPrototype);
             let prototype2: TestPrototype = await applicationContext.getComponent(TestPrototype);
             // then
             expect(prototype1).not.toBeUndefined();
             expect(prototype2).not.toBeUndefined();
             expect(prototype1).not.toBe(prototype2);
+        });
+
+        it('as a list', async () => {
+            // given
+            abstract class TestClass { }
+            @Component
+            class TestComponent1 extends TestClass { }
+            @Component
+            class TestComponent2 extends TestClass { }
+            let instance1: TestComponent1 = new TestComponent1();
+            let instance2: TestComponent2 = new TestComponent2();
+            componentRegistry.getComponentClass.mockImplementation(componentName => (componentName === 'TestComponent1') ? TestComponent1 : TestComponent2);
+            componentRegistry.resolveComponentClass.mockReturnValueOnce(new Set<ClassConstructor<TestClass>>([TestComponent1, TestComponent2]));
+            componentFactory.newInstance.mockImplementation(componentClass => (componentClass === TestComponent1) ? instance1 : instance2);
+            // when
+            applicationContext.registerComponentClass(TestComponent1);
+            applicationContext.registerComponentClass(TestComponent2);
+            await applicationContext.start();
+            let components: Array<TestClass> = await applicationContext.getComponents(TestClass);
+            // then
+            expect(components).not.toBeUndefined();
+            expect(components.length).toBe(2);
+            expect(components).toContain(instance1);
+            expect(components).toContain(instance2);
+        });
+
+        it('as a map', async () => {
+            // given
+            abstract class TestClass { }
+            @Component
+            class TestComponent1 extends TestClass { }
+            @Component
+            class TestComponent2 extends TestClass { }
+            let instance1: TestComponent1 = new TestComponent1();
+            let instance2: TestComponent2 = new TestComponent2();
+            componentRegistry.getComponentClass.mockImplementation(componentName => (componentName === 'TestComponent1') ? TestComponent1 : TestComponent2);
+            componentRegistry.resolveComponentClass.mockReturnValueOnce(new Set<ClassConstructor<TestClass>>([TestComponent1, TestComponent2]));
+            componentFactory.newInstance.mockImplementation(componentClass => (componentClass === TestComponent1) ? instance1 : instance2);
+            // when
+            applicationContext.registerComponentClass(TestComponent1);
+            applicationContext.registerComponentClass(TestComponent2);
+            await applicationContext.start();
+            let components: Map<string, TestClass> = await applicationContext.getNamedComponents(TestClass);
+            // then
+            expect(components).not.toBeUndefined();
+            expect(components.size).toBe(2);
+            expect(components.get('TestComponent1')).toBe(instance1);
+            expect(components.get('TestComponent2')).toBe(instance2);
         });
 
     });

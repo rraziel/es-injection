@@ -51,6 +51,14 @@ abstract class ApplicationContext {
      */
     abstract getComponents<T>(componentClass: ComponentClass<T>): Promise<Array<T>>;
 
+    /**
+     * Get a map of components where the key is the component name
+     * @param componentClass Component class
+     * @param <T>            Component type
+     * @return Promise that resolves to the map of component instances
+     */
+    abstract getNamedComponents<T>(componentClass: ComponentClass<T>): Promise<Map<string, T>>;
+
 }
 
 export {

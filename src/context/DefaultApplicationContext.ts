@@ -1,7 +1,7 @@
 import {ApplicationContext} from './ApplicationContext';
 import {ApplicationContextSettings} from './ApplicationContextSettings';
 import {ApplicationContextState} from './ApplicationContextState';
-import {ComponentFactory, DefaultComponentFactory} from '../factory';
+import {ComponentFactory, ComponentFactoryResolverSettings, DefaultComponentFactory} from '../factory';
 import {ComponentInfo, getComponentInfo, ScopeType} from '../metadata';
 import {ComponentRegistry, DefaultComponentRegistry} from '../registry';
 import {ClassConstructor, ComponentClass} from '../utils';
@@ -26,12 +26,7 @@ class DefaultApplicationContext extends ApplicationContext {
     constructor(applicationContextSettings?: ApplicationContextSettings, componentRegistry?: ComponentRegistry, componentFactory?: ComponentFactory) {
         super();
         this.settings = applicationContextSettings || {};
-        this.settings.resolvers = this.settings.resolvers || {
-            array: componentClass => this.getComponents(componentClass),
-            component: (componentClass, componentName) => this.resolveComponent(componentClass, componentName),
-            constant: null,
-            map: null
-        };
+        this.settings.resolvers = this.settings.resolvers || this.buildDefaultResolvers();
         this.componentRegistry = componentRegistry ? componentRegistry : new DefaultComponentRegistry();
         this.componentFactory = componentFactory ? componentFactory : new DefaultComponentFactory(this.settings);
         this.state = ApplicationContextState.INITIALIZING;
@@ -144,6 +139,20 @@ class DefaultApplicationContext extends ApplicationContext {
     }
 
     /**
+     * Get a map of components where the key is the component name
+     * @param componentClass Component class
+     * @param <T>            Component type
+     * @return Promise that resolves to the map of component instances
+     */
+    async getNamedComponents<T>(componentClass: ComponentClass<T>): Promise<Map<string, T>> {
+        let componentInstances: Array<T> = await this.getComponents(componentClass);
+
+        return new Map<string, T>(
+            componentInstances.map(componentInstance => [this.componentRegistry.getComponentName(Object.getPrototypeOf(componentInstance).constructor), componentInstance] as [string, T])
+        );
+    }
+
+    /**
      * Get a component
      * @param componentName  Component name
      * @param componentClass Component class
@@ -186,6 +195,17 @@ class DefaultApplicationContext extends ApplicationContext {
     }
 
     /**
+     * Resolve a constant
+     * @param constantName  Constant name
+     * @param expectedClass Expected class
+     * @param <T>           Expected type
+     * @return Promise that resolves to the constant value
+     */
+    private async resolveConstant<T>(constantName: string, expectedClass: ClassConstructor<T>): Promise<T> {
+        throw new Error('Constant resolution is not implemented');
+    }
+
+    /**
      * Resolve a single concrete component class, i.e. an implementation from a base class
      * @param componentClass Component class
      * @return Single concrete component class
@@ -218,6 +238,19 @@ class DefaultApplicationContext extends ApplicationContext {
     private async instantiateSingleton<T>(componentClass: ClassConstructor<T>): Promise<void> {
         let componentInstance: T = await this.componentFactory.newInstance(componentClass);
         this.singletonComponents.set(componentClass, componentInstance);
+    }
+
+    /**
+     * Build default resolver settings
+     * @return Resolver settings
+     */
+    private buildDefaultResolvers(): ComponentFactoryResolverSettings {
+        return {
+            array: componentClass => this.getComponents(componentClass),
+            component: (componentClass, componentName) => this.resolveComponent(componentClass, componentName),
+            constant: (constantName, expectedClass) => this.resolveConstant(constantName, expectedClass),
+            map: componentClass => this.getNamedComponents(componentClass)
+        };
     }
 
 }
