@@ -28,13 +28,7 @@ class DefaultApplicationContext extends ApplicationContext {
         this.settings = applicationContextSettings || {};
         this.settings.resolvers = this.settings.resolvers || {
             array: componentClass => this.getComponents(componentClass),
-            component: (componentClass, componentName) => {
-                if (componentName) {
-                    return this.getComponentByName(componentName, componentClass);
-                } else {
-                    return this.getComponent(componentClass);
-                }
-            },
+            component: (componentClass, componentName) => this.resolveComponent(componentClass, componentName),
             constant: null,
             map: null
         };
@@ -173,6 +167,21 @@ class DefaultApplicationContext extends ApplicationContext {
             return await this.componentFactory.newInstance(componentClass);
         } else {
             return this.singletonComponents.get(componentClass as ClassConstructor<T>) as T;
+        }
+    }
+
+    /**
+     * Resolve a component
+     * @param componentClass Component class
+     * @param componentName  Component name
+     * @param <T>            Component type
+     * @return Promise that resolves to the component
+     */
+    private resolveComponent<T>(componentClass: ComponentClass<T>, componentName?: string): Promise<T> {
+        if (componentName) {
+            return this.getComponentByName(componentName, componentClass);
+        } else {
+            return this.getComponent(componentClass);
         }
     }
 
