@@ -55,15 +55,8 @@ class InjectionUtils {
      */
     static async injectMethod<T>(target: InjectionTarget<T>, methodName: string, resolver: <P>(parameterClass: ComponentClass<P>, parameterIndex: number) => Promise<P>): Promise<void> {
         let methodParameterClasses: Array<ComponentClass<any>> = ReflectionUtils.getParameterClasses(target.class, methodName);
-        let methodParameters: Array<any>;
-
-        if (methodParameterClasses) {
-            let methodParameterPromises: Array<Promise<any>> = methodParameterClasses.map((methodParameterClass, i) => resolver(methodParameterClass, i));
-            methodParameters = await Promise.all(methodParameterPromises);
-        } else {
-            methodParameters = [];
-        }
-
+        let methodParameterPromises: Array<Promise<any>> = methodParameterClasses.map((methodParameterClass, i) => resolver(methodParameterClass, i));
+        let methodParameters: Array<any> = await Promise.all(methodParameterPromises);
         await InvocationUtils.waitForResult(target.instance, methodName, ...methodParameters);
     }
 
