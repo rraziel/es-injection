@@ -190,6 +190,25 @@ describe('Default application context', () => {
             expect(applicationContext.getComponent(TestClass)).rejects.toThrowError('component class TestClass has more than one registered implementation: TestDerivedClass1, TestDerivedClass2');
         });
 
+        it('attempting to get components using a class that is not registered', async () => {
+            // given
+            class TestClass { }
+            await applicationContext.start();
+            componentRegistry.containsComponentClass.mockReturnValueOnce(false);
+            // expect
+            expect(applicationContext.getComponents(TestClass)).rejects.toThrowError('component class TestClass has not been registered in this context');
+        });
+
+        it('attempting to get components when there are no implementations', async () => {
+            // given
+            class TestClass { }
+            await applicationContext.start();
+            componentRegistry.containsComponentClass.mockReturnValueOnce(true);
+            componentRegistry.resolveComponentClass.mockReturnValueOnce(undefined);
+            // expect
+            expect(applicationContext.getComponents(TestClass)).rejects.toThrowError('no implementation classes have been registered for class TestClass');
+        });
+
     });
 
 });
