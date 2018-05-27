@@ -1,121 +1,77 @@
-import {ApplicationContext} from './ApplicationContext';
 import {ApplicationContextSettings} from './ApplicationContextSettings';
+import {DefaultApplicationContext} from './DefaultApplicationContext';
 import {Component} from '../decorators';
-import {ComponentFactory, DefaultComponentFactory} from '../factory';
+import {ComponentFactory} from '../factory';
 import {getComponentInfo, ComponentInfo} from '../metadata';
+import {ComponentRegistry} from '../registry';
 import {ClassConstructor, ComponentClass, StereotypeUtils} from '../utils';
 
 /**
  * Application context accepting annotated configuration classes as input
  */
-@Component
-class AnnotationConfigApplicationContext extends ApplicationContext {
-    private componentFactory: DefaultComponentFactory;
+class AnnotationConfigApplicationContext extends DefaultApplicationContext {
 
     /**
      * Class constructor
      * @param applicationContextSettings Application context settings
-     * @param configurationClasses       Configuration classes
+     * @param componentRegistry          Component registry
+     * @param componentFactory           Component factory
      */
-    constructor(applicationContextSettings?: ApplicationContextSettings, ...configurationClasses: Array<ClassConstructor<any>>) {
-        super();
-        this.componentFactory = new DefaultComponentFactory(applicationContextSettings);
-        this.componentFactory.registerComponent(this);
-        this.register(...configurationClasses);
-    }
-
-    /**
-     * Refresh the context
-     * @return Promise that resolves once the context is refreshed
-     */
-    async refresh(): Promise<void> {
-        await this.componentFactory.start();
-    }
-
-    /**
-     * Close the context
-     * @return Promise that resolves once the context is closed
-     */
-    async close(): Promise<void> {
-        await this.componentFactory.stop();
-    }
-
-    /**
-     * Test whether the factory contains a component
-     * @param componentName Component name
-     * @return true if the factory contains the component
-     */
-    containsComponent(componentName: string): boolean {
-        return this.componentFactory.containsComponent(componentName);
-    }
-
-    /**
-     * Get a component
-     * @param componentName  Component name or class
-     * @param componentClass Component class
-     * @param <T>            Component type
-     * @return Component instance
-     */
-    async getComponent<T>(componentNameOrClass: ComponentClass<T>|string, componentClass?: ComponentClass<T>): Promise<T> {
-        return this.componentFactory.getComponent(componentNameOrClass, componentClass);
-    }
-
-    /**
-     * Get a list of components
-     * @param componentClass Component class
-     * @param <T>            Component type
-     * @return Promise that resolves to the list of component instances
-     */
-    getComponents<T>(componentClass: ComponentClass<T>): Promise<Array<T>> {
-        return this.componentFactory.getComponents(componentClass);
-    }
-
-    /**
-     * Get a component's class
-     * @param componentName Component name
-     * @return Component class
-     */
-    getComponentClass(componentName: string): ClassConstructor<any> {
-        return this.componentFactory.getComponentClass(componentName);
+    constructor(applicationContextSettings?: ApplicationContextSettings, componentRegistry?: ComponentRegistry, componentFactory?: ComponentFactory) {
+        super(applicationContextSettings, componentRegistry, componentFactory);
     }
 
     /**
      * Register configuration classes
      * @param configurationClasses Configuration classes
      */
-    register(...configurationClasses: Array<ClassConstructor<any>>): void {
+    registerConfiguration(...configurationClasses: Array<ClassConstructor<any>>): void {
         configurationClasses.forEach(annotatedClass => this.registerConfigurationClass(annotatedClass));
     }
 
     /**
-     * Register an annotated class
+     * Register an annotated configuration class
      * @param configurationClass Configuration class
+     * @param <T>                Configuration type
      */
     private registerConfigurationClass<T>(configurationClass: ClassConstructor<T>): void {
+        if (!StereotypeUtils.isConfiguration(configurationClass)) {
+            throw new Error(`class ${configurationClass.name} cannot be used as a configuration class as it lacks a @Configuration decorator`);
+        }
+
         let componentInfo: ComponentInfo = getComponentInfo(configurationClass);
 
-        this.validateConfigurationClass(configurationClass, componentInfo);
-
-        this.componentFactory.registerComponentClass(configurationClass);
-
-        if (componentInfo.importedConfigurations) {
-            this.register(...componentInfo.importedConfigurations);
-        }
-
-        if (componentInfo.scannedComponents) {
-            componentInfo.scannedComponents.forEach(scannedComponentClass => this.componentFactory.registerComponentClass(scannedComponentClass));
-        }
+        this.componentRegistry.registerComponent(componentInfo.name, configurationClass);
+        this.registerImports(configurationClass, componentInfo);
+        this.registerScannedComponents(configurationClass, componentInfo);
     }
 
     /**
-     * Validate a configuration class, i.e. ensure it is decorated with @Configuration
+     * Register a configuration class' imported configuration
      * @param configurationClass Configuration class
-     * @param componentInfo      Component info
+     * @param componentInfo      Component information
+     * @param <T>                Configuration type
      */
-    private validateConfigurationClass<T>(configurationClass: ClassConstructor<T>, componentInfo: ComponentInfo): void {
-        if (!StereotypeUtils.isConfiguration(configurationClass)) {
-            throw new Error('unable to register ' + configurationClass.name + ': not marked with @Configuration');
+    private registerImports<T>(configurationClass: ClassConstructor<T>, componentInfo: ComponentInfo): void {
+        if (!componentInfo.importedConfigurations) {
+            return;
         }
+
+        componentInfo.importedConfigurations.forEach(importedConfiguration => this.registerConfigurationClass(importedConfiguration));
+    }
+
+    /**
+     * Register a configuration class' scanned components
+     * @param configurationClass Configuration class
+     * @param componentInfo      Component information
+     * @param <T>                Configuration type
+     */
+    private registerScannedComponents<T>(configurationClass: ClassConstructor<T>, componentInfo: ComponentInfo): void {
+        if (!componentInfo.scannedComponents) {
+            return;
+        }
+
+        componentInfo.scannedComponents.forEach(scannedComponentClass => this.registerComponentClass(scannedComponentClass));
     }
 
 }

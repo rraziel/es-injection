@@ -1,60 +1,38 @@
 import {ComponentClass} from './ComponentClass';
 
-type DependencyResolver = (requiredClass: ComponentClass<any>, parameterIndex: number) => any;
-
 /**
  * Type utility functions
  */
 class TypeUtils {
+    private static readonly PROPERTYNAME_CONSTRUCTOR: string = 'constructor';
+    private static readonly TYPE_FUNCTION: string = 'function';
 
     /**
-     * Apply a callback to each method
+     * Get method names
      * @param componentClass   Component class
-     * @param callback         Callback
      * @param includeAncestors true if ancestor class methods must be iterated over
      * @param <T>              Component type
+     * @return List of method names
      */
-    static forEachMethod<T>(componentClass: ComponentClass<T>, callback: (methodName: string, typeClass: ComponentClass<any>) => void, includeAncestors?: boolean): void {
-        Object.getOwnPropertyNames(componentClass.prototype)
-            .filter(propertyName => {
-                let property: any = componentClass.prototype[propertyName];
-                return typeof(property) === 'function' && propertyName !== 'constructor';
-            })
-            .forEach(methodName => callback(methodName, componentClass))
+    static getMethodNames<T>(componentClass: ComponentClass<T>, includeAncestors?: boolean): Array<string> {
+        let methodNames: Array<string>;
+
+        methodNames = Object.getOwnPropertyNames(componentClass.prototype)
+            .filter(propertyName => TypeUtils.isMethodProperty(componentClass, propertyName))
         ;
 
         if (includeAncestors) {
-            TypeUtils.forEachAncestor(componentClass, ancestorClass => TypeUtils.forEachMethod(ancestorClass, callback));
+            TypeUtils.getAncestors(componentClass)
+                .map(ancestorClass => TypeUtils.getMethodNames(ancestorClass))
+                .forEach(ancestorMethodNames => methodNames.push(...ancestorMethodNames))
+            ;
         }
+
+        return methodNames;
     }
 
     /**
-     * Iterate over ancestor classes
-     * @param componentClass Component class
-     * @param callback       Callback
-     * @param <T>            Component type
-     */
-    static forEachAncestor<T>(componentClass: ComponentClass<T>, callback: (ancestorClass: ComponentClass<any>) => void): void {
-        let it: ComponentClass<any>;
-
-        for (it = TypeUtils.getParentClass(componentClass); it; it = TypeUtils.getParentClass(it)) {
-            callback(it);
-        }
-    }
-
-    /**
-     * Iterator over all classes
-     * @param componentClass Component class
-     * @param callback       Callback
-     * @param <T>            Component type
-     */
-    static forEachClass<T>(componentClass: ComponentClass<T>, callback: (typeClass: ComponentClass<any>) => void): void {
-        callback(componentClass);
-        TypeUtils.forEachAncestor(componentClass, callback);
-    }
-
-    /**
-     * Get a parent class (prototype inheritance)
+     * Get the parent class
      * @param componentClass Component class
      * @param <T>            Component type
      * @return Parent class
@@ -66,6 +44,36 @@ class TypeUtils {
         }
 
         return parentClass;
+    }
+
+    /**
+     * Get classes
+     * @param componentClass Component class
+     * @param <T>            Component type
+     * @return List of classes
+     */
+    static getClasses<T>(componentClass: ComponentClass<T>): Array<ComponentClass<any>> {
+        let classes: Array<ComponentClass<any>> = [componentClass];
+        let ancestorClasses: Array<ComponentClass<any>> = TypeUtils.getAncestors(componentClass);
+        classes.push(...ancestorClasses);
+        return classes;
+    }
+
+    /**
+     * Get ancestor classes
+     * @param componentClass Component class
+     * @param <T>            Component type
+     * @return List of ancestor classes
+     */
+    static getAncestors<T>(componentClass: ComponentClass<T>): Array<ComponentClass<any>> {
+        let ancestors: Array<ComponentClass<any>> = [];
+        let it: ComponentClass<any>;
+
+        for (it = TypeUtils.getParentClass(componentClass); it; it = TypeUtils.getParentClass(it)) {
+            ancestors.push(it);
+        }
+
+        return ancestors;
     }
 
     /**
@@ -108,9 +116,20 @@ class TypeUtils {
         return typeClass === Number;
     }
 
+    /**
+     * Test whether a property is a method
+     * @param componentClass Component class
+     * @param propertyName   Property name
+     * @param <T>            Component type
+     * @return true if the property is a method
+     */
+    private static isMethodProperty<T>(componentClass: ComponentClass<T>, propertyName: string): boolean {
+        let property: any = componentClass.prototype[propertyName];
+        return typeof(property) === TypeUtils.TYPE_FUNCTION && propertyName !== TypeUtils.PROPERTYNAME_CONSTRUCTOR;
+    }
+
 }
 
 export {
-    DependencyResolver,
     TypeUtils
 };

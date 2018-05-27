@@ -1,10 +1,12 @@
+import {ComponentFactoryResolverSettings} from './ComponentFactoryResolverSettings';
 
 /**
  * Component factory settings
  */
-interface ComponentFactorySettings {
+class ComponentFactorySettings {
     alwaysInjectConstructors?: boolean;
     guessInjectedComponentNames?: boolean;
+    resolvers?: ComponentFactoryResolverSettings;
 }
 
 export {

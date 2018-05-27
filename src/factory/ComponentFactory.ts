@@ -1,4 +1,4 @@
-import {ClassConstructor, ComponentClass} from '../utils';
+import {ComponentClass} from '../utils';
 
 /**
  * Component factory
@@ -6,43 +6,12 @@ import {ClassConstructor, ComponentClass} from '../utils';
 abstract class ComponentFactory {
 
     /**
-     * Test whether the factory contains a component
-     * @param componentName Component name
-     * @return true if the factory contains the component
-     */
-    abstract containsComponent(componentName: string): boolean;
-
-    /**
-     * Get a component
+     * Create a new component instance
      * @param componentClass Component class
      * @param <T>            Component type
-     * @return Promise that resolves to the component instance
+     * @return Promise that resolves to a new component instance
      */
-    abstract getComponent<T>(componentClass: ComponentClass<T>): Promise<T>;
-
-    /**
-     * Get a component
-     * @param componentName  Component name
-     * @param componentClass Component class
-     * @param <T>            Component type
-     * @return Promise that resolves to the component instance
-     */
-    abstract getComponent<T>(componentName: string, componentClass?: ComponentClass<T>): Promise<T>;
-
-    /**
-     * Get a list of components
-     * @param componentClass Component class
-     * @param <T>            Component type
-     * @return Promise that resolves to the list of component instances
-     */
-    abstract getComponents<T>(componentClass: ComponentClass<T>): Promise<Array<T>>;
-
-    /**
-     * Get a component's class
-     * @param componentName Component name
-     * @return Component class
-     */
-    abstract getComponentClass(componentName: string): ClassConstructor<any>;
+    abstract newInstance<T>(componentClass: ComponentClass<T>): Promise<T>;
 
 }
 

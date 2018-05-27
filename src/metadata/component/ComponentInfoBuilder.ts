@@ -136,7 +136,7 @@ class ComponentInfoBuilder<T> {
      * Register base classes
      */
     private registerBaseClasses(): void {
-        TypeUtils.forEachAncestor(this.componentClass, baseClass => this.registerBaseClass(baseClass)); // TODO: check this is not an abstract class
+        TypeUtils.getAncestors(this.componentClass).forEach(baseClass => this.registerBaseClass(baseClass)); // TODO: check this is not an abstract class
     }
 
     /**

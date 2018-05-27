@@ -3,8 +3,8 @@
  * Scope type
  */
 enum ScopeType {
-    PROTOTYPE,
-    SINGLETON
+    PROTOTYPE = 1,
+    SINGLETON = 2
 }
 
 export {

@@ -41,16 +41,7 @@ class InjectionUtils {
     static async injectProperty<T>(target: InjectionTarget<T>, injectedProperty: InjectedProperty, resolver: <P>(componentClass: ComponentClass<P>, componentName?: string) => Promise<P>): Promise<void> {
         let propertyClass: ComponentClass<any> = ReflectionUtils.getPropertyClass(target.class, injectedProperty.name);
         let propertyName: string = injectedProperty.name;
-        let propertyInstance: any;
-
-        try {
-            propertyInstance = await resolver(propertyClass, injectedProperty.info.name);
-        } catch (e) {
-            if (!injectedProperty.info.optional) {
-                throw e;
-            }
-        }
-
+        let propertyInstance: any = await resolver(propertyClass, injectedProperty.info.name);
         target.instance[propertyName] = propertyInstance;
     }
 
@@ -64,14 +55,13 @@ class InjectionUtils {
      */
     static async injectMethod<T>(target: InjectionTarget<T>, methodName: string, resolver: <P>(parameterClass: ComponentClass<P>, parameterIndex: number) => Promise<P>): Promise<void> {
         let methodParameterClasses: Array<ComponentClass<any>> = ReflectionUtils.getParameterClasses(target.class, methodName);
-        let methodParameters: Array<any> = [];
+        let methodParameters: Array<any>;
 
         if (methodParameterClasses) {
-            for (let i: number = 0; i !== methodParameterClasses.length; ++i) {
-                let methodParameterClass: ComponentClass<any> = methodParameterClasses[i];
-                let methodParameter: any = await resolver(methodParameterClass, i);
-                methodParameters.push(methodParameter);
-            }
+            let methodParameterPromises: Array<Promise<any>> = methodParameterClasses.map((methodParameterClass, i) => resolver(methodParameterClass, i));
+            methodParameters = await Promise.all(methodParameterPromises);
+        } else {
+            methodParameters = [];
         }
 
         await InvocationUtils.waitForResult(target.instance, methodName, ...methodParameters);

@@ -1,12 +1,20 @@
 import {AnnotationConfigApplicationContext} from './AnnotationConfigApplicationContext';
 import {ApplicationContext} from './ApplicationContext';
 import {Component, ComponentScan, Configuration, Import} from '../decorators';
+import {ComponentFactory} from '../factory';
+import {ComponentRegistry} from '../registry';
+import {createMockInstance} from 'jest-create-mock-instance';
 
 describe('Annotation configuration application context', () => {
     let applicationContext: AnnotationConfigApplicationContext;
+    let componentFactory: jest.Mocked<ComponentFactory>;
+    let componentRegistry: jest.Mocked<ComponentRegistry>;
 
     beforeEach(() => {
-        applicationContext = new AnnotationConfigApplicationContext({});
+        componentFactory = createMockInstance(ComponentFactory);
+        componentRegistry = createMockInstance(ComponentRegistry);
+        componentRegistry.registerComponent = jest.fn();
+        applicationContext = new AnnotationConfigApplicationContext({}, componentRegistry, componentFactory);
     });
 
     describe('can register', () => {
@@ -15,26 +23,40 @@ describe('Annotation configuration application context', () => {
             // given
             @Configuration
             class TestConfiguration { }
-            // expect
-            expect(() => applicationContext.register(TestConfiguration)).not.toThrow();
+            // when
+            applicationContext.registerConfiguration(TestConfiguration);
+            // then
+            expect(componentRegistry.registerComponent).toHaveBeenCalledTimes(1);
+            expect(componentRegistry.registerComponent).toHaveBeenCalledWith('testConfiguration', TestConfiguration);
         });
 
-        it('a configuration class with scanned components', async () => {
+        it('a simple configuration class with a name', () => {
+            // given
+            @Configuration('test-configuration')
+            class TestConfiguration { }
+            // when
+            applicationContext.registerConfiguration(TestConfiguration);
+            // then
+            expect(componentRegistry.registerComponent).toHaveBeenCalledTimes(1);
+            expect(componentRegistry.registerComponent).toHaveBeenCalledWith('test-configuration', TestConfiguration);
+        });
+
+        it('a configuration class with scanned components', () => {
             // given
             @Component
             class ScannedComponent { }
             @Configuration
             @ComponentScan(ScannedComponent)
             class TestConfiguration { }
-            applicationContext.register(TestConfiguration);
-            await applicationContext.refresh();
             // when
-            let scannedComponent: ScannedComponent = applicationContext.getComponent(ScannedComponent);
+            applicationContext.registerConfiguration(TestConfiguration);
             // then
-            expect(scannedComponent).not.toBeUndefined();
+            expect(componentRegistry.registerComponent).toHaveBeenCalledTimes(2);
+            expect(componentRegistry.registerComponent).toHaveBeenCalledWith('scannedComponent', ScannedComponent);
+            expect(componentRegistry.registerComponent).toHaveBeenCalledWith('testConfiguration', TestConfiguration);
         });
 
-        it('a configuration class with imported configuration classes', async () => {
+        it('a configuration class with imported configuration classes', () => {
             // given
             @Component
             class ScannedComponent { }
@@ -44,23 +66,15 @@ describe('Annotation configuration application context', () => {
             @Configuration
             @Import(ImportedConfiguration)
             class TestConfiguration { }
-            applicationContext.register(TestConfiguration);
-            await applicationContext.refresh();
             // when
-            let scannedComponent: ScannedComponent = applicationContext.getComponent(ScannedComponent);
+            applicationContext.registerConfiguration(TestConfiguration);
             // then
-            expect(scannedComponent).not.toBeUndefined();
+            expect(componentRegistry.registerComponent).toHaveBeenCalledTimes(3);
+            expect(componentRegistry.registerComponent).toHaveBeenCalledWith('scannedComponent', ScannedComponent);
+            expect(componentRegistry.registerComponent).toHaveBeenCalledWith('importedConfiguration', ImportedConfiguration);
+            expect(componentRegistry.registerComponent).toHaveBeenCalledWith('testConfiguration', TestConfiguration);
         });
 
-    });
-
-    it('returns itself as the application context component', async () => {
-        // given
-        await applicationContext.refresh();
-        // when
-        let applicationContextComponent: ApplicationContext = await applicationContext.getComponent(ApplicationContext);
-        // then
-        expect(applicationContextComponent).toBe(applicationContext);
     });
 
     describe('throws an exception when', () => {
@@ -69,7 +83,7 @@ describe('Annotation configuration application context', () => {
             // given
             class TestConfiguration { }
             // expect
-            expect(() => applicationContext.register(TestConfiguration)).toThrowError(/unable to register/);
+            expect(() => applicationContext.registerConfiguration(TestConfiguration)).toThrowError('class TestConfiguration cannot be used as a configuration class as it lacks a @Configuration decorator');
         });
 
     });

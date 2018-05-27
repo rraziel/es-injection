@@ -7,64 +7,64 @@ const DummyProperty: PropertyDecorator = () => { /* empty */ };
 
 describe('Type utility functions', () => {
 
-    describe('can iterate', () => {
+    describe('can retrieve', () => {
 
-        it('over ancestors', () => {
+        it('all classes', () => {
             // given
             class TestClass { }
             class TestDerivedClass extends TestClass { }
             class TestDerivedClass2 extends TestDerivedClass { }
-            let callback: () => void = jest.fn();
             // when
-            TypeUtils.forEachAncestor(TestDerivedClass2, callback);
+            let classes: Array<ComponentClass<any>> = TypeUtils.getClasses(TestDerivedClass2);
             // then
-            expect(callback).toHaveBeenCalledTimes(2);
-            expect(callback).toHaveBeenCalledWith(TestDerivedClass);
-            expect(callback).toHaveBeenCalledWith(TestClass);
+            expect(classes).not.toBeUndefined();
+            expect(classes.length).toBe(3);
+            expect(classes[0]).toBe(TestDerivedClass2);
+            expect(classes[1]).toBe(TestDerivedClass);
+            expect(classes[2]).toBe(TestClass);
         });
 
-        it('over all classes', () => {
+        it('ancestors', () => {
             // given
             class TestClass { }
             class TestDerivedClass extends TestClass { }
             class TestDerivedClass2 extends TestDerivedClass { }
-            let callback: () => void = jest.fn();
             // when
-            TypeUtils.forEachClass(TestDerivedClass2, callback);
+            let ancestorClasses: Array<ComponentClass<any>> = TypeUtils.getAncestors(TestDerivedClass2);
             // then
-            expect(callback).toHaveBeenCalledTimes(3);
-            expect(callback).toHaveBeenCalledWith(TestDerivedClass2);
-            expect(callback).toHaveBeenCalledWith(TestDerivedClass);
-            expect(callback).toHaveBeenCalledWith(TestClass);
+            expect(ancestorClasses).not.toBeUndefined();
+            expect(ancestorClasses.length).toBe(2);
+            expect(ancestorClasses[0]).toBe(TestDerivedClass);
+            expect(ancestorClasses[1]).toBe(TestClass);
         });
 
-        it('over methods', () => {
+        it('method names for a specific class', () => {
             // given
             class TestClass { method(): void { /* empty */ }  }
             class TestDerivedClass extends TestClass { derivedmethod(): void { /* empty */ }  }
             class TestDerivedClass2 extends TestDerivedClass { derived2method(): void { /* empty */ } }
-            let callback: () => void = jest.fn();
             // when
-            TypeUtils.forEachMethod(TestDerivedClass2, callback);
+            let methodNames: Array<string> = TypeUtils.getMethodNames(TestDerivedClass2);
             // then
-            expect(callback).toHaveBeenCalledTimes(1);
-            expect(callback).toHaveBeenCalledWith('derived2method', TestDerivedClass2);
+            expect(methodNames).not.toBeUndefined();
+            expect(methodNames.length).toBe(1);
+            expect(methodNames[0]).toBe('derived2method');
         });
 
-        it('over all methods', () => {
+        it('method names for all classes', () => {
             // given
             class TestClass { method(): void { /* empty */ }  }
             class TestDerivedClass extends TestClass { derivedmethod(): void { /* empty */ } }
             class TestDerivedClass2 extends TestDerivedClass { derived2method(): void { /* empty */ } derivedmethod(): void { super.derivedmethod(); } }
-            let callback: () => void = jest.fn();
             // when
-            TypeUtils.forEachMethod(TestDerivedClass2, callback, true);
+            let methodNames: Array<string> = TypeUtils.getMethodNames(TestDerivedClass2, true);
             // then
-            expect(callback).toHaveBeenCalledTimes(4);
-            expect(callback).toHaveBeenCalledWith('derived2method', TestDerivedClass2);
-            expect(callback).toHaveBeenCalledWith('derivedmethod', TestDerivedClass2);
-            expect(callback).toHaveBeenCalledWith('derivedmethod', TestDerivedClass);
-            expect(callback).toHaveBeenCalledWith('method', TestClass);
+            expect(methodNames).not.toBeUndefined();
+            expect(methodNames.length).toBe(4);
+            expect(methodNames[0]).toBe('derived2method');
+            expect(methodNames[1]).toBe('derivedmethod');
+            expect(methodNames[2]).toBe('derivedmethod'); // TODO: do we really want duplicates?
+            expect(methodNames[3]).toBe('method');
         });
 
     });
