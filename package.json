@@ -25,7 +25,7 @@
     "build:watch": "webpack --display-error-details --mode development --watch",
     "compile": "tsc -p .",
     "compile:watch": "tsc --watch -p .",
-    "quality:lint": "tslint --config ./conf/tslint.json",
+    "quality:lint": "tslint --project ./tsconfig.json --config ./conf/tslint.json",
     "test": "jest --no-cache --verbose",
     "test:coverage": "jest --no-cache --coverage",
     "test:watch": "jest --watch --no-cache --verbose"
