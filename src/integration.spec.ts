@@ -1,4 +1,4 @@
-import {AnnotationConfigApplicationContext, Component, ComponentScan, Configuration, Import, Inject, PostConstruct} from '.';
+import {AnnotationConfigApplicationContext, Component, ComponentScan, Configuration, Import, Inject, Named, PostConstruct} from '.';
 
 describe('Integration tests', () => {
 
@@ -43,11 +43,8 @@ describe('Integration tests', () => {
             }
 
             @PostConstruct
-            initialize(): Promise<void> {
-                return new Promise(resolve => {
-                    setTimeout(() => this.testDependency.value = 42, 0);
-                    resolve();
-                });
+            initialize(): void {
+                this.testDependency.value = 42;
             }
 
             getValue(): number {
@@ -56,9 +53,20 @@ describe('Integration tests', () => {
 
         }
 
+        @Component
+        class TestOtherClass {
+            @Inject
+            @Named('testDerivedClass')
+            testClass: TestClass;
+
+            getValue(): number {
+                return this.testClass.getValue();
+            }
+        }
+
         @Configuration
         @Import(TestDependentConfiguration)
-        @ComponentScan(TestDerivedClass)
+        @ComponentScan(TestDerivedClass, TestOtherClass)
         class TestConfiguration {
 
         }
@@ -66,12 +74,14 @@ describe('Integration tests', () => {
         // when
         let applicationContext: AnnotationConfigApplicationContext;
         let testClass: TestClass;
+        let testOtherClass: TestOtherClass;
 
         applicationContext = new AnnotationConfigApplicationContext();
         applicationContext.registerConfiguration(TestConfiguration);
         await applicationContext.start();
 
         testClass = await applicationContext.getComponent(TestClass);
+        testOtherClass = await applicationContext.getComponent(TestOtherClass);
 
         // then
         expect(testClass).not.toBeUndefined();
