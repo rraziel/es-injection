@@ -54,7 +54,7 @@ The module can be built using the following command:
 npm run compile
 ```
 
-It is also possible to keep unit tests executing as a background task:
+It is also possible to keep unit and integration tests executing as a background task:
 
 ```
 npm run test:watch

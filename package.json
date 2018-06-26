@@ -16,12 +16,16 @@
     "type": "git",
     "url": "https://github.com/rraziel/es-injection.git"
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/es-injection.js",
+  "browser": "./dist/es-injection.min.js",
+  "types": "./dist/es-injection.d.ts",
   "scripts": {
+    "build": "webpack --display-error-details --mode development",
+    "build:release": "webpack --display-error-details --mode production",
+    "build:watch": "webpack --display-error-details --mode development --watch",
     "compile": "tsc -p .",
     "compile:watch": "tsc --watch -p .",
-    "quality:lint": "tslint --project ./tsconfig.json --config ./conf/tslint.json",
+    "quality:lint": "tslint --config ./conf/tslint.json",
     "test": "jest --no-cache --verbose",
     "test:coverage": "jest --no-cache --coverage",
     "test:watch": "jest --watch --no-cache --verbose"
@@ -59,8 +63,12 @@
     "jest-create-mock-instance": "1.0.3",
     "jest-junit-reporter": "1.1.0",
     "ts-jest": "22.4.6",
+    "ts-loader": "4.4.1",
     "ts-node": "7.0.0",
     "tslint": "5.10.0",
-    "typescript": "2.9.2"
+    "typescript": "2.9.2",
+    "uglifyjs-webpack-plugin": "1.2.7",
+    "webpack": "4.12.1",
+    "webpack-cli": "3.0.8"
   }
 }
