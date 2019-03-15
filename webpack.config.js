@@ -1,5 +1,5 @@
 const path = require('path');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 const sourcePath = path.join(__dirname, '/src');
 const destinationPath = path.resolve(__dirname, 'dist');
@@ -16,6 +16,9 @@ const moduleConfig = {
             loader: 'ts-loader'
         }
     }]
+};
+const optimizationConfig = {
+    minimizer: [new TerserPlugin()]
 };
 const resolveConfig = {
     extensions: [
@@ -48,6 +51,7 @@ const webConfig = {
     devtool: 'source-map',
     entry: entryConfig,
     module: moduleConfig,
+    optimization: optimizationConfig,
     output: {
         path: destinationPath,
         filename: '[name].min.js',
@@ -55,9 +59,6 @@ const webConfig = {
         libraryTarget: 'umd',
         umdNamedDefine: true
     },
-    plugins: [
-        new UglifyJSPlugin()
-    ],
     resolve: resolveConfig
 };
 

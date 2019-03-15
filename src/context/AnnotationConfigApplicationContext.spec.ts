@@ -11,8 +11,8 @@ describe('Annotation configuration application context', () => {
     let componentRegistry: jest.Mocked<ComponentRegistry>;
 
     beforeEach(() => {
-        componentFactory = createMockInstance(ComponentFactory);
-        componentRegistry = createMockInstance(ComponentRegistry);
+        componentFactory = createMockInstance(ComponentFactory as any);
+        componentRegistry = createMockInstance(ComponentRegistry as any);
         componentRegistry.registerComponent = jest.fn();
         applicationContext = new AnnotationConfigApplicationContext({}, componentRegistry, componentFactory);
     });

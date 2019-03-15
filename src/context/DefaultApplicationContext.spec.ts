@@ -13,9 +13,9 @@ describe('Default application context', () => {
     let componentFactory: jest.Mocked<ComponentFactory>;
 
     beforeEach(() => {
-        componentFactory = createMockInstance(ComponentFactory);
+        componentFactory = createMockInstance(ComponentFactory as any);
         componentFactory.newInstance = jest.fn();
-        componentRegistry = createMockInstance(ComponentRegistry);
+        componentRegistry = createMockInstance(ComponentRegistry as any);
         componentRegistry.registerComponent = jest.fn();
         componentRegistry.containsComponentClass = jest.fn();
         componentRegistry.containsComponentClass.mockReturnValue(true);
@@ -45,8 +45,8 @@ describe('Default application context', () => {
             @Component
             @Scope(ScopeType.SINGLETON)
             class TestSingleton { }
-            componentRegistry.getComponentClass.mockImplementation(componentName => TestSingleton);
-            componentFactory.newInstance.mockImplementationOnce(() => new TestSingleton());
+            componentRegistry.getComponentClass.mockImplementation(() => TestSingleton);
+            componentFactory.newInstance.mockImplementationOnce(() => Promise.resolve(new TestSingleton()));
             // when
             applicationContext.registerComponentClass(TestSingleton);
             await applicationContext.start();
@@ -63,8 +63,8 @@ describe('Default application context', () => {
             @Component
             @Scope(ScopeType.PROTOTYPE)
             class TestPrototype { }
-            componentRegistry.getComponentClass.mockImplementation(componentName => TestPrototype);
-            componentFactory.newInstance.mockImplementation(() => new TestPrototype());
+            componentRegistry.getComponentClass.mockImplementation(() => TestPrototype);
+            componentFactory.newInstance.mockImplementation(() => Promise.resolve(new TestPrototype()));
             // when
             applicationContext.registerComponentClass(TestPrototype);
             await applicationContext.start();
@@ -87,7 +87,7 @@ describe('Default application context', () => {
             let instance2: TestComponent2 = new TestComponent2();
             componentRegistry.getComponentClass.mockImplementation(componentName => (componentName === 'TestComponent1') ? TestComponent1 : TestComponent2);
             componentRegistry.resolveComponentClass.mockReturnValueOnce(new Set<ClassConstructor<TestClass>>([TestComponent1, TestComponent2]));
-            componentFactory.newInstance.mockImplementation(componentClass => (componentClass === TestComponent1) ? instance1 : instance2);
+            componentFactory.newInstance.mockImplementation(componentClass => Promise.resolve((componentClass === TestComponent1) ? instance1 : instance2));
             // when
             applicationContext.registerComponentClass(TestComponent1);
             applicationContext.registerComponentClass(TestComponent2);
@@ -111,7 +111,7 @@ describe('Default application context', () => {
             let instance2: TestComponent2 = new TestComponent2();
             componentRegistry.getComponentClass.mockImplementation(componentName => (componentName === 'TestComponent1') ? TestComponent1 : TestComponent2);
             componentRegistry.resolveComponentClass.mockReturnValueOnce(new Set<ClassConstructor<TestClass>>([TestComponent1, TestComponent2]));
-            componentFactory.newInstance.mockImplementation(componentClass => (componentClass === TestComponent1) ? instance1 : instance2);
+            componentFactory.newInstance.mockImplementation(componentClass => Promise.resolve((componentClass === TestComponent1) ? instance1 : instance2));
             // when
             applicationContext.registerComponentClass(TestComponent1);
             applicationContext.registerComponentClass(TestComponent2);
@@ -177,7 +177,7 @@ describe('Default application context', () => {
             @Component
             class TestDerivedClass2 extends TestClass { }
             componentRegistry.resolveComponentClass.mockReturnValueOnce(new Set([TestDerivedClass1, TestDerivedClass2]));
-            componentRegistry.getComponentClass.mockReturnValueOnce(TestClass);
+            componentRegistry.getComponentClass.mockReturnValueOnce(TestClass as any);
             componentRegistry.getComponentName.mockReturnValueOnce(undefined);
             // when
             applicationContext.registerComponentClass(TestDerivedClass1);
