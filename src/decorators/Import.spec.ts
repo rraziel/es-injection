@@ -26,7 +26,7 @@ describe('@Import decorator', () => {
         expect(() => {
             @Import(TestImportedConfiguration)
             class TestConfiguration { }
-        }).toThrowError(/invalid @Import/);
+        }).toThrowError(`invalid @Import: class ${TestImportedConfiguration.name} is not a configuration class`);
     });
 
 });

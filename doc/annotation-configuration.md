@@ -117,4 +117,13 @@ class ModuleBConfiguration { }
 @Import(ModuleBConfiguration)
 class ModuleAConfiguration { }
 ```
- 
+
+It is also possible to use the @Import decorator with promises.
+
+As a rejected promise is simply ignored, this mechanism can be used to automatically import optional modules:
+
+```typescript
+@Configuration
+@Import(async () => await import('optional-dependency').OptionalDependencyConfiguration)
+class ModuleConfiguration { }
+```

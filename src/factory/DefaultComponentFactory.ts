@@ -94,9 +94,9 @@ class DefaultComponentFactory extends ComponentFactory {
      */
     private async resolveDependency<T>(dependencyInfo: DependencyInfo, requiredClass: ComponentClass<T>): Promise<T> {
         try {
-            if (TypeUtils.isArray(requiredClass)) {
+            if (TypeUtils.isArrayType(requiredClass)) {
                 return this.resolveArrayDependency(dependencyInfo) as  any as T;
-            } else if (TypeUtils.isMap(requiredClass)) {
+            } else if (TypeUtils.isMapType(requiredClass)) {
                 return this.resolveMapDependency(dependencyInfo) as any as T;
             } else {
                 return this.resolveInstanceDependency(dependencyInfo, requiredClass);
@@ -158,11 +158,11 @@ class DefaultComponentFactory extends ComponentFactory {
             throw e;
         }
 
-        if (TypeUtils.isArray(componentClass)) {
+        if (TypeUtils.isArrayType(componentClass)) {
             return <any> [];
         }
 
-        if (TypeUtils.isMap(componentClass)) {
+        if (TypeUtils.isMapType(componentClass)) {
             return <any> new Map<string, any>();
         }
 

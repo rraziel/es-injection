@@ -6,7 +6,7 @@ import {ClassConstructor} from '../utils';
  * @param configurationClasses Configuration classes
  * @return Import decorator
  */
-function Import(...configurationClasses: ClassConstructor<any>[]): ClassDecorator {
+function Import(...configurationClasses: Array<ClassConstructor<any>|Promise<ClassConstructor<any>>>): ClassDecorator {
     return target => {
         ComponentInfoBuilder.of(target).import(...configurationClasses);
     };

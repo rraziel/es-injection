@@ -43,7 +43,7 @@ class ComponentInfoBuilder<T> {
      * @param scope Scope
      * @return this
      */
-    scope(scope: ScopeType): ComponentInfoBuilder<T> {
+    scope(scope: ScopeType): this {
         return this.update(componentInfo => componentInfo.scope = scope);
     }
 
@@ -52,7 +52,7 @@ class ComponentInfoBuilder<T> {
      * @param propertyName Property name
      * @return this
      */
-    property(propertyName: string): ComponentInfoBuilder<T> {
+    property(propertyName: string): this {
         return this.update(componentInfo => {
             componentInfo.properties = componentInfo.properties || [];
             componentInfo.properties.push(propertyName);
@@ -64,13 +64,13 @@ class ComponentInfoBuilder<T> {
      * @param annotatedClasses Annotated component classes
      * @return this
      */
-    componentScan(...annotatedClasses: Array<ClassConstructor<any>>): ComponentInfoBuilder<T> {
+    componentScan(...annotatedClasses: Array<ClassConstructor<any>>): this {
         return this.update(componentInfo => {
             componentInfo.scannedComponents = componentInfo.scannedComponents || [];
             annotatedClasses.forEach(annotatedClass => {
                 let annotatedClassInfo: ComponentInfo = getComponentInfo(annotatedClass);
                 if (!annotatedClassInfo) {
-                    throw new Error('invalid @ComponentScan: class ' + annotatedClass.name + ' is not a component class');
+                    throw new Error(`invalid @ComponentScan: class ${annotatedClass.name} is not a component class`);
                 }
 
                 componentInfo.scannedComponents.push(annotatedClass);
@@ -92,19 +92,22 @@ class ComponentInfoBuilder<T> {
 
     /**
      * Set the imported configuration classes
-     * @param configurationClasses Annotated configuration classes
+     * @param configurationClassesOrPromises List of annotated configuration classes or promises to configuration classes
      * @return this
      */
-    import(...configurationClasses: ClassConstructor<any>[]): ComponentInfoBuilder<T> {
+    import(...configurationClassesOrPromises: Array<ClassConstructor<any>|Promise<ClassConstructor<any>>>): this {
         return this.update(componentInfo => {
             componentInfo.importedConfigurations = componentInfo.importedConfigurations || [];
-            configurationClasses.forEach(configurationClass => {
-                let annotatedClassInfo: ComponentInfo = getComponentInfo(configurationClass);
-                if (!annotatedClassInfo || annotatedClassInfo.stereotype !== Stereotype.CONFIGURATION) {
-                    throw new Error('invalid @Import: class ' + configurationClass.name + ' is not a configuration class');
+            configurationClassesOrPromises.forEach(configurationClassOrPromise => {
+                if (!TypeUtils.isPromise(configurationClassOrPromise)) {
+                    const configurationClass: ClassConstructor<any> = configurationClassOrPromise as ClassConstructor<any>;
+                    const annotatedClassInfo: ComponentInfo = getComponentInfo(configurationClass);
+                    if (!annotatedClassInfo || annotatedClassInfo.stereotype !== Stereotype.CONFIGURATION) {
+                        throw new Error(`invalid @Import: class ${configurationClass.name} is not a configuration class`);
+                    }
                 }
 
-                componentInfo.importedConfigurations.push(configurationClass);
+                componentInfo.importedConfigurations.push(configurationClassOrPromise);
             });
         });
     }
@@ -114,7 +117,7 @@ class ComponentInfoBuilder<T> {
      * @param callback Callback
      * @return this
      */
-    private update(callback: (componentInfo: ComponentInfo) => void): ComponentInfoBuilder<T> {
+    private update(callback: (componentInfo: ComponentInfo) => void): this {
         return this.updateClass(this.componentClass, callback);
     }
 
@@ -125,7 +128,7 @@ class ComponentInfoBuilder<T> {
      * @param <T2>           Component type
      * @return this
      */
-    private updateClass<T2>(componentClass: ComponentClass<T2>, callback: (componentInfo: ComponentInfo) => void): ComponentInfoBuilder<T> {
+    private updateClass<T2>(componentClass: ComponentClass<T2>, callback: (componentInfo: ComponentInfo) => void): this {
         let componentInfo: ComponentInfo = getComponentInfo(componentClass) || {};
         callback(componentInfo);
         setComponentInfo(componentClass, componentInfo);

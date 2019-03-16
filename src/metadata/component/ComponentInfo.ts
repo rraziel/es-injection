@@ -12,14 +12,14 @@ const ComponentInfoMetadata: Symbol = Symbol('es-injection:component');
 /**
  * Component info
  */
-interface ComponentInfo {
+class ComponentInfo {
     name?: string;
     scope?: ScopeType;
     stereotype?: Stereotype;
     implementations?: Array<ClassConstructor<any>>;
     properties?: Array<string>;
     conditions?: Array<Condition>;
-    importedConfigurations?: Array<ClassConstructor<any>>;
+    importedConfigurations?: Array<ClassConstructor<any>|Promise<ClassConstructor<any>>>;
     scannedComponents?: Array<ClassConstructor<any>>;
 }
 
@@ -30,7 +30,7 @@ interface ComponentInfo {
  * @return Component information
  */
 function getComponentInfo<T>(componentClass: ComponentClass<T>): ComponentInfo {
-    let componentInfo: ComponentInfo = Reflect.getOwnMetadata(ComponentInfoMetadata, componentClass);
+    const componentInfo: ComponentInfo = Reflect.getOwnMetadata(ComponentInfoMetadata, componentClass);
     return componentInfo;
 }
 

@@ -82,7 +82,7 @@ class TypeUtils {
      * @param <T>       Type
      * @return true if the type is an array
      */
-    static isArray<T>(typeClass: ComponentClass<T>): boolean {
+    static isArrayType<T>(typeClass: ComponentClass<T>): boolean {
         return typeClass === Array;
     }
 
@@ -92,7 +92,7 @@ class TypeUtils {
      * @param <T>       Type
      * @return true if the type is a map
      */
-    static isMap<T>(typeClass: ComponentClass<T>): boolean {
+    static isMapType<T>(typeClass: ComponentClass<T>): boolean {
         return typeClass === Map;
     }
 
@@ -102,7 +102,7 @@ class TypeUtils {
      * @param <T>       Type
      * @return true if the type is an string
      */
-    static isString<T>(typeClass: ComponentClass<T>): boolean {
+    static isStringType<T>(typeClass: ComponentClass<T>): boolean {
         return typeClass === String;
     }
 
@@ -112,8 +112,17 @@ class TypeUtils {
      * @param <T>       Type
      * @return true if the type is a number
      */
-    static isNumber<T>(typeClass: ComponentClass<T>): boolean {
+    static isNumberType<T>(typeClass: ComponentClass<T>): boolean {
         return typeClass === Number;
+    }
+
+    /**
+     * Test whether an object appears to be a promise
+     * @param obj Object
+     * @return true if the object appears to be a promise
+     */
+    static isPromise<T>(obj: T): boolean {
+        return typeof (obj as any).then === TypeUtils.TYPE_FUNCTION;
     }
 
     /**

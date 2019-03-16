@@ -11,6 +11,7 @@ import {ClassConstructor, ComponentClass} from '../utils';
  */
 class DefaultApplicationContext extends ApplicationContext {
     private readonly singletonComponents: Map<ClassConstructor<any>, Object> = new Map<ClassConstructor<any>, Object>();
+
     private state: ApplicationContextState;
 
     protected readonly componentRegistry: ComponentRegistry;

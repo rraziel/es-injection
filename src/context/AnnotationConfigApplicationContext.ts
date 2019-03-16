@@ -1,10 +1,9 @@
 import {ApplicationContextSettings} from './ApplicationContextSettings';
 import {DefaultApplicationContext} from './DefaultApplicationContext';
-import {Component} from '../decorators';
 import {ComponentFactory} from '../factory';
 import {getComponentInfo, ComponentInfo} from '../metadata';
 import {ComponentRegistry} from '../registry';
-import {ClassConstructor, ComponentClass, StereotypeUtils} from '../utils';
+import {ClassConstructor, StereotypeUtils, TypeUtils} from '../utils';
 
 /**
  * Application context accepting annotated configuration classes as input
@@ -25,21 +24,34 @@ class AnnotationConfigApplicationContext extends DefaultApplicationContext {
      * Register configuration classes
      * @param configurationClasses Configuration classes
      */
-    registerConfiguration(...configurationClasses: Array<ClassConstructor<any>>): void {
+    async registerConfiguration(...configurationClasses: Array<ClassConstructor<any>>): Promise<void> {
         configurationClasses.forEach(annotatedClass => this.registerConfigurationClass(annotatedClass));
     }
 
     /**
      * Register an annotated configuration class
-     * @param configurationClass Configuration class
-     * @param <T>                Configuration type
+     * @param configurationClassOrPromise Configuration class or promise that resolves to a configuration class
+     * @param <T>                         Configuration type
      */
-    private registerConfigurationClass<T>(configurationClass: ClassConstructor<T>): void {
+    private async registerConfigurationClass<T>(configurationClassOrPromise: ClassConstructor<T>|Promise<ClassConstructor<T>>): Promise<void> {
+        let configurationClass: ClassConstructor<T>;
+
+        if (TypeUtils.isPromise(configurationClassOrPromise)) {
+            try {
+                configurationClass = await (configurationClassOrPromise as Promise<ClassConstructor<T>>);
+            } catch (e) {
+                console.warn('Unable to register configuration class', e);
+                return;
+            }
+        } else {
+            configurationClass = configurationClassOrPromise as ClassConstructor<T>;
+        }
+
         if (!StereotypeUtils.isConfiguration(configurationClass)) {
             throw new Error(`class ${configurationClass.name} cannot be used as a configuration class as it lacks a @Configuration decorator`);
         }
 
-        let componentInfo: ComponentInfo = getComponentInfo(configurationClass);
+        const componentInfo: ComponentInfo = getComponentInfo(configurationClass);
 
         this.componentRegistry.registerComponent(componentInfo.name, configurationClass);
         this.registerImports(configurationClass, componentInfo);
