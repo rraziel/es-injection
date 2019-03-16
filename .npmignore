@@ -8,6 +8,7 @@ src/
 .codeclimate.yml
 .travis.yml
 cc-test-reporter
+junit.xml
 test-report.xml
 tsconfig.json
 *.spec.*

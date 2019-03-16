@@ -18,7 +18,7 @@
   },
   "main": "./dist/es-injection.js",
   "browser": "./dist/es-injection.min.js",
-  "types": "./dist/es-injection.d.ts",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "webpack --display-error-details --mode development",
     "build:release": "webpack --display-error-details --mode production",

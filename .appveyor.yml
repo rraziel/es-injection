@@ -4,7 +4,7 @@ install:
   - ps: Install-Product node $env:version_nodejs x64
   - ps: $env:package_version = (Get-Content -Raw -Path package.json | ConvertFrom-Json).version
   - ps: Update-AppveyorBuild -Version "$env:package_version-$env:APPVEYOR_BUILD_NUMBER"
-  - npm install
+  - npm ci
 test_script:
   - node --version
   - npm --version

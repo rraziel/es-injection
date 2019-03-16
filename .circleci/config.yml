@@ -13,7 +13,7 @@ jobs:
       - checkout
       - run:
           name: 'Dependencies'
-          command: npm install
+          command: npm ci
       - run:
           name: 'Lint'
           command: npm run quality:lint
