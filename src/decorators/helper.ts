@@ -22,20 +22,20 @@ class AppliedDecoratorParameters {
  * @param parameters Applied decorator parameters
  */
 function applyParameterOrPropertyDecorator(parameters: AppliedDecoratorParameters): void {
-    let decoratorName: string = parameters.decoratorName;
-    let target: Object = parameters.target;
-    let propertyKey: string|symbol = parameters.propertyKey;
-    let parameterIndex: number = parameters.parameterIndex;
+    const decoratorName: string = parameters.decoratorName;
+    const target: Object = parameters.target;
+    const propertyKey: string|symbol = parameters.propertyKey;
+    const parameterIndex: number = parameters.parameterIndex;
 
     if (target instanceof Function && propertyKey !== undefined) {
-        throw new Error('the @' + decoratorName + ' decorator cannot be applied to static method or property ' + target.name + '.' + <string> propertyKey);
+        throw new Error(`the @${decoratorName} decorator cannot be applied to static method or property ${target.name}.${propertyKey as string}`);
     }
 
     if (parameterIndex === undefined) {
-        let propertyInfoBuilder: PropertyInfoBuilder = PropertyInfoBuilder.of(target, propertyKey);
+        const propertyInfoBuilder: PropertyInfoBuilder = PropertyInfoBuilder.of(target, propertyKey);
         parameters.propertyInfoCallback(propertyInfoBuilder);
     } else {
-        let methodInfoBuilder: MethodInfoBuilder = MethodInfoBuilder.of(target, propertyKey);
+        const methodInfoBuilder: MethodInfoBuilder = MethodInfoBuilder.of(target, propertyKey);
         parameters.methodInfoCallback(methodInfoBuilder, parameterIndex);
     }
 }
