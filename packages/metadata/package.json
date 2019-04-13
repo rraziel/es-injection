@@ -1,0 +1,35 @@
+{
+  "name": "@es-injection/metadata",
+  "version": "0.2.3",
+  "description": "Dependency injection metadata for es-injection.",
+  "homepage": "https://github.com/rraziel/es-injection",
+  "bugs": "https://github.com/rraziel/es-injection/issues",
+  "license": "MIT",
+  "keywords": [
+    "ecmascript",
+    "dependency",
+    "injection",
+    "typescript",
+    "decorator"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rraziel/es-injection.git"
+  },
+  "main": "./lib/es-injection-metadata.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "build": "webpack --display-error-details --mode development",
+    "build:release": "webpack --display-error-details --mode production",
+    "build:watch": "webpack --display-error-details --mode development --watch",
+    "compile": "tsc -p .",
+    "compile:watch": "tsc --watch -p ."
+  },
+  "dependencies": {
+    "reflect-metadata": "0.1.13"
+  },
+  "devDependencies": {
+    "typescript": "3.3.3333",
+    "webpack-cli": "3.3.0"
+  }
+}

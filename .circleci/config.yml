@@ -9,17 +9,20 @@ jobs:
           name: 'Version check'
           command: |
             node --version
-            npm --version
+            yarn --version
       - checkout
       - run:
           name: 'Dependencies'
-          command: npm ci
+          command: yarn install --frozen-lockfile
+      - run:
+          name: 'Monorepo setup'
+          command: lerna bootstrap
       - run:
           name: 'Lint'
-          command: npm run quality:lint
-      - run:
-          name: 'Build'
-          command: npm run compile
+          command: yarn run quality:lint
       - run:
           name: 'Unit tests'
-          command: npm run test:coverage
+          command: yarn run test:coverage
+      - run:
+          name: 'Build'
+          command: yarn run build:release

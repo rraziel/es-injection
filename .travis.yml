@@ -3,7 +3,7 @@ env:
     - CC_TEST_REPORTER_ID=e5d347fb0b2d8f186a447b8ffed96aea93c9eda230418a6ae2481a5dc68daad3
 language: node_js
 node_js:
-  - "8"
+  - "10"
 before_install:
   - npm install -g greenkeeper-lockfile@1
 before_script:
@@ -12,10 +12,11 @@ before_script:
   - ./cc-test-reporter before-build
   - greenkeeper-lockfile-update
 script:
-  - npm ci
-  - npm run quality:lint
-  - npm run compile
-  - npm run test:coverage
+  - yarn install --frozen-lockfile
+  - lerna bootstrap
+  - yarn run quality:lint
+  - yarn run test:coverage
+  - yarn run build:release
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
   - greenkeeper-lockfile-upload

@@ -1,29 +1,3 @@
 {
-    "compilerOptions": {
-        "allowJs": false,
-        "alwaysStrict": true,
-        "baseUrl": "src",
-        "declaration": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "moduleResolution": "node",
-        "module": "commonjs",
-        "noImplicitAny": false,
-        "noImplicitReturns": true,
-        "noImplicitThis": true,
-        "removeComments": false,
-        "outDir": "./dist",
-        "sourceMap": true,
-        "target": "es2015",
-        "typeRoots": [
-            "node_modules/@types"
-        ],
-        "types": [
-            "jest"
-        ]
-    },
-    "exclude": [
-        "dist",
-        "node_modules"
-    ]
+    "extends": "./packages/tsconfig.base.json"
 }

@@ -35,7 +35,7 @@ This is achieved through the `AnnotationConfigApplicationContext` class.
 
 Annotation-based configuration makes it possible to:
 - declare components that need to be registered, via the `@ComponentScan` decorator
-- declare other configurations that are dependnecies, via the `@Import` decorator
+- declare other configurations that are dependencies, via the `@Import` decorator
 - provide component instances via methods annotated with a `@Component` decorator
 
 More information regarding annotation-based configuration can be found in the [Annotation-based Configuration chapter](annotation-configuration.md).

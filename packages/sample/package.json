@@ -1,0 +1,26 @@
+{
+  "name": "@es-injection/sample",
+  "version": "0.2.3",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rraziel/es-injection.git"
+  },
+  "scripts": {
+    "build": "webpack --display-error-details --mode development",
+    "build:release": "webpack --display-error-details --mode production",
+    "build:watch": "webpack --display-error-details --mode development --watch",
+    "compile": "tsc -p .",
+    "compile:watch": "tsc --watch -p ."
+  },
+  "dependencies": {
+    "@es-injection/core": "0.2.3",
+    "@es-injection/decorators": "0.2.3",
+    "@es-injection/metadata": "0.2.3"
+  },
+  "devDependencies": {
+    "typescript": "3.3.3333",
+    "webpack-cli": "3.3.0"
+  }
+}

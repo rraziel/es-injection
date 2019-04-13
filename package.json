@@ -1,39 +1,30 @@
 {
   "name": "es-injection",
   "version": "0.2.3",
-  "description": "A modern, lightweight dependency injection library inspired by JSR-303 and Spring.",
-  "homepage": "https://github.com/rraziel/es-injection",
-  "bugs": "https://github.com/rraziel/es-injection/issues",
+  "private": true,
   "license": "MIT",
-  "keywords": [
-    "ecmascript",
-    "dependency",
-    "injection",
-    "typescript",
-    "decorator"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/rraziel/es-injection.git"
   },
-  "main": "./dist/es-injection.js",
-  "browser": "./dist/es-injection.min.js",
-  "types": "./dist/index.d.ts",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "build": "webpack --display-error-details --mode development",
-    "build:release": "webpack --display-error-details --mode production",
-    "build:watch": "webpack --display-error-details --mode development --watch",
-    "compile": "tsc -p .",
-    "compile:watch": "tsc --watch -p .",
-    "quality:lint": "tslint --project ./tsconfig.json --config ./conf/tslint.json",
+    "build": "lerna run build",
+    "build:release": "lerna run build:release",
+    "build:watch": "lerna run build:watch",
+    "compile": "lerna run compile",
+    "compile:watch": "lerna run compile:watch",
+    "quality:lint": "tslint --project ./packages/tsconfig.base.json --config ./packages/tslint.json",
     "test": "jest --no-cache --verbose",
     "test:coverage": "jest --no-cache --coverage",
     "test:watch": "jest --watch --no-cache --verbose"
   },
   "jest": {
     "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!src/**/index.ts"
+      "<rootDir>/packages/*/src/**/*.ts",
+      "!<rootDir>/packages/*/src/**/index.ts"
     ],
     "moduleDirectories": [
       "node_modules",
@@ -44,20 +35,22 @@
       "js",
       "json"
     ],
+    "moduleNameMapper": {
+      "@es-injection/(.+)$": "<rootDir>/packages/$1/src/index.ts"
+    },
+    "modulePaths": [
+      "<rootDir>"
+    ],
     "reporters": [
       "default",
       "jest-junit"
     ],
-    "roots": [
-      "<rootDir>/src"
-    ],
+    "rootDir": ".",
+    "testEnvironment": "node",
     "testRegex": "\\.spec\\.ts",
     "transform": {
       "^.+\\.ts$": "ts-jest"
     }
-  },
-  "dependencies": {
-    "reflect-metadata": "0.1.13"
   },
   "devDependencies": {
     "@types/jest": "24.0.11",
@@ -65,6 +58,8 @@
     "jest": "24.5.0",
     "jest-create-mock-instance": "1.1.0",
     "jest-junit": "6.3.0",
+    "lerna": "3.13.1",
+    "reflect-metadata": "0.1.13",
     "terser-webpack-plugin": "1.2.3",
     "ts-jest": "24.0.0",
     "ts-loader": "5.3.3",
@@ -72,6 +67,7 @@
     "tslint": "5.14.0",
     "typescript": "3.3.3333",
     "webpack": "4.29.6",
-    "webpack-cli": "3.3.0"
+    "webpack-cli": "3.3.0",
+    "webpack-node-externals": "1.7.2"
   }
 }
