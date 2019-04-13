@@ -11,6 +11,7 @@
     "packages/*"
   ],
   "scripts": {
+    "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
     "build:release": "lerna run build:release",
     "build:watch": "lerna run build:watch",

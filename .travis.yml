@@ -3,7 +3,7 @@ env:
     - CC_TEST_REPORTER_ID=e5d347fb0b2d8f186a447b8ffed96aea93c9eda230418a6ae2481a5dc68daad3
 language: node_js
 node_js:
-  - "10"
+  - "11"
 before_install:
   - npm install -g greenkeeper-lockfile@1
 before_script:
@@ -13,7 +13,7 @@ before_script:
   - greenkeeper-lockfile-update
 script:
   - yarn install --frozen-lockfile
-  - lerna bootstrap
+  - yarn run bootstrap
   - yarn run quality:lint
   - yarn run test:coverage
   - yarn run build:release
