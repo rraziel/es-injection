@@ -6,4 +6,3 @@ node_modules/
 *.log
 junit.xml
 package-lock.json
-test-report.xml
