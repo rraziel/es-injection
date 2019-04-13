@@ -17,6 +17,7 @@
     "build:watch": "lerna run build:watch",
     "compile": "lerna run compile",
     "compile:watch": "lerna run compile:watch",
+    "publish": "lerna publish",
     "quality:lint": "tslint --project ./packages/tsconfig.base.json --config ./packages/tslint.json",
     "test": "jest --no-cache --verbose",
     "test:coverage": "jest --no-cache --coverage",
