@@ -21,8 +21,8 @@ jobs:
           name: 'Lint'
           command: yarn run quality:lint
       - run:
-          name: 'Unit tests'
-          command: yarn run test:coverage
-      - run:
           name: 'Build'
           command: yarn run build:release
+      - run:
+          name: 'Unit tests'
+          command: yarn run test:coverage

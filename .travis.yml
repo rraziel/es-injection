@@ -15,8 +15,8 @@ script:
   - yarn install --frozen-lockfile
   - yarn run bootstrap
   - yarn run quality:lint
-  - yarn run test:coverage
   - yarn run build:release
+  - yarn run test:coverage
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
   - greenkeeper-lockfile-upload

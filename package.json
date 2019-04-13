@@ -36,9 +36,6 @@
       "js",
       "json"
     ],
-    "moduleNameMapper": {
-      "@es-injection/(.+)$": "<rootDir>/packages/$1/src/index.ts"
-    },
     "modulePaths": [
       "<rootDir>"
     ],

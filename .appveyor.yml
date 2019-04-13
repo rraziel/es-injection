@@ -10,8 +10,8 @@ test_script:
   - node --version
   - yarn --version
   - yarn run quality:lint
-  - yarn run test:coverage
   - yarn run build:release
+  - yarn run test:coverage
 on_finish:
   - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\junit.xml))
 on_success:
