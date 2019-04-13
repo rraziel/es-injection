@@ -7,14 +7,16 @@
 
 ## Introduction
 
-Not documented yet.
+Declaring a component allows its lifecycle to be managed by es-injection.
+
+The decorators necessary for component declaration can be imported from the @es-injection/decorators module.
 
 ## Basic Declaration
 
 Declaring a component is as simple as adding a `@Component` decorator to a class.
 
 ```typescript
-import {Component} from 'es-injection';
+import {Component} from '@es-injection/decorators';
 
 @Component
 class MyDependency {
@@ -34,7 +36,8 @@ As an alternative, it is also possible to use one of three more specific stereot
 - `@Repository`, dedicated to the persistence layer
 - `@Service`, dedicated to the service layer
 
-All four decorators exhibit the same behavior, but the annotated code is usually more readable when using the proper stereotype.
+All four decorators exhibit the same behavior, but the annotated code is usually more readable when using the proper
+stereotype.
 
 It also makes it possible to filter components based on their stereotype.
 
@@ -43,7 +46,7 @@ It also makes it possible to filter components based on their stereotype.
 The aforementioned decorators also make it possible to give a name to a component.
 
 ```typescript
-import {Component} from 'es-injection';
+import {Component} from '@es-injection/decorators';
 
 @Component('my-dependency-name')
 class MyDependency {
@@ -51,7 +54,9 @@ class MyDependency {
 }
 ```
 
-Components with a name can be queried by name, either programmatically through the [application context](application-context.md) or using the [@Named](component-injection.md#named-dependencies) decorator.
+Components with a name can be queried by name, either programmatically through the
+[application context](application-context.md) or using the [@Named](component-injection.md#named-dependencies)
+decorator.
 
 ## Abstract Class vs. Interface
 
@@ -59,7 +64,8 @@ Currently, interfaces are not concrete types and do not get compiled into an act
 
 Due to this, it is not possible to add decorators to an interface and then retrieve components through this interface.
 
-It, however, possible to achieve something quite similar by creating an abstract class with nothing but abstract methods.
+It, however, possible to achieve something quite similar by creating an abstract class with nothing but abstract
+methods.
 
 The following interface:
 

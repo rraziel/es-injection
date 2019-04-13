@@ -12,7 +12,8 @@ The application context is the central interface for [component injection](compo
 
 ## Context Lifecycle
 
-The application context has a lifecycle that determines what type of operation can be performed with the application context.
+The application context has a lifecycle that determines what type of operation can be performed with the application
+context.
 
 The lifecycle can be describe as the following steps:
 
@@ -21,7 +22,7 @@ The lifecycle can be describe as the following steps:
 3. the execution phase
 4. the [context stop](#context-stop)
 
-The context gets configured and, once started, becomes read-only.It is configured once and then, once started, becomes read-only.
+The context gets configured and, once started, becomes read-only.
 
 ## Context Configuration
 
@@ -38,7 +39,8 @@ Annotation-based configuration makes it possible to:
 - declare other configurations that are dependencies, via the `@Import` decorator
 - provide component instances via methods annotated with a `@Component` decorator
 
-More information regarding annotation-based configuration can be found in the [Annotation-based Configuration chapter](annotation-configuration.md).
+More information regarding annotation-based configuration can be found in the
+[Annotation-based Configuration chapter](annotation-configuration.md).
 
 ## Context Start
 

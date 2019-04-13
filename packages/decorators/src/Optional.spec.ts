@@ -8,7 +8,7 @@ describe('@Optional decorator', () => {
         it('a property', () => {
             // given
             class TestClass {
-                @Optional private p: string = 'test';
+                @Optional private p: string|undefined = 'test';
                 constructor() { this.p; }
             }
             // when
@@ -21,7 +21,7 @@ describe('@Optional decorator', () => {
         it('a constructor parameter', () => {
             // given
             class TestClass {
-                constructor(@Optional p: string) { /* empty */ }
+                constructor(@Optional p: string|undefined) { /* empty */ }
             }
             // when
             const methodInfo: MethodInfo|undefined = getMethodInfo(TestClass);
@@ -35,7 +35,7 @@ describe('@Optional decorator', () => {
         it('a method parameter', () => {
             // given
             class TestClass {
-                method(@Optional p: string): void { /* empty */ }
+                method(@Optional p: string|undefined): void { /* empty */ }
             }
             // when
             const methodInfo: MethodInfo|undefined = getMethodInfo(TestClass, 'method');
@@ -54,7 +54,7 @@ describe('@Optional decorator', () => {
             // expect
             expect(() => {
                 class TestClass {
-                    static method(@Optional p: string): void { /* empty */ }
+                    static method(@Optional p: string|undefined): void { /* empty */ }
                 }
                 TestClass;
             }).toThrowError(/cannot be applied to static method or property TestClass\.method/);
@@ -64,7 +64,7 @@ describe('@Optional decorator', () => {
             // expect
             expect(() => {
                 class TestClass {
-                    @Optional private static p: string;
+                    @Optional private static p: string|undefined;
                     constructor() { TestClass.p; }
                 }
                 TestClass;

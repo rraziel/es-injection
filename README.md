@@ -2,8 +2,8 @@
 
 A modern, lightweight implementation of dependency injection inspired by [JSR-330](https://jcp.org/en/jsr/detail?id=330) and [Spring](https://docs.spring.io/spring-boot/docs/current/reference/html/using-boot-spring-beans-and-dependency-injection.html).
 
-[![Version](https://img.shields.io/npm/v/es-injection.svg?label=Version&style=for-the-badge&logo=npm)](https://www.npmjs.com/package/es-injection)
-[![Downloads](https://img.shields.io/npm/dt/es-injection.svg?label=Downloads&style=for-the-badge&logo=npm)](https://www.npmjs.com/package/es-injection)
+[![Version](https://img.shields.io/npm/v/@es-injection/core.svg?label=Version&style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@es-injection/core)
+[![Downloads](https://img.shields.io/npm/dt/@es-injection/core.svg?label=Downloads&style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@es-injection/core)
 [![AppVeyor](https://img.shields.io/appveyor/ci/rraziel/es-injection/master.svg?label=Win32&style=for-the-badge&logo=appveyor)](https://ci.appveyor.com/project/rraziel/es-injection)
 [![CircleCI](https://img.shields.io/circleci/project/github/rraziel/es-injection/master.svg?label=MacOS&style=for-the-badge&logo=circleci)](https://circleci.com/gh/rraziel/es-injection)
 [![Travis CI](https://img.shields.io/travis/rraziel/es-injection/master.svg?label=Linux&style=for-the-badge&logo=travis)](https://travis-ci.org/rraziel/es-injection)
@@ -37,25 +37,25 @@ This loose coupling tends to make code more self-contained and easier to test, a
 The library can be installed using `npm`:
 
 ```
-npm install es-injection --save
+npm install @es-injection/core --save
 ```
 
 Or using `yarn`:
 
 ```
-yarn add es-injection
+yarn add @es-injection/core
 ```
 
 ## Development
 
-The module can be built using the following command:
+The modules can be built using the following command:
 
 ```
-npm run compile
+yarn run build
 ```
 
-It is also possible to keep unit and integration tests executing as a background task:
+Tests are written using [Jest](https://jestjs.io/) and can be kept running as a background task with:
 
 ```
-npm run test:watch
+yarn run test:watch
 ```

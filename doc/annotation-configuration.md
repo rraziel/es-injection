@@ -47,7 +47,8 @@ This effectively lets the application context create `MyComponent` instances.
 
 ### Component Instance
 
-Sometimes a component cannot be easily instantiated, either because it requires specific settings that are not available to the component and need to be passed in, or simply because the objects are from third-party libraries.
+Sometimes a component cannot be easily instantiated, either because it requires specific settings that are not
+available to the component and need to be passed in, or simply because the objects are from third-party libraries.
 
 In this scenario, components can be created directly within the configuration class:
 
@@ -105,7 +106,8 @@ As projects grow larger, having multiple configuration classes - one per sub-mod
 
 In many cases, components defined within a sub-module will have dependencies that come from other sub-modules.
 
-For such a scenario, requiring the user of sub-module A to know they need to add the configuration for sub-module B simply because A requires B is not convenient.
+For such a scenario, requiring the user of sub-module A to know they need to add the configuration for sub-module B
+simply because A requires B is not convenient.
 
 To work around this, the @Import decorator can be used:
 

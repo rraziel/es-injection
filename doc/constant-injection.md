@@ -1,3 +1,3 @@
 # Injecting Constants
 
-Not documented yet.
+Not available yet.

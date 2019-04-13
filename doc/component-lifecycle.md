@@ -14,7 +14,8 @@
 
 A component possesses a lifecycle, with two phases that occurs during the component's construction and destruction.
 
-It is possible to execute logic during those phases, which are generally used to initialize a component or shut it down, respectively.
+It is possible to execute logic during those phases, which are generally used to initialize a component or shut it
+down, respectively.
 
 ## Construction Phase
 
@@ -30,7 +31,7 @@ The construction phase starts when a component needs to be instantiated. This ph
 A post-destruction method is a method decorated with the `@PostConstruct` decorator:
 
 ```typescript
-import {Component, PostConstruct} from 'es-injection';
+import {Component, PostConstruct} from '@es-injection/decorators';
 
 @Component
 class MyComponent {
@@ -48,7 +49,7 @@ class MyComponent {
 It is also possible to perform an asynchronous cleanup, simply by having the method return a promise:
 
 ```typescript
-import {Component, PreDestroy} from 'es-injection';
+import {Component, PreDestroy} from '@es-injection/decorators';
 
 @Component
 class MyComponent {
@@ -66,7 +67,7 @@ class MyComponent {
 The pre-construction method call order can be explicitely set using `@Order` decorators:
 
 ```typescript
-import {Component, Order, PostConstruct} from 'es-injection';
+import {Component, Order, PostConstruct} from '@es-injection/decorators';
 
 @Component
 class MyComponent {
@@ -106,7 +107,7 @@ The destruction phase is simpler, but still made of multiple steps:
 A pre-destruction method is a method decorated with the `@PreDestroy` decorator:
 
 ```typescript
-import {Component, PreDestroy} from 'es-injection';
+import {Component, PreDestroy} from '@es-injection/decorators';
 
 @Component
 class MyComponent {
@@ -124,7 +125,7 @@ class MyComponent {
 It is also possible to perform an asynchronous cleanup, simply by having the method return a promise:
 
 ```typescript
-import {Component, PreDestroy} from 'es-injection';
+import {Component, PreDestroy} from '@es-injection/decorators';
 
 @Component
 class MyComponent {
@@ -142,7 +143,7 @@ class MyComponent {
 The pre-destruction method call order can be explicitely set using `@Order` decorators:
 
 ```typescript
-import {Component, Order, PreDestroy} from 'es-injection';
+import {Component, Order, PreDestroy} from '@es-injection/decorators';
 
 @Component
 class MyComponent {
