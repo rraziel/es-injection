@@ -47,15 +47,26 @@ class AnnotationConfigApplicationContext extends DefaultApplicationContext {
             configurationClass = configurationClassOrPromise as ClassConstructor<T>;
         }
 
-        const componentInfo: ComponentInfo|undefined = getComponentInfo(configurationClass)!;
-
-        if (componentInfo === undefined || componentInfo.stereotype !== 'CONFIGURATION') {
-            throw new Error(`class ${configurationClass.name} cannot be used as a configuration class as it lacks a @Configuration decorator`);
-        }
+        const componentInfo: ComponentInfo = this.getConfigurationComponentInfo(configurationClass);
 
         this.componentRegistry.registerComponent(componentInfo.name, configurationClass);
         this.registerImports(configurationClass, componentInfo);
         this.registerScannedComponents(configurationClass, componentInfo);
+    }
+
+    /**
+     * Get component information for a configuration class, throwing an error if the component is unknown or not a configuration class
+     * @param configurationClass Configuration class
+     * @param <T>                Configuration type
+     * @return Component information
+     */
+    private getConfigurationComponentInfo<T>(configurationClass: ClassConstructor<T>): ComponentInfo {
+        const componentInfo: ComponentInfo|undefined = getComponentInfo(configurationClass);
+        if (componentInfo === undefined || componentInfo.stereotype !== 'CONFIGURATION') {
+            throw new Error(`class ${configurationClass.name} cannot be used as a configuration class as it lacks a @Configuration decorator`);
+        }
+
+        return componentInfo;
     }
 
     /**
