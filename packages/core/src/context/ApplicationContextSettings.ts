@@ -3,7 +3,7 @@ import {ComponentFactorySettings} from '../factory';
 /**
  * Application context settings
  */
-interface ApplicationContextSettings extends ComponentFactorySettings {
+class ApplicationContextSettings extends ComponentFactorySettings {
 
 }
 
