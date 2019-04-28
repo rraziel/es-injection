@@ -1,5 +1,4 @@
 import {ComponentClass} from './ComponentClass';
-import 'reflect-metadata';
 
 /**
  * Reflection utility functions

@@ -42,6 +42,9 @@
       "jest-junit"
     ],
     "rootDir": ".",
+    "setupFiles": [
+      "<rootDir>/packages/test.setup.js"
+    ],
     "testEnvironment": "node",
     "testRegex": "\\.spec\\.ts",
     "transform": {
@@ -50,7 +53,6 @@
   },
   "devDependencies": {
     "@types/jest": "24.0.11",
-    "@types/node": "11.13.8",
     "codecov": "3.3.0",
     "jest": "24.7.1",
     "jest-create-mock-instance": "1.1.0",

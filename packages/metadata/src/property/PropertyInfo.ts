@@ -1,5 +1,4 @@
 import {DependencyInfo} from '../dependency';
-import 'reflect-metadata';
 
 /**
  * Property information metadata

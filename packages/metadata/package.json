@@ -25,9 +25,6 @@
     "compile": "tsc -p .",
     "compile:watch": "tsc --watch -p ."
   },
-  "dependencies": {
-    "reflect-metadata": "0.1.13"
-  },
   "devDependencies": {
     "rollup": "1.10.1",
     "rollup-plugin-node-resolve": "4.2.3",

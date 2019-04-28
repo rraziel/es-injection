@@ -152,7 +152,6 @@ describe('Default component factory', () => {
                 });
                 // when
                 const component: TestClass = await componentFactory.newInstance(TestClass);
-                component;
                 // then
                 expect(resolvers.component).toHaveBeenCalledTimes(1);
                 expect(component).toBeInstanceOf(TestClass);

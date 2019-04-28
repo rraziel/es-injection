@@ -1,7 +1,6 @@
 import {ComponentInfo} from './ComponentInfo';
 import {ComponentInfoMetadata} from './ComponentInfoMetadata';
 import {ComponentClass} from '../ComponentClass';
-import 'reflect-metadata';
 
 /**
  * Set component information

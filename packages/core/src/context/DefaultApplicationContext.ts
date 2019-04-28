@@ -42,7 +42,7 @@ class DefaultApplicationContext extends ApplicationContext {
             throw new Error(`class ${componentClass.name} cannot be registered after the context initialization phase`);
         }
 
-        let componentInfo: ComponentInfo|undefined = getComponentInfo(componentClass);
+        const componentInfo: ComponentInfo|undefined = getComponentInfo(componentClass);
         if (!componentInfo || componentInfo.stereotype === undefined) {
             throw new Error(`class ${componentClass.name} does not appear to be a component`);
         }

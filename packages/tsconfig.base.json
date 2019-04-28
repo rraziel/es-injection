@@ -27,6 +27,9 @@
         "target": "es5",
         "typeRoots": [
             "../node_modules/@types"
+        ],
+        "types": [
+            "reflect-metadata"
         ]
     },
     "exclude": [

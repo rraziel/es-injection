@@ -1,6 +1,5 @@
 import {DependencyInfo} from '../dependency';
 import {ComponentClass} from '../ComponentClass';
-import 'reflect-metadata';
 
 /**
  * Method information metadata

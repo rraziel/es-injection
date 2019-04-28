@@ -2,7 +2,7 @@ import {ComponentFactory} from './ComponentFactory';
 import {ComponentFactorySettings} from './ComponentFactorySettings';
 import {ComponentClass, DependencyInfo, getComponentInfo, getMethodInfo, getPropertyInfo, MethodInfo, MethodParameterInfo, PropertyInfo} from '@es-injection/metadata';
 import {InjectedProperty, InjectionTarget, InjectionUtils, InvocationUtils, OrderedElement, OrderUtils} from '../utils';
-import {TypeUtils} from '@es-injection/metadata';
+import {ComponentInfo, TypeUtils} from '@es-injection/metadata';
 
 /**
  * Default component factory
@@ -28,16 +28,43 @@ class DefaultComponentFactory extends ComponentFactory {
      */
     async newInstance<T>(componentClass: ComponentClass<T>): Promise<T> {
         const componentInstance: T = await this.instantiateComponent(componentClass);
-        const targets: Array<InjectionTarget<T>> = TypeUtils.getClasses(componentClass)
-            .map(baseComponentClass => new InjectionTarget(baseComponentClass, getComponentInfo(baseComponentClass)!, componentInstance))
-            .reverse()
-        ;
+        const targets: Array<InjectionTarget<T>> = this.buildInjectionTargets(componentClass, componentInstance);TypeUtils.getClasses(componentClass)
 
         for (const target of targets) {
             await this.initializeInstance(target);
         }
 
         return componentInstance;
+    }
+
+    /**
+     * Build an injection target for each class in the class hierarchy
+     * @param componentClass    Component class
+     * @param componentInstance Component instance
+     * @param <T>               Component type
+     * @return List of injection targets
+     */
+    private buildInjectionTargets<T>(componentClass: ComponentClass<T>, componentInstance: T): Array<InjectionTarget<T>> {
+        return TypeUtils.getClasses(componentClass)
+            .map(baseComponentClass => this.buildInjectionTarget(baseComponentClass, componentInstance))
+            .reverse()
+        ;
+    }
+
+    /**
+     * Build an injection target for a base component class
+     * @param baseComponentClass Base component class
+     * @param componentInstance  Component instance
+     * @param <T>                Base component type
+     * @return Injection target
+     */
+    private buildInjectionTarget<T>(baseComponentClass: ComponentClass<T>, componentInstance: T): InjectionTarget<T> {
+        const componentInfo: ComponentInfo|undefined = getComponentInfo(baseComponentClass);
+        if (!componentInfo) {
+            throw new Error(`base component class ${baseComponentClass.name} has no component information`);
+        }
+
+        return new InjectionTarget(baseComponentClass, componentInfo, componentInstance);
     }
 
     /**
