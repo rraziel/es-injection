@@ -1,6 +1,6 @@
 {
   "name": "@es-injection/core",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "A modern, lightweight dependency injection library inspired by JSR-303 and Spring.",
   "homepage": "https://github.com/rraziel/es-injection",
   "bugs": "https://github.com/rraziel/es-injection/issues",
@@ -26,7 +26,7 @@
     "compile:watch": "tsc --watch -p ."
   },
   "dependencies": {
-    "@es-injection/metadata": "^0.2.6"
+    "@es-injection/metadata": "^0.2.7"
   },
   "devDependencies": {
     "rollup": "1.10.1",
