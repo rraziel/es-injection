@@ -1,6 +1,6 @@
-bin/
+.rpt2_cache/
 coverage/
-lib/
+dist/
 node_modules/
 *.cache
 *.log

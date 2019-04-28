@@ -11,12 +11,11 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
-    "build:release": "lerna run build:release",
     "build:watch": "lerna run build:watch",
     "compile": "lerna run compile",
     "compile:watch": "lerna run compile:watch",
     "publish": "lerna publish",
-    "quality:lint": "tslint --project ./packages/tsconfig.base.json --config ./packages/tslint.json",
+    "quality:lint": "tslint --project tsconfig.json --config ./packages/tslint.json",
     "test": "jest --no-cache --verbose",
     "test:coverage": "jest --no-cache --coverage",
     "test:watch": "jest --watch --no-cache --verbose"
@@ -51,20 +50,22 @@
   },
   "devDependencies": {
     "@types/jest": "24.0.11",
+    "@types/node": "11.13.8",
     "codecov": "3.3.0",
-    "jest": "24.5.0",
+    "jest": "24.7.1",
     "jest-create-mock-instance": "1.1.0",
     "jest-junit": "6.3.0",
-    "lerna": "3.13.3",
+    "lerna": "3.13.4",
     "reflect-metadata": "0.1.13",
-    "terser-webpack-plugin": "1.2.3",
+    "rollup": "1.10.1",
+    "rollup-plugin-auto-external": "2.0.0",
+    "rollup-plugin-node-resolve": "4.2.3",
+    "rollup-plugin-sourcemaps": "0.4.2",
+    "rollup-plugin-terser": "4.0.4",
+    "rollup-plugin-typescript2": "0.21.0",
     "ts-jest": "24.0.2",
-    "ts-loader": "5.3.3",
     "ts-node": "8.1.0",
-    "tslint": "5.14.0",
-    "typescript": "3.3.3333",
-    "webpack": "4.30.0",
-    "webpack-cli": "3.3.1",
-    "webpack-node-externals": "1.7.2"
+    "tslint": "5.16.0",
+    "typescript": "3.4.5"
   }
 }

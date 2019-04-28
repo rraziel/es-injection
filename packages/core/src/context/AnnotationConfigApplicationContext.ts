@@ -62,8 +62,13 @@ class AnnotationConfigApplicationContext extends DefaultApplicationContext {
      */
     private getConfigurationComponentInfo<T>(configurationClass: ClassConstructor<T>): ComponentInfo {
         const componentInfo: ComponentInfo|undefined = getComponentInfo(configurationClass);
-        if (componentInfo === undefined || componentInfo.stereotype !== 'CONFIGURATION') {
+        if (componentInfo === undefined || componentInfo.stereotype === undefined) {
             throw new Error(`class ${configurationClass.name} cannot be used as a configuration class as it lacks a @Configuration decorator`);
+        }
+
+        if (componentInfo.stereotype !== 'CONFIGURATION') {
+            const stereotypeDecoratorName: string = `@${componentInfo.stereotype.charAt(0).toUpperCase()}${componentInfo.stereotype.substr(1).toLowerCase()}`;
+            throw new Error(`class ${configurationClass.name} cannot be used as a configuration class as it has a ${stereotypeDecoratorName} a @Configuration decorator`);
         }
 
         return componentInfo;

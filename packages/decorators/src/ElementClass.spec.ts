@@ -8,7 +8,7 @@ describe('@ElementClass decorator', () => {
         it('a property', () => {
             // given
             class TestClass {
-                @ElementClass(String) private p: string[] = [];
+                @ElementClass(String) private p: Array<string> = [];
                 constructor() { this.p; }
             }
             // when
@@ -21,7 +21,7 @@ describe('@ElementClass decorator', () => {
         it('a constructor parameter', () => {
             // given
             class TestClass {
-                constructor(@ElementClass(String) p: string[]) { /* empty */ }
+                constructor(@ElementClass(String) p: Array<string>) { /* empty */ }
             }
             // when
             const methodInfo: MethodInfo|undefined = getMethodInfo(TestClass);
@@ -35,7 +35,7 @@ describe('@ElementClass decorator', () => {
         it('a method parameter', () => {
             // given
             class TestClass {
-                method(@ElementClass(String) p: string[]): void { /* empty */ }
+                method(@ElementClass(String) p: Array<string>): void { /* empty */ }
             }
             // when
             const methodInfo: MethodInfo|undefined = getMethodInfo(TestClass, 'method');
@@ -53,7 +53,7 @@ describe('@ElementClass decorator', () => {
             // expect
             expect(() => {
                 class TestClass {
-                    static method(@ElementClass(String) p: string[]): void { /* empty */ }
+                    static method(@ElementClass(String) p: Array<string>): void { /* empty */ }
                 }
                 TestClass;
             }).toThrowError(/cannot be applied to static method or property TestClass\.method/);
@@ -63,7 +63,7 @@ describe('@ElementClass decorator', () => {
             // expect
             expect(() => {
                 class TestClass {
-                    @ElementClass(String) private static p: string[];
+                    @ElementClass(String) private static p: Array<string>;
                     constructor() { TestClass.p; }
                 }
                 TestClass;

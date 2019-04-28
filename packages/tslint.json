@@ -3,7 +3,7 @@
         "class-name": true,
         "curly": true,
         "eofline": true,
-        "indent": [true, 2],
+        "indent": [true, 4],
         "interface-name": false,
         "jsdoc-format": true,
         "member-ordering": [
