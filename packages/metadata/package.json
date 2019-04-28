@@ -1,6 +1,6 @@
 {
   "name": "@es-injection/metadata",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Dependency injection metadata for es-injection.",
   "homepage": "https://github.com/rraziel/es-injection",
   "bugs": "https://github.com/rraziel/es-injection/issues",
