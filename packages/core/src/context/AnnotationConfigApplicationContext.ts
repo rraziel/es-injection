@@ -50,7 +50,7 @@ class AnnotationConfigApplicationContext extends DefaultApplicationContext {
         const componentInfo: ComponentInfo = this.getConfigurationComponentInfo(configurationClass);
 
         this.componentRegistry.registerComponent(componentInfo.name, configurationClass);
-        this.registerImports(configurationClass, componentInfo);
+        await this.registerImports(configurationClass, componentInfo);
         this.registerScannedComponents(configurationClass, componentInfo);
     }
 
@@ -79,13 +79,12 @@ class AnnotationConfigApplicationContext extends DefaultApplicationContext {
      * @param configurationClass Configuration class
      * @param componentInfo      Component information
      * @param <T>                Configuration type
+     * @return Promise that resolves once the imports are registered
      */
-    private registerImports<T>(configurationClass: ClassConstructor<T>, componentInfo: ComponentInfo): void {
-        if (!componentInfo.importedConfigurations) {
-            return;
+    private async registerImports<T>(_configurationClass: ClassConstructor<T>, componentInfo: ComponentInfo): Promise<void> {
+        for (const importedConfiguration of componentInfo.importedConfigurations) {
+            await this.registerConfigurationClass(importedConfiguration);
         }
-
-        componentInfo.importedConfigurations.forEach(importedConfiguration => this.registerConfigurationClass(importedConfiguration));
     }
 
     /**
@@ -94,12 +93,10 @@ class AnnotationConfigApplicationContext extends DefaultApplicationContext {
      * @param componentInfo      Component information
      * @param <T>                Configuration type
      */
-    private registerScannedComponents<T>(configurationClass: ClassConstructor<T>, componentInfo: ComponentInfo): void {
-        if (!componentInfo.scannedComponents) {
-            return;
+    private registerScannedComponents<T>(_configurationClass: ClassConstructor<T>, componentInfo: ComponentInfo): void {
+        for (const scannedComponentClass of componentInfo.scannedComponents) {
+            this.registerComponentClass(scannedComponentClass);
         }
-
-        componentInfo.scannedComponents.forEach(scannedComponentClass => this.registerComponentClass(scannedComponentClass));
     }
 
 }
