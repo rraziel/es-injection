@@ -28,7 +28,7 @@ class DefaultComponentFactory extends ComponentFactory {
      */
     async newInstance<T>(componentClass: ComponentClass<T>): Promise<T> {
         const componentInstance: T = await this.instantiateComponent(componentClass);
-        const targets: Array<InjectionTarget<T>> = this.buildInjectionTargets(componentClass, componentInstance);TypeUtils.getClasses(componentClass)
+        const targets: Array<InjectionTarget<T>> = this.buildInjectionTargets(componentClass, componentInstance);TypeUtils.getClasses(componentClass);
 
         for (const target of targets) {
             await this.initializeInstance(target);
