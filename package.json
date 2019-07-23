@@ -56,7 +56,7 @@
     "codecov": "3.4.0",
     "jest": "24.7.1",
     "jest-create-mock-instance": "1.1.0",
-    "jest-junit": "6.4.0",
+    "jest-junit": "7.0.0",
     "lerna": "3.13.4",
     "reflect-metadata": "0.1.13",
     "rollup": "1.11.3",
