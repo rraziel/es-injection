@@ -57,7 +57,7 @@
     "jest": "24.7.1",
     "jest-create-mock-instance": "1.1.0",
     "jest-junit": "6.4.0",
-    "lerna": "3.13.4",
+    "lerna": "3.20.0",
     "reflect-metadata": "0.1.13",
     "rollup": "1.11.3",
     "rollup-plugin-auto-external": "2.0.0",
